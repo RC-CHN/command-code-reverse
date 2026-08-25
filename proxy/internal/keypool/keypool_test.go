@@ -30,6 +30,33 @@ func newTestPool(fc *fakeClient, keys ...string) *Pool {
 	return New(fc, session.NewStore(), keys, BreakerPolicy{})
 }
 
+func TestModelNotInPlanKeepsKeyHealthy(t *testing.T) {
+	planErr := &commandcode.APIError{
+		Status:  403,
+		Code:    "FORBIDDEN",
+		Message: "MODEL_NOT_IN_PLAN: Claude Haiku 4.5 available in Pro and above plans",
+	}
+	fc := &fakeClient{failWith: map[string]error{"k1": planErr}}
+	p := newTestPool(fc, "k1", "k2")
+
+	// Spills to k2 within the request (a higher-tier key may succeed).
+	if _, err := p.Generate(context.Background(), "", &commandcode.GenerateRequest{}); err != nil {
+		t.Fatalf("Generate: %v", err)
+	}
+	if len(fc.calls) != 2 || fc.calls[0] != "k1" || fc.calls[1] != "k2" {
+		t.Fatalf("calls = %v, want [k1 k2]", fc.calls)
+	}
+
+	// k1 must NOT be circuit-broken: the next request starts at k1 again.
+	fc.failWith = nil
+	if _, err := p.Generate(context.Background(), "", &commandcode.GenerateRequest{}); err != nil {
+		t.Fatalf("Generate after plan mismatch: %v", err)
+	}
+	if fc.calls[2] != "k1" {
+		t.Fatalf("k1 was circuit-broken on a plan mismatch, calls = %v", fc.calls)
+	}
+}
+
 func TestFillFirstUsesFirstKey(t *testing.T) {
 	fc := &fakeClient{}
 	p := newTestPool(fc, "k1", "k2", "k3")

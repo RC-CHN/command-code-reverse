@@ -40,6 +40,14 @@ func (e *APIError) IsInsufficientCredits() bool {
 // IsRateLimited reports 429.
 func (e *APIError) IsRateLimited() bool { return e.Status == 429 }
 
+// IsModelNotInPlan reports the 403 + "MODEL_NOT_IN_PLAN" signature: the key
+// itself is valid, only the requested model is above the account's tier.
+// It must NOT be treated as an auth rejection (which would circuit the key).
+func (e *APIError) IsModelNotInPlan() bool {
+	return e.Status == http.StatusForbidden &&
+		strings.Contains(strings.ToLower(e.Message), MarkerModelNotInPlan)
+}
+
 // Credentials identifies one upstream account plus per-request disguise headers.
 type Credentials struct {
 	APIKey      string

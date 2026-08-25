@@ -46,6 +46,9 @@ func writeUpstreamError(w http.ResponseWriter, err error) {
 	case ae.IsRateLimited():
 		writeError(w, http.StatusTooManyRequests, "rate_limit_error",
 			"Upstream rate limit: "+ae.Message, 10)
+	case ae.IsModelNotInPlan():
+		writeError(w, http.StatusForbidden, "plan_error",
+			"The requested model is not included in the upstream account's plan: "+ae.Message, 0)
 	case ae.Status == http.StatusUnauthorized || ae.Status == http.StatusForbidden:
 		writeError(w, http.StatusBadGateway, "upstream_auth_error",
 			"Upstream rejected the CC API key: "+ae.Message, 0)

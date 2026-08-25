@@ -151,6 +151,10 @@ func (p *Pool) reportFailure(ks *keyState, err error) (rotate bool) {
 		p.open(ks, p.policy.CreditsTTL, "insufficient_credits")
 	case errors.As(err, &ae) && ae.IsRateLimited():
 		p.open(ks, p.policy.RateLimitTTL, "rate_limited")
+	case errors.As(err, &ae) && ae.IsModelNotInPlan():
+		// Tier mismatch, not a key problem: keep the key healthy, but a
+		// higher-tier pooled key may succeed, so rotating is worthwhile.
+		return true
 	case errors.As(err, &ae) && (ae.Status == 401 || ae.Status == 403):
 		p.open(ks, p.policy.CreditsTTL, "auth_rejected")
 	case errors.As(err, &ae) && ae.Status >= 400 && ae.Status < 500:
