@@ -141,6 +141,7 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 	completionID := ids.NewCompletionID()
 	created := time.Now().Unix()
 	started := false
+	finishWritten := false
 	flusher, _ := w.(http.Flusher)
 
 	writeChunk := func(c *stream.Chunk) {
@@ -231,6 +232,7 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 			st.absorb(ev)
 			writeChunk(stream.NewChunk(completionID, created, req.Model,
 				map[string]any{}, &st.finishReason, stream.UsageFromUpstream(st.usage)))
+			finishWritten = true
 
 		case "finish-step", "provider-metadata":
 			st.absorb(ev)
@@ -247,6 +249,15 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 		writeError(w, http.StatusTooManyRequests, "rate_limit_error",
 			"Empty response from upstream (zero output tokens)", 10)
 		return
+	}
+	// Upstream ended without a finish event (truncated stream): still
+	// deliver a terminal chunk so clients never hang waiting for one.
+	if !finishWritten {
+		if st.finishReason == "" {
+			st.finishReason = "stop"
+		}
+		writeChunk(stream.NewChunk(completionID, created, req.Model,
+			map[string]any{}, &st.finishReason, stream.UsageFromUpstream(st.usage)))
 	}
 	_, _ = io.WriteString(w, stream.DoneSSE)
 	s.consecutiveTimeouts.Store(0)
