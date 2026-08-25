@@ -4,6 +4,29 @@ All notable changes to commandcode-proxy are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 versioning follows [SemVer](https://semver.org/).
 
+## [v0.1.1] - 2026-08-25
+
+### Fixed
+
+- Truncated upstream streams (EOF without a finish event) now always deliver
+  a terminal SSE chunk with finish_reason and usage — clients no longer hang
+  waiting for one.
+- `recordFailure` is wired into every failure path (upstream error, terminal
+  marker, empty response, timeout); it was dead code in v0.1.0.
+
+### Changed
+
+- Removed dead code: write-only `lastEvent`, unused `Tracker.hc` client,
+  never-set error `code` field, and parsed-but-never-consumed wire fields
+  (`parallel_tool_calls`, `marketCost`, `totalTokens` — verified live to
+  always equal input+output).
+- Deduplicated: shared `streamState.absorb` for stream bookkeeping,
+  `Client.setAuthHeaders` for the repeated auth header block,
+  `toolCallArgs` for argument normalization, and `strconv.Itoa` in place of
+  a hand-rolled helper.
+- `usage.completion_tokens_details.reasoning_tokens` is now mapped from the
+  upstream `reasoningTokens` (OpenAI-standard field).
+
 ## [v0.1.0] - 2026-08-25
 
 Initial release.
