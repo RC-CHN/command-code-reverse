@@ -41,12 +41,14 @@ type Event struct {
 	Raw json.RawMessage `json:"-"`
 }
 
-// Usage mirrors the upstream token accounting shape.
+// Usage mirrors the upstream token accounting shape. totalTokens is
+// intentionally omitted: verified live to always equal
+// inputTokens + outputTokens (which we expose OpenAI-side), and
+// inputTokens already includes cachedInputTokens.
 type Usage struct {
 	InputTokens       int `json:"inputTokens"`
 	OutputTokens      int `json:"outputTokens"`
 	CachedInputTokens int `json:"cachedInputTokens"`
-	TotalTokens       int `json:"totalTokens"`
 }
 
 // StreamError is the payload of an "error" event.
@@ -60,8 +62,7 @@ type StreamError struct {
 // downstream; only surfaced via logs/metrics.
 type ProviderMetadata struct {
 	Gateway *struct {
-		Cost       string `json:"cost"`
-		MarketCost string `json:"marketCost"`
+		Cost string `json:"cost"`
 	} `json:"gateway,omitempty"`
 }
 

@@ -90,8 +90,31 @@ type streamState struct {
 	finishReason string
 	usage        *stream.Usage
 	costUSD      float64
-	lastEvent    string
 	chunkCount   int
+}
+
+// absorb folds bookkeeping-only events (usage, finish reason, cost) into
+// the state. Returns nothing; visible events are handled by the caller.
+func (st *streamState) absorb(ev *stream.Event) {
+	switch ev.Type {
+	case "finish-step":
+		if ev.FinishReason != "" {
+			st.finishReason = stream.MapFinishReason(ev.FinishReason)
+		}
+		if ev.Usage != nil {
+			st.usage = ev.Usage
+		}
+		st.absorbCost(ev)
+	case "finish":
+		if st.finishReason == "" {
+			st.finishReason = stream.MapFinishReason(ev.FinishReason)
+		}
+		if ev.TotalUsage != nil {
+			st.usage = ev.TotalUsage
+		}
+	case "provider-metadata":
+		st.absorbCost(ev)
+	}
 }
 
 // absorbCost captures gateway cost from finish-step / provider-metadata.
@@ -137,7 +160,6 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 			return
 		}
 		idleTimer.Reset(idle)
-		st.lastEvent = ev.Type
 
 		// In-band terminal markers (billing/plan) — the old proxy swallowed
 		// these; we surface them with explicit semantics.
@@ -201,27 +223,13 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 			st.chunkCount++
 			writeChunk(stream.NewChunk(completionID, created, req.Model, delta, nil, nil))
 
-		case "finish-step":
-			if ev.FinishReason != "" {
-				st.finishReason = stream.MapFinishReason(ev.FinishReason)
-			}
-			if ev.Usage != nil {
-				st.usage = ev.Usage
-			}
-			st.absorbCost(ev)
-
 		case "finish":
-			if st.finishReason == "" {
-				st.finishReason = stream.MapFinishReason(ev.FinishReason)
-			}
-			if ev.TotalUsage != nil {
-				st.usage = ev.TotalUsage
-			}
+			st.absorb(ev)
 			writeChunk(stream.NewChunk(completionID, created, req.Model,
 				map[string]any{}, &st.finishReason, stream.UsageFromUpstream(st.usage)))
 
-		case "provider-metadata":
-			st.absorbCost(ev)
+		case "finish-step", "provider-metadata":
+			st.absorb(ev)
 		}
 		// start / start-step / reasoning-start / reasoning-end / text-start /
 		// text-end / provider-metadata: intentionally silent. start-step and
@@ -262,7 +270,6 @@ func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.
 			return
 		}
 		idleTimer.Reset(idle)
-		st.lastEvent = ev.Type
 
 		if te := stream.TerminalError(ev); te != nil {
 			status, typ, msg := terminalErrorStatus(te.Message)
@@ -290,23 +297,8 @@ func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.
 					"arguments": args,
 				},
 			})
-		case "finish-step":
-			if ev.FinishReason != "" {
-				st.finishReason = stream.MapFinishReason(ev.FinishReason)
-			}
-			if ev.Usage != nil {
-				st.usage = ev.Usage
-			}
-			st.absorbCost(ev)
-		case "finish":
-			if st.finishReason == "" {
-				st.finishReason = stream.MapFinishReason(ev.FinishReason)
-			}
-			if ev.TotalUsage != nil {
-				st.usage = ev.TotalUsage
-			}
-		case "provider-metadata":
-			st.absorbCost(ev)
+		case "finish", "finish-step", "provider-metadata":
+			st.absorb(ev)
 		}
 	}
 

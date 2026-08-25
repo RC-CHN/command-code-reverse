@@ -16,15 +16,14 @@ import (
 
 // ChatRequest is the OpenAI /v1/chat/completions request shape.
 type ChatRequest struct {
-	Model            string          `json:"model"`
-	Messages         []Message       `json:"messages"`
-	Stream           bool            `json:"stream"`
-	MaxTokens        *int            `json:"max_tokens,omitempty"`
-	Temperature      *float64        `json:"temperature,omitempty"`
-	ReasoningEffort  string          `json:"reasoning_effort,omitempty"`
-	Tools            []Tool          `json:"tools,omitempty"`
-	ToolChoice       json.RawMessage `json:"tool_choice,omitempty"`
-	ParallelToolCall *bool           `json:"parallel_tool_calls,omitempty"`
+	Model           string          `json:"model"`
+	Messages        []Message       `json:"messages"`
+	Stream          bool            `json:"stream"`
+	MaxTokens       *int            `json:"max_tokens,omitempty"`
+	Temperature     *float64        `json:"temperature,omitempty"`
+	ReasoningEffort string          `json:"reasoning_effort,omitempty"`
+	Tools           []Tool          `json:"tools,omitempty"`
+	ToolChoice      json.RawMessage `json:"tool_choice,omitempty"`
 }
 
 // Message is an OpenAI chat message. Content may be a string or an array

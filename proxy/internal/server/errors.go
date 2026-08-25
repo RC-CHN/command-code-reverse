@@ -16,7 +16,6 @@ type openAIError struct {
 type openAIErrorBody struct {
 	Message string `json:"message"`
 	Type    string `json:"type"`
-	Code    string `json:"code,omitempty"`
 }
 
 // writeError sends an OpenAI-shaped error response. When retryAfter > 0 a

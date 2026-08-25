@@ -42,10 +42,9 @@ func New(pin, initial string) *Tracker {
 		v = fallbackVersion
 	}
 	return &Tracker{
-		v:       v,
-		pin:     pin,
-		hc:      &http.Client{Timeout: 10 * time.Second},
-		fetchFn: nil,
+		v:   v,
+		pin: pin,
+		hc:  &http.Client{Timeout: 10 * time.Second},
 	}
 }
 
@@ -78,7 +77,7 @@ func (t *Tracker) Start(ctx context.Context) {
 func (t *Tracker) refresh(ctx context.Context) {
 	fetch := t.fetchFn
 	if fetch == nil {
-		fetch = fetchLatest
+		fetch = t.fetchLatest
 	}
 	v, err := fetch(ctx)
 	if err != nil {
@@ -92,12 +91,12 @@ func (t *Tracker) refresh(ctx context.Context) {
 }
 
 // fetchLatest queries the npm registry for command-code@latest.
-func fetchLatest(ctx context.Context) (string, error) {
+func (t *Tracker) fetchLatest(ctx context.Context) (string, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, registryURL, nil)
 	if err != nil {
 		return "", err
 	}
-	resp, err := (&http.Client{Timeout: 10 * time.Second}).Do(req)
+	resp, err := t.hc.Do(req)
 	if err != nil {
 		return "", err
 	}
