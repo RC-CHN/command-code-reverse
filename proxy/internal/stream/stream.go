@@ -49,6 +49,7 @@ type Usage struct {
 	InputTokens       int `json:"inputTokens"`
 	OutputTokens      int `json:"outputTokens"`
 	CachedInputTokens int `json:"cachedInputTokens"`
+	ReasoningTokens   int `json:"reasoningTokens"`
 }
 
 // StreamError is the payload of an "error" event.
@@ -184,7 +185,7 @@ type ChunkChoice struct {
 	FinishReason *string        `json:"finish_reason"`
 }
 
-// OpenAIUsage is the OpenAI usage block with cache details.
+// OpenAIUsage is the OpenAI usage block with cache and reasoning details.
 type OpenAIUsage struct {
 	PromptTokens        int `json:"prompt_tokens"`
 	CompletionTokens    int `json:"completion_tokens"`
@@ -192,6 +193,9 @@ type OpenAIUsage struct {
 	PromptTokensDetails struct {
 		CachedTokens int `json:"cached_tokens"`
 	} `json:"prompt_tokens_details"`
+	CompletionTokensDetails struct {
+		ReasoningTokens int `json:"reasoning_tokens"`
+	} `json:"completion_tokens_details"`
 }
 
 // UsageFromUpstream maps and normalizes upstream usage. The zero-output
@@ -201,14 +205,15 @@ func UsageFromUpstream(u *Usage) *OpenAIUsage {
 	if u == nil {
 		return out
 	}
-	input, output, cached := u.InputTokens, u.OutputTokens, u.CachedInputTokens
+	input, output, cached, reasoning := u.InputTokens, u.OutputTokens, u.CachedInputTokens, u.ReasoningTokens
 	if output == 0 {
-		input, cached = 0, 0
+		input, cached, reasoning = 0, 0, 0
 	}
 	out.PromptTokens = input
 	out.CompletionTokens = output
 	out.TotalTokens = input + output
 	out.PromptTokensDetails.CachedTokens = cached
+	out.CompletionTokensDetails.ReasoningTokens = reasoning
 	return out
 }
 

@@ -124,6 +124,14 @@ func (st *streamState) absorbCost(ev *stream.Event) {
 	}
 }
 
+// toolCallArgs renders a tool-call input as an OpenAI arguments JSON string.
+func toolCallArgs(input json.RawMessage) string {
+	if len(input) > 0 {
+		return string(input)
+	}
+	return "{}"
+}
+
 // serveStream relays the upstream NDJSON stream as OpenAI SSE. The 200
 // header is delayed until the first visible chunk so early failures can
 // still be reported as JSON errors.
@@ -202,17 +210,13 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 			writeChunk(stream.NewChunk(completionID, created, req.Model, delta, nil, nil))
 
 		case "tool-call":
-			args := "{}"
-			if len(ev.Input) > 0 {
-				args = string(ev.Input)
-			}
 			tc := map[string]any{
 				"index": st.toolCallIdx,
 				"id":    ev.ToolCallID,
 				"type":  "function",
 				"function": map[string]any{
 					"name":      ev.ToolName,
-					"arguments": args,
+					"arguments": toolCallArgs(ev.Input),
 				},
 			}
 			st.toolCallIdx++
@@ -285,16 +289,12 @@ func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.
 		case "reasoning-delta":
 			st.reasoning += ev.Text
 		case "tool-call":
-			args := "{}"
-			if len(ev.Input) > 0 {
-				args = string(ev.Input)
-			}
 			st.toolCalls = append(st.toolCalls, map[string]any{
 				"id":   ev.ToolCallID,
 				"type": "function",
 				"function": map[string]any{
 					"name":      ev.ToolName,
-					"arguments": args,
+					"arguments": toolCallArgs(ev.Input),
 				},
 			})
 		case "finish", "finish-step", "provider-metadata":

@@ -118,10 +118,7 @@ func (c *Client) postJSON(ctx context.Context, route, apiKey string, payload any
 		return fmt.Errorf("build %s request: %w", route, err)
 	}
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+apiKey)
-	req.Header.Set("User-Agent", "cli")
-	req.Header.Set("x-command-code-version", c.version())
-	req.Header.Set("x-cli-environment", "production")
+	c.setAuthHeaders(req, apiKey)
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
@@ -132,6 +129,14 @@ func (c *Client) postJSON(ctx context.Context, route, apiKey string, payload any
 		return parseAPIError(resp)
 	}
 	return nil
+}
+
+// setAuthHeaders applies the shared authenticated-CLI header set.
+func (c *Client) setAuthHeaders(req *http.Request, apiKey string) {
+	req.Header.Set("Authorization", "Bearer "+apiKey)
+	req.Header.Set("User-Agent", "cli")
+	req.Header.Set("x-command-code-version", c.version())
+	req.Header.Set("x-cli-environment", "production")
 }
 
 // Whoami probes /alpha/whoami — a lightweight auth/upstream health check.
@@ -158,10 +163,7 @@ func (c *Client) getJSON(ctx context.Context, route, apiKey string, out any) err
 	if err != nil {
 		return fmt.Errorf("build %s request: %w", route, err)
 	}
-	req.Header.Set("Authorization", "Bearer "+apiKey)
-	req.Header.Set("User-Agent", "cli")
-	req.Header.Set("x-command-code-version", c.version())
-	req.Header.Set("x-cli-environment", "production")
+	c.setAuthHeaders(req, apiKey)
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
@@ -195,9 +197,8 @@ func (c *Client) ProviderModels(ctx context.Context, apiKey string) ([]string, e
 	if err != nil {
 		return nil, fmt.Errorf("build models request: %w", err)
 	}
-	req.Header.Set("Authorization", "Bearer "+apiKey)
-	req.Header.Set("x-command-code-version", c.version())
-	req.Header.Set("x-cli-environment", "production")
+	req.Header.Set("Content-Type", "application/json")
+	c.setAuthHeaders(req, apiKey)
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {

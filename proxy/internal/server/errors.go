@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/commandcode"
 )
@@ -22,7 +23,7 @@ type openAIErrorBody struct {
 // Retry-After header (seconds) is attached so SDKs back off politely.
 func writeError(w http.ResponseWriter, status int, typ, msg string, retryAfter int) {
 	if retryAfter > 0 {
-		w.Header().Set("Retry-After", itoa(retryAfter))
+		w.Header().Set("Retry-After", strconv.Itoa(retryAfter))
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
@@ -81,19 +82,4 @@ func streamErrorChunk(msg, typ string) string {
 		"error": map[string]any{"message": msg, "type": typ},
 	})
 	return "data: " + string(b) + "\n\n"
-}
-
-// itoa avoids importing strconv in this file's call sites.
-func itoa(n int) string {
-	if n == 0 {
-		return "0"
-	}
-	var buf [8]byte
-	i := len(buf)
-	for n > 0 {
-		i--
-		buf[i] = byte('0' + n%10)
-		n /= 10
-	}
-	return string(buf[i:])
 }
