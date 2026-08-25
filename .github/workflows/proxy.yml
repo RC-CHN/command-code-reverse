@@ -1,0 +1,54 @@
+name: proxy
+
+on:
+  push:
+    paths: ["proxy/**", ".github/workflows/proxy.yml"]
+  pull_request:
+    paths: ["proxy/**"]
+
+defaults:
+  run:
+    working-directory: proxy
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+          cache-dependency-path: proxy/go.sum
+
+      - name: vet
+        run: go vet ./...
+
+      - name: test
+        run: go test -race -count=1 ./...
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+          cache-dependency-path: proxy/go.sum
+      - uses: golangci/golangci-lint-action@v6
+        with:
+          working-directory: proxy
+          version: latest
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: [test, lint]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: proxy
+          platforms: linux/amd64,linux/arm64
+          push: false
+          tags: commandcode-proxy:ci

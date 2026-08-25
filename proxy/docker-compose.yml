@@ -1,0 +1,21 @@
+services:
+  commandcode-proxy:
+    build: .
+    ports:
+      - "3050:3050"
+    env_file: ../.env
+    environment:
+      HOST: 0.0.0.0
+      PORT: "3050"
+      FINGERPRINT_STATE_FILE: /app/data/fingerprint.json
+    volumes:
+      # Fingerprint state file persistence (collect-once-replay-forever).
+      - proxy-data:/app/data
+    restart: unless-stopped
+    # NOTE: distroless has no shell/curl, so no container-level healthcheck.
+    # Use k8s httpGet probes instead:
+    #   livenessProbe:  GET /healthz
+    #   readinessProbe: GET /readyz
+
+volumes:
+  proxy-data:
