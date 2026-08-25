@@ -2,6 +2,7 @@ package convert
 
 import (
 	"encoding/json"
+	"strings"
 	"testing"
 )
 
@@ -176,6 +177,21 @@ func TestToWireImageMessage(t *testing.T) {
 	parts := w.Params.Messages[0].Content
 	if len(parts) != 2 || parts[1].Type != "image" || parts[1].MimeType != "image/jpeg" {
 		t.Errorf("parts = %+v", parts)
+	}
+}
+
+func TestToWireRejectsRemoteImageURL(t *testing.T) {
+	req := &ChatRequest{
+		Model: "m",
+		Messages: []Message{
+			{Role: "user", Content: mustJSON(t, []map[string]any{
+				{"type": "image_url", "image_url": map[string]string{"url": "https://example.com/cat.jpg"}},
+			})},
+		},
+	}
+	_, err := ToWire(req, "", 200000, 64000)
+	if err == nil || !strings.Contains(err.Error(), "data URL") {
+		t.Fatalf("expected data-URL rejection, got %v", err)
 	}
 }
 

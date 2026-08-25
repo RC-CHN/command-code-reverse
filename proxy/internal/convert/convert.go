@@ -196,6 +196,14 @@ func convertMessages(msgs []Message) (string, []commandcode.WireMessage, error) 
 						parts = append(parts, commandcode.WireContentPart{Type: "text", Text: p.Text})
 					case "image_url":
 						if p.ImageURL != nil && p.ImageURL.URL != "" {
+							if !strings.HasPrefix(p.ImageURL.URL, "data:") {
+								// The upstream wire format only carries base64
+								// data URLs (CLI parseDataUrl); a remote URL
+								// would be silently ignored by the model.
+								return "", nil, fmt.Errorf(
+									"image_url must be a base64 data URL (data:<mime>;base64,...), "+
+										"remote URLs are not supported: %.80s", p.ImageURL.URL)
+							}
 							mt := mimeFromDataURL(p.ImageURL.URL)
 							parts = append(parts, commandcode.WireContentPart{Type: "image", Image: p.ImageURL.URL, MimeType: mt})
 						}
