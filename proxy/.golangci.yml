@@ -1,3 +1,5 @@
+version: "2"
+
 run:
   timeout: 3m
 
@@ -7,11 +9,14 @@ linters:
     - govet
     - staticcheck
     - unused
-    - gofmt
-    - goimports
     - misspell
     - unconvert
     - unparam
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
 
 issues:
   max-issues-per-linter: 0

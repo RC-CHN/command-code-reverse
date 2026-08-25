@@ -17,7 +17,7 @@ func isolate(t *testing.T) {
 		"HOST", "PORT", "LOG_FORMAT", "LOG_LEVEL",
 	} {
 		t.Setenv(k, "")
-		os.Unsetenv(k)
+		_ = os.Unsetenv(k)
 	}
 }
 

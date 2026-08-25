@@ -88,7 +88,7 @@ func (c *Client) Generate(ctx context.Context, creds Credentials, req *GenerateR
 		return nil, fmt.Errorf("upstream request: %w", err)
 	}
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		defer resp.Body.Close()
+		defer func() { _ = resp.Body.Close() }()
 		return nil, parseAPIError(resp)
 	}
 	return resp.Body, nil
@@ -127,7 +127,7 @@ func (c *Client) postJSON(ctx context.Context, route, apiKey string, payload any
 	if err != nil {
 		return fmt.Errorf("%s request: %w", route, err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		return parseAPIError(resp)
 	}
@@ -167,7 +167,7 @@ func (c *Client) getJSON(ctx context.Context, route, apiKey string, out any) err
 	if err != nil {
 		return fmt.Errorf("%s request: %w", route, err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		return parseAPIError(resp)
 	}
@@ -203,7 +203,7 @@ func (c *Client) ProviderModels(ctx context.Context, apiKey string) ([]string, e
 	if err != nil {
 		return nil, fmt.Errorf("models request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode != http.StatusOK {
 		return nil, parseAPIError(resp)
 	}

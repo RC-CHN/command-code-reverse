@@ -101,7 +101,7 @@ func fetchLatest(ctx context.Context) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode != http.StatusOK {
 		return "", fmt.Errorf("npm registry responded %d", resp.StatusCode)
 	}

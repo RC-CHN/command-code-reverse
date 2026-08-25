@@ -37,10 +37,10 @@ jobs:
         with:
           go-version: "1.24"
           cache-dependency-path: proxy/go.sum
-      - uses: golangci/golangci-lint-action@v6
+      - uses: golangci/golangci-lint-action@v7
         with:
           working-directory: proxy
-          version: latest
+          version: v2.1.6
 
   docker:
     runs-on: ubuntu-latest

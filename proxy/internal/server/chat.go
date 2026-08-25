@@ -68,10 +68,11 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 			return // downstream hung up before the first byte
 		}
 		slog.Warn("upstream generate failed", "model", req.Model, "error", err)
+		s.recordFailure(&req, req.Stream, "upstream_error")
 		writeUpstreamError(w, err)
 		return
 	}
-	defer body.Close()
+	defer func() { _ = body.Close() }()
 
 	if req.Stream {
 		s.serveStream(w, r, body, &req, start, idleTimer, idle)
@@ -143,6 +144,7 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 		if te := stream.TerminalError(ev); te != nil {
 			status, typ, msg := terminalErrorStatus(te.Message)
 			slog.Warn("terminal marker in stream", "marker", te.Message, "model", req.Model)
+			s.recordFailure(req, true, "terminal_marker")
 			if !started {
 				writeError(w, status, typ, msg, 0)
 			} else {
@@ -229,6 +231,7 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 	if !started {
 		// Stream ended with nothing visible: treat as retryable (the old
 		// proxy's zero-output guard).
+		s.recordFailure(req, true, "empty_response")
 		writeError(w, http.StatusTooManyRequests, "rate_limit_error",
 			"Empty response from upstream (zero output tokens)", 10)
 		return
@@ -264,6 +267,7 @@ func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.
 		if te := stream.TerminalError(ev); te != nil {
 			status, typ, msg := terminalErrorStatus(te.Message)
 			slog.Warn("terminal marker in stream", "marker", te.Message, "model", req.Model)
+			s.recordFailure(req, false, "terminal_marker")
 			writeError(w, status, typ, msg, 0)
 			return
 		}
@@ -307,6 +311,7 @@ func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.
 	}
 
 	if usageOut(st.usage) == 0 {
+		s.recordFailure(req, false, "empty_response")
 		writeError(w, http.StatusTooManyRequests, "rate_limit_error",
 			"Empty response from upstream (zero output tokens)", 10)
 		return
@@ -395,6 +400,7 @@ func (s *Server) handleStreamReadError(w http.ResponseWriter, r *http.Request, r
 	if n >= timeoutReduceThreshold {
 		msg = "Response timeout - try reducing context length (summarize earlier messages)"
 	}
+	s.recordFailure(req, req.Stream, "timeout")
 	slog.Warn("stream read failed",
 		"model", req.Model, "stream", req.Stream,
 		"consecutiveTimeouts", n, "error", err,

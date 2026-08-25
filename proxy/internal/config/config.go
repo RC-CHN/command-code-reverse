@@ -133,7 +133,7 @@ func loadDotEnv(path string) error {
 		}
 		return fmt.Errorf("config: open %s: %w", path, err)
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	sc := bufio.NewScanner(f)
 	for sc.Scan() {
@@ -148,7 +148,7 @@ func loadDotEnv(path string) error {
 		k = strings.TrimSpace(k)
 		v = strings.Trim(strings.TrimSpace(v), `"'`)
 		if k != "" && os.Getenv(k) == "" {
-			os.Setenv(k, v)
+			_ = os.Setenv(k, v)
 		}
 	}
 	return sc.Err()

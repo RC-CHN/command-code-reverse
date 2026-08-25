@@ -20,7 +20,7 @@ func TestGenerateHeadersAndBody(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(&gotBody); err != nil {
 			t.Errorf("decode body: %v", err)
 		}
-		w.Write([]byte("{\"type\":\"start\"}\n{\"type\":\"finish\"}\n"))
+		_, _ = w.Write([]byte("{\"type\":\"start\"}\n{\"type\":\"finish\"}\n"))
 	}))
 	defer srv.Close()
 
@@ -33,7 +33,7 @@ func TestGenerateHeadersAndBody(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Generate: %v", err)
 	}
-	defer rc.Close()
+	defer func() { _ = rc.Close() }()
 
 	body, _ := io.ReadAll(rc)
 	if !strings.Contains(string(body), `"type":"start"`) {
@@ -68,7 +68,7 @@ func TestGenerateHeadersAndBody(t *testing.T) {
 func TestGenerateAPIError(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(`{"success":false,"error":{"code":"BAD_REQUEST","status":400,"message":"insufficient credits. Buy more.","docs":"https://x"}}`))
+		_, _ = w.Write([]byte(`{"success":false,"error":{"code":"BAD_REQUEST","status":400,"message":"insufficient credits. Buy more.","docs":"https://x"}}`))
 	}))
 	defer srv.Close()
 
