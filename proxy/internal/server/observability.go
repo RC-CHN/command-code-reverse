@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/RC-CHN/command-code-reverse/proxy/internal/commandcode"
 )
 
 // Deps bundles the injectable dependencies of the HTTP surface.
@@ -19,7 +21,7 @@ type Deps struct {
 	CCVersion func() string
 
 	// FetchModels refreshes the model catalog; nil → static fallback only.
-	FetchModels func(ctx context.Context, downstreamKey string) ([]string, error)
+	FetchModels func(ctx context.Context, downstreamKey string) ([]commandcode.ModelInfo, error)
 	// FetchCredits passthroughs billing data; nil → /v1/credits returns 501.
 	FetchCredits func(ctx context.Context, downstreamKey string) (credits, subscriptions json.RawMessage, err error)
 	// Probe checks upstream health for /readyz; nil → readiness mirrors liveness.

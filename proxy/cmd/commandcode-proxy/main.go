@@ -77,7 +77,7 @@ func main() {
 		}
 		return cfg.APIKeys[0]
 	}
-	fetchModels := func(ctx context.Context, downstreamKey string) ([]string, error) {
+	fetchModels := func(ctx context.Context, downstreamKey string) ([]commandcode.ModelInfo, error) {
 		return client.ProviderModels(ctx, pickKey(downstreamKey))
 	}
 

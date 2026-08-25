@@ -190,14 +190,22 @@ func (c *Client) getJSON(ctx context.Context, route, apiKey string, out any) err
 	return nil
 }
 
+// ModelInfo is one entry of the upstream model catalog.
+type ModelInfo struct {
+	ID            string `json:"id"`
+	Name          string `json:"name"`
+	ContextLength int    `json:"context_length"`
+	Created       int64  `json:"created"`
+	OwnedBy       string `json:"owned_by"`
+}
+
 // ProviderModels fetches the upstream model catalog from
-// /provider/v1/models and returns the model IDs.
-func (c *Client) ProviderModels(ctx context.Context, apiKey string) ([]string, error) {
+// /provider/v1/models, preserving display name and context length.
+func (c *Client) ProviderModels(ctx context.Context, apiKey string) ([]ModelInfo, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.baseURL+"/provider/v1/models", nil)
 	if err != nil {
 		return nil, fmt.Errorf("build models request: %w", err)
 	}
-	req.Header.Set("Content-Type", "application/json")
 	c.setAuthHeaders(req, apiKey)
 
 	resp, err := c.httpClient.Do(req)
@@ -210,23 +218,21 @@ func (c *Client) ProviderModels(ctx context.Context, apiKey string) ([]string, e
 	}
 
 	var out struct {
-		Data []struct {
-			ID string `json:"id"`
-		} `json:"data"`
+		Data []ModelInfo `json:"data"`
 	}
 	if err := json.NewDecoder(io.LimitReader(resp.Body, 4<<20)).Decode(&out); err != nil {
 		return nil, fmt.Errorf("decode models response: %w", err)
 	}
-	ids := make([]string, 0, len(out.Data))
+	models := out.Data[:0]
 	for _, m := range out.Data {
 		if m.ID != "" {
-			ids = append(ids, m.ID)
+			models = append(models, m)
 		}
 	}
-	if len(ids) == 0 {
+	if len(models) == 0 {
 		return nil, fmt.Errorf("models response contained no models")
 	}
-	return ids, nil
+	return models, nil
 }
 
 // headers reproduces the real CLI header set (without the old proxy's

@@ -207,21 +207,60 @@ func TestModelsFallbackAndAuth(t *testing.T) {
 
 func TestModelsDynamicFetch(t *testing.T) {
 	up := &stubUpstream{}
-	fetch := func(ctx context.Context, key string) ([]string, error) {
+	fetch := func(ctx context.Context, key string) ([]commandcode.ModelInfo, error) {
 		// Managed mode: downstream hint must be empty (proxy key never
 		// travels upstream); the wiring layer substitutes the pool key.
 		if key != "" {
 			t.Errorf("managed-mode downstream hint leaked: %q", key)
 		}
-		return []string{"dynamic/model-1"}, nil
+		return []commandcode.ModelInfo{{ID: "dynamic/model-1", Name: "Dynamic One", ContextLength: 131072}}, nil
 	}
 	h := New(testConfig(), Deps{Upstream: up, FetchModels: fetch}, nil)
 
 	req := authedReq(t, "GET", "/v1/models", "")
 	rec := httptest.NewRecorder()
 	h.ServeHTTP(rec, req)
-	if !strings.Contains(rec.Body.String(), "dynamic/model-1") {
-		t.Errorf("dynamic catalog missing: %s", rec.Body.String())
+	body := rec.Body.String()
+	if !strings.Contains(body, "dynamic/model-1") {
+		t.Errorf("dynamic catalog missing: %s", body)
+	}
+	if !strings.Contains(body, `"context_length":131072`) || !strings.Contains(body, `"name":"Dynamic One"`) {
+		t.Errorf("enriched fields missing: %s", body)
+	}
+}
+
+func TestModelGetByID(t *testing.T) {
+	up := &stubUpstream{}
+	h := New(testConfig(), Deps{Upstream: up}, nil)
+
+	// Fallback catalog hit (ID contains a slash — wildcard route must match).
+	req := authedReq(t, "GET", "/v1/models/deepseek/deepseek-v4-flash", "")
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, req)
+	if rec.Result().StatusCode != 200 {
+		t.Fatalf("status = %d, body = %s", rec.Result().StatusCode, rec.Body.String())
+	}
+	if !strings.Contains(rec.Body.String(), `"id":"deepseek/deepseek-v4-flash"`) {
+		t.Errorf("body = %s", rec.Body.String())
+	}
+
+	// Unknown model → OpenAI-shaped 404.
+	req = authedReq(t, "GET", "/v1/models/nope/not-a-model", "")
+	rec = httptest.NewRecorder()
+	h.ServeHTTP(rec, req)
+	if rec.Result().StatusCode != 404 {
+		t.Fatalf("status = %d", rec.Result().StatusCode)
+	}
+	if !strings.Contains(rec.Body.String(), "does not exist") {
+		t.Errorf("body = %s", rec.Body.String())
+	}
+
+	// Unauthenticated → 401.
+	req = httptest.NewRequest("GET", "/v1/models/deepseek/deepseek-v4-flash", nil)
+	rec = httptest.NewRecorder()
+	h.ServeHTTP(rec, req)
+	if rec.Result().StatusCode != 401 {
+		t.Errorf("unauthenticated model get = %d", rec.Result().StatusCode)
 	}
 }
 
