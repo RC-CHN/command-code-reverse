@@ -13,6 +13,11 @@ import (
 type Deps struct {
 	Upstream Upstream
 
+	// Version is the proxy build version (stamped via ldflags).
+	Version string
+	// CCVersion reports the CLI version currently sent upstream; nil → omitted.
+	CCVersion func() string
+
 	// FetchModels refreshes the model catalog; nil → static fallback only.
 	FetchModels func(ctx context.Context, downstreamKey string) ([]string, error)
 	// FetchCredits passthroughs billing data; nil → /v1/credits returns 501.
@@ -54,6 +59,21 @@ func (s *Server) handleCredits(w http.ResponseWriter, r *http.Request) {
 		"credits":       credits,
 		"subscriptions": subs,
 	})
+}
+
+// ── /version ────────────────────────────────────────────────────────
+
+// handleVersion reports build and upstream-protocol versions.
+func (s *Server) handleVersion(w http.ResponseWriter, _ *http.Request) {
+	out := map[string]string{"version": s.deps.Version}
+	if out["version"] == "" {
+		out["version"] = "dev"
+	}
+	if s.deps.CCVersion != nil {
+		out["ccVersion"] = s.deps.CCVersion()
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(out)
 }
 
 // ── /metrics ────────────────────────────────────────────────────────

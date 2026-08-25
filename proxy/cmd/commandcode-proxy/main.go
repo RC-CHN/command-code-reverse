@@ -6,6 +6,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"flag"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -24,7 +26,18 @@ import (
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/version"
 )
 
+// buildVersion is stamped by -ldflags "-X main.buildVersion=..." at release
+// time (see .github/workflows/release.yml and the Dockerfile).
+var buildVersion = "dev"
+
 func main() {
+	versionFlag := flag.Bool("version", false, "print version and exit")
+	flag.Parse()
+	if *versionFlag {
+		fmt.Println("commandcode-proxy", buildVersion)
+		return
+	}
+
 	cfg, err := config.Load()
 	if err != nil {
 		slog.Error("config load failed", "error", err)
@@ -79,6 +92,8 @@ func main() {
 
 	deps := server.Deps{
 		Upstream:    upstream,
+		Version:     buildVersion,
+		CCVersion:   versionTracker.String,
 		FetchModels: fetchModels,
 		FetchCredits: func(ctx context.Context, downstreamKey string) (json.RawMessage, json.RawMessage, error) {
 			return client.Billing(ctx, pickKey(downstreamKey))
@@ -92,7 +107,7 @@ func main() {
 	handler := server.New(cfg, deps, renderMetrics)
 	httpServer := &http.Server{
 		Addr:              cfg.Addr(),
-		Handler:           handler,
+		Handler:           versionHeader(handler),
 		ReadHeaderTimeout: 10 * time.Second,
 	}
 
@@ -100,6 +115,7 @@ func main() {
 	go func() {
 		slog.Info("commandcode-proxy listening",
 			"addr", cfg.Addr(),
+			"version", buildVersion,
 			"authMode", cfg.AuthMode,
 			"apiKeys", len(cfg.APIKeys),
 			"apiBase", cfg.APIBase,
@@ -128,4 +144,13 @@ func main() {
 		os.Exit(1)
 	}
 	slog.Info("commandcode-proxy stopped")
+}
+
+// versionHeader stamps every response with the proxy version.
+func versionHeader(next http.Handler) http.Handler {
+	server := "commandcode-proxy/" + buildVersion
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Server", server)
+		next.ServeHTTP(w, r)
+	})
 }

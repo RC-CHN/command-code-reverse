@@ -9,8 +9,9 @@ COPY go.mod ./
 RUN go mod download
 
 COPY . .
+ARG VERSION=dev
 RUN CGO_ENABLED=0 GOOS=linux go build \
-      -trimpath -ldflags="-s -w" \
+      -trimpath -ldflags="-s -w -X main.buildVersion=${VERSION}" \
       -o /out/commandcode-proxy ./cmd/commandcode-proxy
 
 # ── runtime stage ─────────────────────────────────────

@@ -33,6 +33,7 @@ func New(cfg *config.Config, deps Deps, renderMetrics func() string) http.Handle
 	mux.HandleFunc("GET /healthz", s.handleHealthz)
 	mux.HandleFunc("GET /readyz", s.handleReadyz)
 	mux.HandleFunc("GET /metrics", s.handleMetrics)
+	mux.HandleFunc("GET /version", s.handleVersion)
 
 	// Authenticated API surface.
 	api := http.NewServeMux()
