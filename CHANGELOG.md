@@ -4,6 +4,33 @@ All notable changes to commandcode-proxy are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 versioning follows [SemVer](https://semver.org/).
 
+## [v0.1.2] - 2026-08-25
+
+### Fixed
+
+- A 403 `MODEL_NOT_IN_PLAN` response (model above the account's tier) no
+  longer circuit-breaks an otherwise healthy key for an hour. The key stays
+  in rotation — plan mismatch is per-model, not per-key — and downstream
+  clients now get a truthful `403 plan_error` instead of a misleading
+  "Upstream rejected the CC API key".
+- Remote image URLs (`image_url` with an `https://` URL) are rejected with a
+  clear 400 error instead of being silently dropped upstream, where the
+  model would answer "I can't see the image".
+
+### Added
+
+- `GET /v1/models/{id}` retrieve endpoint (OpenAI shape, wildcard route for
+  slash-bearing model IDs, OpenAI-shaped 404 for unknown models).
+- `GET /v1/models` entries now carry the upstream display `name` and
+  `context_length` as additive fields on the OpenAI model object.
+
+### Verified
+
+- Multimodal input end-to-end: `image_url` data URLs convert to the upstream
+  wire format and vision models (e.g. `deepseek/deepseek-v4-flash-vision-exp`)
+  actually receive the image. Non-vision models silently ignore images —
+  clients must pick a vision-capable model.
+
 ## [v0.1.1] - 2026-08-25
 
 ### Fixed
