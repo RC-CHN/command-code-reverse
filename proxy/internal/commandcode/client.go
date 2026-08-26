@@ -48,6 +48,15 @@ func (e *APIError) IsModelNotInPlan() bool {
 		strings.Contains(strings.ToLower(e.Message), MarkerModelNotInPlan)
 }
 
+// IsModelNotRecognized reports the 403 + "Model/provider not recognized"
+// signature: the model ID itself is unknown upstream (bare names get the
+// default "anthropic:" provider prefix). A request-shape problem — no key
+// in the pool will serve it, so it must neither circuit nor rotate keys.
+func (e *APIError) IsModelNotRecognized() bool {
+	return e.Status == http.StatusForbidden &&
+		strings.Contains(strings.ToLower(e.Message), "model/provider not recognized")
+}
+
 // Credentials identifies one upstream account plus per-request disguise headers.
 type Credentials struct {
 	APIKey      string

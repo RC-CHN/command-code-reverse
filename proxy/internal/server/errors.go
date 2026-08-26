@@ -49,6 +49,9 @@ func writeUpstreamError(w http.ResponseWriter, err error) {
 	case ae.IsModelNotInPlan():
 		writeError(w, http.StatusForbidden, "plan_error",
 			"The requested model is not included in the upstream account's plan: "+ae.Message, 0)
+	case ae.IsModelNotRecognized():
+		writeError(w, http.StatusNotFound, "invalid_request_error",
+			"Upstream does not recognize the model: "+ae.Message, 0)
 	case ae.Status == http.StatusUnauthorized || ae.Status == http.StatusForbidden:
 		writeError(w, http.StatusBadGateway, "upstream_auth_error",
 			"Upstream rejected the CC API key: "+ae.Message, 0)

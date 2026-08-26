@@ -57,6 +57,33 @@ func TestModelNotInPlanKeepsKeyHealthy(t *testing.T) {
 	}
 }
 
+func TestModelNotRecognizedKeepsKeyHealthy(t *testing.T) {
+	notFound := &commandcode.APIError{
+		Status:  403,
+		Code:    "FORBIDDEN",
+		Message: "Model/provider not recognized: anthropic:deepseek-v4-pro",
+	}
+	fc := &fakeClient{failWith: map[string]error{"k1": notFound}}
+	p := newTestPool(fc, "k1", "k2")
+
+	// No rotation: every key sees the same model catalog.
+	if _, err := p.Generate(context.Background(), "", &commandcode.GenerateRequest{}); err == nil {
+		t.Fatal("expected the model error to surface")
+	}
+	if len(fc.calls) != 1 {
+		t.Fatalf("calls = %v, want exactly one attempt (no rotation)", fc.calls)
+	}
+
+	// And no circuit: the key stays healthy for valid models.
+	fc.failWith = nil
+	if _, err := p.Generate(context.Background(), "", &commandcode.GenerateRequest{}); err != nil {
+		t.Fatalf("Generate after model-not-recognized: %v", err)
+	}
+	if fc.calls[1] != "k1" {
+		t.Fatalf("k1 was circuit-broken on a bad model ID, calls = %v", fc.calls)
+	}
+}
+
 func TestFillFirstUsesFirstKey(t *testing.T) {
 	fc := &fakeClient{}
 	p := newTestPool(fc, "k1", "k2", "k3")
