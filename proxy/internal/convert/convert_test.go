@@ -96,19 +96,24 @@ func TestToWireAssistantToolCalls(t *testing.T) {
 		t.Fatalf("Messages = %+v", w.Params.Messages)
 	}
 	asst := w.Params.Messages[0]
-	if asst.Role != "assistant" || len(asst.Content) != 2 {
+	if asst.Role != "assistant" || len(asst.Content) != 1 {
 		t.Fatalf("assistant = %+v", asst)
 	}
-	tc := asst.Content[1]
-	if tc.Type != "tool-call" || tc.ToolCallID != "call_1" || tc.ToolName != "get_weather" {
-		t.Errorf("tool-call part = %+v", tc)
+	if asst.Content[0].Type != "text" || asst.Content[0].Text != "let me check" {
+		t.Errorf("assistant content = %+v", asst.Content)
 	}
-	if tc.Input["city"] != "bj" {
-		t.Errorf("input = %v", tc.Input)
+	if len(asst.ToolCalls) != 1 || asst.ToolCalls[0].ID != "call_1" ||
+		asst.ToolCalls[0].Function.Name != "get_weather" ||
+		asst.ToolCalls[0].Function.Arguments != `{"city":"bj"}` {
+		t.Errorf("toolCalls = %+v", asst.ToolCalls)
 	}
 	tool := w.Params.Messages[1]
-	if tool.Role != "tool" || tool.Content[0].Type != "tool-result" || tool.Content[0].Output.Value != "sunny" {
-		t.Errorf("tool msg = %+v", tool)
+	// The upstream rejects role "tool"; results fold into a user text message.
+	if tool.Role != "user" || tool.Content[0].Type != "text" {
+		t.Fatalf("tool msg = %+v", tool)
+	}
+	if !strings.Contains(tool.Content[0].Text, "get_weather") || !strings.Contains(tool.Content[0].Text, "sunny") {
+		t.Errorf("tool text = %q", tool.Content[0].Text)
 	}
 }
 

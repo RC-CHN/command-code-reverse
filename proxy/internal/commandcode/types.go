@@ -45,19 +45,34 @@ type Params struct {
 	ToolChoice      any           `json:"tool_choice,omitempty"`
 }
 
-// WireMessage is a message in upstream format. Role is "user" | "assistant" | "tool".
+// WireMessage is a message in upstream format. Role is "user" | "assistant"
+// (verified: the upstream rejects any other role, including "tool").
 type WireMessage struct {
-	Role    string            `json:"role"`
-	Content []WireContentPart `json:"content"`
+	Role      string            `json:"role"`
+	Content   []WireContentPart `json:"content"`
+	ToolCalls []WireToolCall    `json:"toolCalls,omitempty"`
+}
+
+// WireToolCall mirrors the OpenAI tool_call shape the upstream accepts as a
+// top-level field on assistant messages ("arguments" is a JSON string).
+type WireToolCall struct {
+	ID       string `json:"id"`
+	Type     string `json:"type"` // "function"
+	Function struct {
+		Name      string `json:"name"`
+		Arguments string `json:"arguments"`
+	} `json:"function"`
 }
 
 // WireContentPart is a single content part. Exactly one field group is
 // populated per part, discriminated by Type:
-//   - "text":        Text
-//   - "image":       Image (data URL) + MimeType
-//   - "tool-call":   ToolCallID + ToolName + Input          (assistant)
-//   - "tool-result": ToolCallID + ToolName + Output          (tool role)
-//   - "reasoning":   Text                                    (assistant)
+//   - "text":  Text
+//   - "image": Image (data URL) + MimeType
+//
+// Tool calls/results are NOT content parts in the upstream wire format:
+// the API rejects them (verified 2026-08). Assistant tool calls ride in
+// WireMessage.ToolCalls; tool results are folded into a user message as
+// plain text (see convert.convertMessages).
 type WireContentPart struct {
 	Type       string         `json:"type"`
 	Text       string         `json:"text,omitempty"`

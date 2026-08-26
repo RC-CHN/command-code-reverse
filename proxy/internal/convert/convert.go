@@ -221,27 +221,43 @@ func convertMessages(msgs []Message) (string, []commandcode.WireMessage, error) 
 			if t := m.ContentText(); t != "" {
 				parts = append(parts, commandcode.WireContentPart{Type: "text", Text: t})
 			}
-			for _, tc := range m.ToolCalls {
-				parts = append(parts, commandcode.WireContentPart{
-					Type:       "tool-call",
-					ToolCallID: tc.ID,
-					ToolName:   tc.Function.Name,
-					Input:      parseArguments(tc.Function.Arguments),
-				})
+			msg := commandcode.WireMessage{Role: "assistant", Content: parts}
+			if len(m.ToolCalls) > 0 {
+				// The upstream rejects tool-call *content parts* (verified:
+				// "expected \"text\" at content[0].type"); assistant tool
+				// calls ride in a top-level toolCalls field instead.
+				msg.ToolCalls = make([]commandcode.WireToolCall, 0, len(m.ToolCalls))
+				for _, tc := range m.ToolCalls {
+					msg.ToolCalls = append(msg.ToolCalls, commandcode.WireToolCall{
+						ID:   tc.ID,
+						Type: "function",
+						Function: struct {
+							Name      string `json:"name"`
+							Arguments string `json:"arguments"`
+						}{Name: tc.Function.Name, Arguments: tc.Function.Arguments},
+					})
+				}
 			}
-			if len(parts) > 0 {
-				out = append(out, commandcode.WireMessage{Role: "assistant", Content: parts})
+			if len(parts) > 0 || len(msg.ToolCalls) > 0 {
+				out = append(out, msg)
 			}
 
 		case "tool":
+			// The upstream rejects role "tool" and ignores structured
+			// tool-result parts, so fold the result into a user message as
+			// plain text (the only shape the model actually consumes).
+			toolName, toolCallID := m.Name, m.ToolCallID
+			if toolName == "" {
+				toolName = "tool"
+			}
+			result := m.ContentText()
+			if result == "" {
+				result = "(empty result)"
+			}
+			text := fmt.Sprintf("Tool result for %s (%s):\n%s", toolName, toolCallID, result)
 			out = append(out, commandcode.WireMessage{
-				Role: "tool",
-				Content: []commandcode.WireContentPart{{
-					Type:       "tool-result",
-					ToolCallID: m.ToolCallID,
-					ToolName:   m.Name,
-					Output:     &commandcode.WireOutput{Type: "text", Value: m.ContentText()},
-				}},
+				Role:    "user",
+				Content: []commandcode.WireContentPart{{Type: "text", Text: text}},
 			})
 
 		default:
@@ -280,16 +296,6 @@ func convertToolChoice(raw json.RawMessage) (any, error) {
 		return commandcode.WireToolChoice{Type: "tool", Name: obj.Function.Name}, nil
 	}
 	return nil, fmt.Errorf("convert: unsupported tool_choice shape")
-}
-
-// parseArguments parses an OpenAI tool-call arguments JSON string.
-// Invalid JSON degrades to an empty object (upstream expects an object).
-func parseArguments(args string) map[string]any {
-	out := map[string]any{}
-	if args != "" {
-		_ = json.Unmarshal([]byte(args), &out)
-	}
-	return out
 }
 
 // mimeFromDataURL extracts the MIME type from a data URL, defaulting to png.
