@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/commandcode"
+	"github.com/RC-CHN/command-code-reverse/proxy/internal/session"
 )
 
 // Deps bundles the injectable dependencies of the HTTP surface.
@@ -26,6 +27,9 @@ type Deps struct {
 	FetchCredits func(ctx context.Context, downstreamKey string) (credits, subscriptions json.RawMessage, err error)
 	// Probe checks upstream health for /readyz; nil → readiness mirrors liveness.
 	Probe func(ctx context.Context) error
+
+	// Sessions derives conversation-scoped identity; nil → random secret.
+	Sessions *session.Store
 
 	// Metrics records request/token/cost accounting; nil disables it.
 	Metrics MetricsRecorder

@@ -27,7 +27,7 @@ func (f *fakeClient) Generate(ctx context.Context, creds commandcode.Credentials
 }
 
 func newTestPool(fc *fakeClient, keys ...string) *Pool {
-	return New(fc, session.NewStore(), keys, BreakerPolicy{})
+	return New(fc, session.NewStore("test-secret"), keys, BreakerPolicy{})
 }
 
 func TestModelNotInPlanKeepsKeyHealthy(t *testing.T) {
@@ -40,7 +40,7 @@ func TestModelNotInPlanKeepsKeyHealthy(t *testing.T) {
 	p := newTestPool(fc, "k1", "k2")
 
 	// Spills to k2 within the request (a higher-tier key may succeed).
-	if _, err := p.Generate(context.Background(), "", &commandcode.GenerateRequest{}); err != nil {
+	if _, err := p.Generate(context.Background(), "", "root1", &commandcode.GenerateRequest{}); err != nil {
 		t.Fatalf("Generate: %v", err)
 	}
 	if len(fc.calls) != 2 || fc.calls[0] != "k1" || fc.calls[1] != "k2" {
@@ -49,7 +49,7 @@ func TestModelNotInPlanKeepsKeyHealthy(t *testing.T) {
 
 	// k1 must NOT be circuit-broken: the next request starts at k1 again.
 	fc.failWith = nil
-	if _, err := p.Generate(context.Background(), "", &commandcode.GenerateRequest{}); err != nil {
+	if _, err := p.Generate(context.Background(), "", "root1", &commandcode.GenerateRequest{}); err != nil {
 		t.Fatalf("Generate after plan mismatch: %v", err)
 	}
 	if fc.calls[2] != "k1" {
@@ -67,7 +67,7 @@ func TestModelNotRecognizedKeepsKeyHealthy(t *testing.T) {
 	p := newTestPool(fc, "k1", "k2")
 
 	// No rotation: every key sees the same model catalog.
-	if _, err := p.Generate(context.Background(), "", &commandcode.GenerateRequest{}); err == nil {
+	if _, err := p.Generate(context.Background(), "", "root1", &commandcode.GenerateRequest{}); err == nil {
 		t.Fatal("expected the model error to surface")
 	}
 	if len(fc.calls) != 1 {
@@ -76,7 +76,7 @@ func TestModelNotRecognizedKeepsKeyHealthy(t *testing.T) {
 
 	// And no circuit: the key stays healthy for valid models.
 	fc.failWith = nil
-	if _, err := p.Generate(context.Background(), "", &commandcode.GenerateRequest{}); err != nil {
+	if _, err := p.Generate(context.Background(), "", "root1", &commandcode.GenerateRequest{}); err != nil {
 		t.Fatalf("Generate after model-not-recognized: %v", err)
 	}
 	if fc.calls[1] != "k1" {
@@ -89,7 +89,7 @@ func TestFillFirstUsesFirstKey(t *testing.T) {
 	p := newTestPool(fc, "k1", "k2", "k3")
 
 	for range 3 {
-		if _, err := p.Generate(context.Background(), "", &commandcode.GenerateRequest{}); err != nil {
+		if _, err := p.Generate(context.Background(), "", "root1", &commandcode.GenerateRequest{}); err != nil {
 			t.Fatalf("Generate: %v", err)
 		}
 	}
@@ -106,7 +106,7 @@ func TestSpillOnInsufficientCredits(t *testing.T) {
 	}}
 	p := newTestPool(fc, "k1", "k2")
 
-	if _, err := p.Generate(context.Background(), "", &commandcode.GenerateRequest{}); err != nil {
+	if _, err := p.Generate(context.Background(), "", "root1", &commandcode.GenerateRequest{}); err != nil {
 		t.Fatalf("Generate: %v", err)
 	}
 	if len(fc.calls) != 2 || fc.calls[0] != "k1" || fc.calls[1] != "k2" {
@@ -115,7 +115,7 @@ func TestSpillOnInsufficientCredits(t *testing.T) {
 
 	// k1 is now circuit-broken: next request goes straight to k2.
 	fc.calls = nil
-	if _, err := p.Generate(context.Background(), "", &commandcode.GenerateRequest{}); err != nil {
+	if _, err := p.Generate(context.Background(), "", "root1", &commandcode.GenerateRequest{}); err != nil {
 		t.Fatalf("Generate: %v", err)
 	}
 	if len(fc.calls) != 1 || fc.calls[0] != "k2" {
@@ -129,8 +129,8 @@ func TestAllBroken(t *testing.T) {
 	p := newTestPool(fc, "k1", "k2")
 
 	// First call breaks both keys (spill chain), second finds none healthy.
-	_, _ = p.Generate(context.Background(), "", &commandcode.GenerateRequest{})
-	_, err := p.Generate(context.Background(), "", &commandcode.GenerateRequest{})
+	_, _ = p.Generate(context.Background(), "", "root1", &commandcode.GenerateRequest{})
+	_, err := p.Generate(context.Background(), "", "root1", &commandcode.GenerateRequest{})
 	if err == nil || !strings.Contains(err.Error(), "circuit-broken") {
 		t.Fatalf("err = %v", err)
 	}
@@ -142,7 +142,7 @@ func TestNoRotateOnBadRequest(t *testing.T) {
 	}}
 	p := newTestPool(fc, "k1", "k2")
 
-	_, err := p.Generate(context.Background(), "", &commandcode.GenerateRequest{})
+	_, err := p.Generate(context.Background(), "", "root1", &commandcode.GenerateRequest{})
 	if err == nil {
 		t.Fatal("expected error")
 	}
@@ -156,9 +156,9 @@ func TestBackoffEscalatesOnServerFailures(t *testing.T) {
 		"k1": &commandcode.APIError{Status: 502, Message: "bad gateway"},
 	}}
 	now := time.Now()
-	p := New(fc, session.NewStore(), []string{"k1"}, BreakerPolicy{Now: func() time.Time { return now }})
+	p := New(fc, session.NewStore("test-secret"), []string{"k1"}, BreakerPolicy{Now: func() time.Time { return now }})
 
-	_, _ = p.Generate(context.Background(), "", &commandcode.GenerateRequest{})
+	_, _ = p.Generate(context.Background(), "", "root1", &commandcode.GenerateRequest{})
 	snap := p.Snapshot()
 	if !snap[0]["broken"].(bool) {
 		t.Fatal("k1 should be broken after 502")
@@ -167,7 +167,7 @@ func TestBackoffEscalatesOnServerFailures(t *testing.T) {
 	// After the first backoff window passes, one retry is allowed and fails
 	// again → longer backoff.
 	now = now.Add(61 * time.Second)
-	_, _ = p.Generate(context.Background(), "", &commandcode.GenerateRequest{})
+	_, _ = p.Generate(context.Background(), "", "root1", &commandcode.GenerateRequest{})
 	snap = p.Snapshot()
 	if snap[0]["consecFail"].(int) != 2 {
 		t.Fatalf("consecFail = %v", snap[0]["consecFail"])
@@ -178,7 +178,7 @@ func TestPassthroughBypassesPool(t *testing.T) {
 	fc := &fakeClient{}
 	p := newTestPool(fc, "k1")
 
-	if _, err := p.Generate(context.Background(), "downstream-key", &commandcode.GenerateRequest{}); err != nil {
+	if _, err := p.Generate(context.Background(), "downstream-key", "root1", &commandcode.GenerateRequest{}); err != nil {
 		t.Fatalf("Generate: %v", err)
 	}
 	if fc.calls[0] != "downstream-key" {
@@ -205,13 +205,13 @@ func TestSuccessResetsFailures(t *testing.T) {
 		"k1": &commandcode.APIError{Status: 502, Message: "x"},
 	}}
 	now := time.Now()
-	p := New(fc, session.NewStore(), []string{"k1"}, BreakerPolicy{Now: func() time.Time { return now }})
+	p := New(fc, session.NewStore("test-secret"), []string{"k1"}, BreakerPolicy{Now: func() time.Time { return now }})
 
-	_, _ = p.Generate(context.Background(), "", &commandcode.GenerateRequest{})
+	_, _ = p.Generate(context.Background(), "", "root1", &commandcode.GenerateRequest{})
 	delete(fc.failWith, "k1") // upstream recovers
 	now = now.Add(61 * time.Second)
 
-	if _, err := p.Generate(context.Background(), "", &commandcode.GenerateRequest{}); err != nil {
+	if _, err := p.Generate(context.Background(), "", "root1", &commandcode.GenerateRequest{}); err != nil {
 		t.Fatalf("Generate: %v", err)
 	}
 	if snap := p.Snapshot(); snap[0]["consecFail"].(int) != 0 {

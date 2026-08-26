@@ -65,8 +65,9 @@ func main() {
 	}
 
 	// Fill-first key pool with circuit breaking. Passthrough hints bypass
-	// pooling inside keypool.Generate.
-	sessions := session.NewStore()
+	// pooling inside keypool.Generate. Session identity derives from the
+	// conversation root, keyed by the fingerprint seed when configured.
+	sessions := session.NewStore(cfg.FingerprintSeed)
 	upstream := keypool.New(client, sessions, cfg.APIKeys, keypool.BreakerPolicy{})
 
 	// Model catalog fetcher: managed uses the pool key, passthrough uses the
@@ -101,7 +102,8 @@ func main() {
 		Probe: func(ctx context.Context) error {
 			return client.Whoami(ctx, cfg.APIKeys[0])
 		},
-		Metrics: recorder,
+		Sessions: sessions,
+		Metrics:  recorder,
 	}
 
 	handler := server.New(cfg, deps, renderMetrics)

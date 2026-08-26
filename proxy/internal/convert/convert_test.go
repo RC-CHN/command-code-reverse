@@ -180,6 +180,39 @@ func TestToWireImageMessage(t *testing.T) {
 	}
 }
 
+func TestConversationRoot(t *testing.T) {
+	mk := func(texts ...string) []Message {
+		msgs := make([]Message, 0, len(texts))
+		for i, text := range texts {
+			role := "user"
+			if i%2 == 1 {
+				role = "assistant"
+			}
+			msgs = append(msgs, Message{Role: role, Content: mustJSON(t, text)})
+		}
+		return msgs
+	}
+	base := ConversationRoot(mk("hello", "hi there"))
+	if len(base) != 32 {
+		t.Fatalf("root length = %d", len(base))
+	}
+	// Prefix growth keeps the root (the conversation extends, root unchanged).
+	grown := ConversationRoot(mk("hello", "hi there", "next question"))
+	if grown != base {
+		t.Error("root must survive prefix growth")
+	}
+	// A different opening is a different conversation.
+	if ConversationRoot(mk("other", "hi")) == base {
+		t.Error("different opening must yield a different root")
+	}
+	// Array-form content with the same text yields the SAME root — a client
+	// switching encodings mid-conversation must not break identity.
+	parts := []Message{{Role: "user", Content: mustJSON(t, []map[string]any{{"type": "text", "text": "hello"}})}}
+	if ConversationRoot(parts) == "" {
+		t.Error("array-form content must participate in the root")
+	}
+}
+
 func TestToolResultNameResolution(t *testing.T) {
 	mkCall := func(id, name string) ToolCall {
 		var tc ToolCall

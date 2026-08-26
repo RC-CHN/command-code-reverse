@@ -7,6 +7,7 @@ import (
 	"sync/atomic"
 
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/config"
+	"github.com/RC-CHN/command-code-reverse/proxy/internal/session"
 )
 
 // Server holds the dependencies shared by all handlers.
@@ -26,6 +27,9 @@ type Server struct {
 
 // New builds the root handler with all routes mounted.
 func New(cfg *config.Config, deps Deps, renderMetrics func() string) http.Handler {
+	if deps.Sessions == nil {
+		deps.Sessions = session.NewStore("")
+	}
 	s := &Server{cfg: cfg, deps: deps, renderMetrics: renderMetrics}
 	s.models = newModelCatalog(deps.FetchModels)
 

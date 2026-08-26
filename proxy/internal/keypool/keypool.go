@@ -80,10 +80,12 @@ func New(client GenerateClient, sessions *session.Store, keys []string, policy B
 
 // Generate picks a key (fill-first, skipping open breakers) and starts an
 // upstream stream. Passthrough hints bypass the pool entirely (no breaker).
-func (p *Pool) Generate(ctx context.Context, hint string, req *commandcode.GenerateRequest) (io.ReadCloser, error) {
+// root identifies the conversation (see convert.ConversationRoot) so session
+// identity stays stable within a conversation and fresh across them.
+func (p *Pool) Generate(ctx context.Context, hint, root string, req *commandcode.GenerateRequest) (io.ReadCloser, error) {
 	if hint != "" {
 		// Passthrough mode: downstream supplied its own key; no pooling.
-		return p.client.Generate(ctx, p.creds(hint), req)
+		return p.client.Generate(ctx, p.creds(hint, root), req)
 	}
 
 	p.mu.Lock()
@@ -102,7 +104,7 @@ func (p *Pool) Generate(ctx context.Context, hint string, req *commandcode.Gener
 
 	var lastErr error
 	for _, ks := range candidates {
-		body, err := p.client.Generate(ctx, p.creds(ks.key), req)
+		body, err := p.client.Generate(ctx, p.creds(ks.key, root), req)
 		if err == nil {
 			p.reportSuccess(ks)
 			return body, nil
@@ -188,12 +190,14 @@ func (p *Pool) open(ks *keyState, ttl time.Duration, reason string) {
 		"keyPrefix", prefix(ks.key), "reason", reason, "openFor", ttl)
 }
 
-// creds builds per-request upstream credentials for a key.
-func (p *Pool) creds(key string) commandcode.Credentials {
+// creds builds per-request upstream credentials for a key. Session identity
+// derives from (key, conversation root): stable within a conversation, fresh
+// across conversations, and re-rolled when a spill changes accounts.
+func (p *Pool) creds(key, root string) commandcode.Credentials {
 	return commandcode.Credentials{
 		APIKey:      key,
-		SessionID:   p.sessions.SessionID(key),
-		ProjectSlug: p.sessions.ProjectSlug(key),
+		SessionID:   p.sessions.SessionID(key, root),
+		ProjectSlug: p.sessions.ProjectSlug(key, root),
 	}
 }
 

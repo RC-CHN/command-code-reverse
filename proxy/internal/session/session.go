@@ -1,25 +1,25 @@
-// Package session maintains per-upstream-key session IDs with rotation,
-// mirroring the old proxy's 12h + 1h jitter scheme. Sessions are pure
-// disguise metadata — the upstream does not validate continuity, so an
-// in-memory store is sufficient (see design doc §8).
+// Package session derives upstream session identity from the conversation
+// root instead of wall-clock rotation. The upstream can reconstruct
+// conversations by prefix-matching message histories, so session identity
+// must be stable within one conversation and fresh across conversations —
+// timers get both wrong. Derivation is stateless: HMAC(secret, parts) with
+// the secret coming from FINGERPRINT_SEED (or random per boot, which is
+// itself CLI-like: a restarted CLI opens new sessions).
+//
+// Two scopes (design: thread = conversation, session = account login):
+//   - ThreadID(root)       — stable across key spills mid-conversation
+//   - SessionID(key, root) — per account; a spill plausibly looks like a
+//     fresh login continuing an old conversation
 package session
 
 import (
+	"crypto/hmac"
 	"crypto/rand"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
-	"math/big"
-	"sync"
-	"time"
 
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/commandcode"
-	"github.com/RC-CHN/command-code-reverse/proxy/internal/ids"
-)
-
-const (
-	// duration is the base session lifetime.
-	duration = 12 * time.Hour
-	// jitterMax bounds the random additive jitter.
-	jitterMax = time.Hour
 )
 
 // projectNames feeds fake project paths for slug generation (same pool the
@@ -29,44 +29,34 @@ var projectNames = []string{
 	"lib", "plugin", "proxy", "server", "service", "tool", "web", "worker",
 }
 
-type entry struct {
-	sessionID string
-	expiresAt time.Time
-}
-
-// Store hands out stable session IDs per key, rotating on expiry.
+// Store derives deterministic identities. Immutable after construction.
 type Store struct {
-	mu  sync.Mutex
-	m   map[string]entry
-	now func() time.Time // test hook
+	secret []byte
 }
 
-// NewStore builds an empty store.
-func NewStore() *Store {
-	return &Store{m: map[string]entry{}, now: time.Now}
-}
-
-// SessionID returns the live session ID for key, creating or rotating as
-// needed.
-func (s *Store) SessionID(key string) string {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	if e, ok := s.m[key]; ok && s.now().Before(e.expiresAt) {
-		return e.sessionID
+// NewStore builds a store from a hex/plain secret; empty → random per boot.
+func NewStore(secret string) *Store {
+	if secret == "" {
+		secret = hex.EncodeToString(randomBytes(32))
 	}
-	e := entry{
-		sessionID: ids.NewUUID(),
-		expiresAt: s.now().Add(duration + jitter()),
-	}
-	s.m[key] = e
-	return e.sessionID
+	return &Store{secret: []byte(secret)}
 }
 
-// ProjectSlug derives a deterministic fake project slug from the key's
-// current session ID (shape-compatible with the real CLI's slugs).
-func (s *Store) ProjectSlug(key string) string {
-	sid := s.SessionID(key)
+// ThreadID returns the conversation-scoped thread ID (valid UUID shape,
+// like the CLI's crypto.randomUUID).
+func (s *Store) ThreadID(root string) string {
+	return s.uuid("thread", "", root)
+}
+
+// SessionID returns the account-scoped session ID (valid UUID shape).
+func (s *Store) SessionID(key, root string) string {
+	return s.uuid("session", key, root)
+}
+
+// ProjectSlug derives a deterministic fake project slug from the session ID
+// (shape-compatible with the real CLI's slugs).
+func (s *Store) ProjectSlug(key, root string) string {
+	sid := s.SessionID(key, root)
 	var n int
 	for _, c := range sid[:4] {
 		n = n*16 + int(c)
@@ -76,29 +66,24 @@ func (s *Store) ProjectSlug(key string) string {
 	return commandcode.ProjectSlug(fakePath)
 }
 
-// Sweep drops expired entries; call periodically to bound memory.
-func (s *Store) Sweep() {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	for k, e := range s.m {
-		if !s.now().Before(e.expiresAt) {
-			delete(s.m, k)
-		}
-	}
+// uuid renders HMAC(secret, label\0key\0root) as a version-4-shaped UUID.
+func (s *Store) uuid(label, key, root string) string {
+	h := hmac.New(sha256.New, s.secret)
+	h.Write([]byte(label))
+	h.Write([]byte{0})
+	h.Write([]byte(key))
+	h.Write([]byte{0})
+	h.Write([]byte(root))
+	sum := h.Sum(nil)
+	sum[6] = (sum[6] & 0x0f) | 0x40 // version 4
+	sum[8] = (sum[8] & 0x3f) | 0x80 // variant 10
+	return fmt.Sprintf("%x-%x-%x-%x-%x", sum[0:4], sum[4:6], sum[6:8], sum[8:10], sum[10:16])
 }
 
-// Len reports the number of tracked sessions (testing/metrics).
-func (s *Store) Len() int {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	return len(s.m)
-}
-
-// jitter returns a uniform random duration in [0, jitterMax).
-func jitter() time.Duration {
-	n, err := rand.Int(rand.Reader, big.NewInt(int64(jitterMax)))
-	if err != nil {
-		return 0
+func randomBytes(n int) []byte {
+	b := make([]byte, n)
+	if _, err := rand.Read(b); err != nil {
+		panic(err)
 	}
-	return time.Duration(n.Int64())
+	return b
 }

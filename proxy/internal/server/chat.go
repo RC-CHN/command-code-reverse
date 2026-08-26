@@ -21,8 +21,9 @@ import (
 // without touching the handler.
 type Upstream interface {
 	// Generate starts an upstream stream. The hint carries the downstream
-	// identity for key affinity; it may be empty.
-	Generate(ctx context.Context, hint string, req *commandcode.GenerateRequest) (io.ReadCloser, error)
+	// identity for key affinity; it may be empty. root identifies the
+	// conversation for session identity derivation.
+	Generate(ctx context.Context, hint, root string, req *commandcode.GenerateRequest) (io.ReadCloser, error)
 }
 
 // timeoutReduceThreshold is how many consecutive idle timeouts trigger the
@@ -43,7 +44,10 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	wire, err := convert.ToWire(&req, ids.NewUUID(), s.cfg.MaxTokensClamp, 64000)
+	// Conversation-root-derived identity: stable within a conversation
+	// (prefix-chain growth keeps the root constant), fresh across them.
+	root := convert.ConversationRoot(req.Messages)
+	wire, err := convert.ToWire(&req, s.deps.Sessions.ThreadID(root), s.cfg.MaxTokensClamp, 64000)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid_request_error", err.Error(), 0)
 		return
@@ -62,7 +66,7 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 	idleTimer := time.AfterFunc(idle, func() { cancel() })
 	defer idleTimer.Stop()
 
-	body, err := s.deps.Upstream.Generate(ctx, downstreamKey(r.Context()), wire)
+	body, err := s.deps.Upstream.Generate(ctx, downstreamKey(r.Context()), root, wire)
 	if err != nil {
 		if errors.Is(err, context.Canceled) && r.Context().Err() != nil {
 			return // downstream hung up before the first byte

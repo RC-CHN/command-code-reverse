@@ -4,6 +4,8 @@
 package convert
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -172,6 +174,27 @@ func ToWire(req *ChatRequest, threadID string, maxTokensClamp, defaultMaxTokens 
 	}
 
 	return out, nil
+}
+
+// ConversationRoot returns a stable fingerprint of the conversation's
+// opening: prefix-chain growth means the first two messages never change
+// within one conversation, so hashing them identifies the conversation
+// without storing any content. Used to derive session/thread identity.
+func ConversationRoot(msgs []Message) string {
+	h := sha256.New()
+	n := min(len(msgs), 2)
+	for i := range n {
+		m := msgs[i]
+		h.Write([]byte(m.Role))
+		h.Write([]byte{0})
+		if t := m.ContentText(); t != "" {
+			h.Write([]byte(t))
+		} else if raw := m.Content; len(raw) > 0 {
+			h.Write(raw)
+		}
+		h.Write([]byte{0})
+	}
+	return hex.EncodeToString(h.Sum(nil))[:32]
 }
 
 // convertMessages splits OpenAI messages into a system prompt plus wire
