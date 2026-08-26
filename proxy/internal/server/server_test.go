@@ -18,13 +18,13 @@ type stubUpstream struct {
 	err    error
 
 	gotHint string
-	gotRoot string
+	gotMeta commandcode.CallMeta
 	gotReq  *commandcode.GenerateRequest
 }
 
-func (u *stubUpstream) Generate(ctx context.Context, hint, root string, req *commandcode.GenerateRequest) (io.ReadCloser, error) {
+func (u *stubUpstream) Generate(ctx context.Context, hint string, meta commandcode.CallMeta, req *commandcode.GenerateRequest) (io.ReadCloser, error) {
 	u.gotHint = hint
-	u.gotRoot = root
+	u.gotMeta = meta
 	u.gotReq = req
 	if u.err != nil {
 		return nil, u.err

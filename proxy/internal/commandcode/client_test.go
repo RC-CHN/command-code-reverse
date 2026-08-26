@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"regexp"
 	"strings"
 	"testing"
 )
@@ -89,6 +90,32 @@ func TestGenerateAPIError(t *testing.T) {
 	}
 	if ae.IsRateLimited() {
 		t.Error("IsRateLimited should be false")
+	}
+}
+
+func TestTraceparentRetrySemantics(t *testing.T) {
+	c := NewClient("http://x", func() string { return "test" }, nil)
+	creds := Credentials{APIKey: "k", SessionID: "s", ProjectSlug: "p", TraceID: "0123456789abcdef0123456789abcdef"}
+
+	re := regexp.MustCompile(`^00-([0-9a-f]{32})-([0-9a-f]{16})-01$`)
+	m1 := re.FindStringSubmatch(c.headers(creds)["traceparent"])
+	m2 := re.FindStringSubmatch(c.headers(creds)["traceparent"])
+	if m1 == nil || m2 == nil {
+		t.Fatalf("traceparent shape wrong: %q", c.headers(creds)["traceparent"])
+	}
+	if m1[1] != creds.TraceID || m2[1] != creds.TraceID {
+		t.Error("retry attempts must share the pinned trace ID")
+	}
+	if m1[2] == m2[2] {
+		t.Error("each attempt must re-roll the span ID")
+	}
+
+	// No pinned trace ID → fully random per call (non-retry paths).
+	creds.TraceID = ""
+	a := c.headers(creds)["traceparent"]
+	b := c.headers(creds)["traceparent"]
+	if a == b {
+		t.Error("unpinned traceparent must be random per call")
 	}
 }
 

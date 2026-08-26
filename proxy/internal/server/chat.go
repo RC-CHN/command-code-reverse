@@ -21,9 +21,9 @@ import (
 // without touching the handler.
 type Upstream interface {
 	// Generate starts an upstream stream. The hint carries the downstream
-	// identity for key affinity; it may be empty. root identifies the
-	// conversation for session identity derivation.
-	Generate(ctx context.Context, hint, root string, req *commandcode.GenerateRequest) (io.ReadCloser, error)
+	// identity for key affinity; it may be empty. meta carries the
+	// conversation root and trace ID for disguise identity derivation.
+	Generate(ctx context.Context, hint string, meta commandcode.CallMeta, req *commandcode.GenerateRequest) (io.ReadCloser, error)
 }
 
 // timeoutReduceThreshold is how many consecutive idle timeouts trigger the
@@ -46,8 +46,13 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 
 	// Conversation-root-derived identity: stable within a conversation
 	// (prefix-chain growth keeps the root constant), fresh across them.
-	root := convert.ConversationRoot(req.Messages)
-	wire, err := convert.ToWire(&req, s.deps.Sessions.ThreadID(root), s.cfg.MaxTokensClamp, 64000)
+	// One trace ID per request; retry attempts share it (fresh span each),
+	// mirroring the CLI's per-iteration trace.
+	meta := commandcode.CallMeta{
+		Root:    convert.ConversationRoot(req.Messages),
+		TraceID: commandcode.NewTraceID(),
+	}
+	wire, err := convert.ToWire(&req, s.deps.Sessions.ThreadID(meta.Root), s.cfg.MaxTokensClamp, 64000)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid_request_error", err.Error(), 0)
 		return
@@ -66,7 +71,7 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 	idleTimer := time.AfterFunc(idle, func() { cancel() })
 	defer idleTimer.Stop()
 
-	body, err := s.deps.Upstream.Generate(ctx, downstreamKey(r.Context()), root, wire)
+	body, err := s.deps.Upstream.Generate(ctx, downstreamKey(r.Context()), meta, wire)
 	if err != nil {
 		if errors.Is(err, context.Canceled) && r.Context().Err() != nil {
 			return // downstream hung up before the first byte

@@ -80,12 +80,12 @@ func New(client GenerateClient, sessions *session.Store, keys []string, policy B
 
 // Generate picks a key (fill-first, skipping open breakers) and starts an
 // upstream stream. Passthrough hints bypass the pool entirely (no breaker).
-// root identifies the conversation (see convert.ConversationRoot) so session
-// identity stays stable within a conversation and fresh across them.
-func (p *Pool) Generate(ctx context.Context, hint, root string, req *commandcode.GenerateRequest) (io.ReadCloser, error) {
+// meta carries conversation + trace identity so session IDs stay stable
+// within a conversation and retries share one trace ID.
+func (p *Pool) Generate(ctx context.Context, hint string, meta commandcode.CallMeta, req *commandcode.GenerateRequest) (io.ReadCloser, error) {
 	if hint != "" {
 		// Passthrough mode: downstream supplied its own key; no pooling.
-		return p.client.Generate(ctx, p.creds(hint, root), req)
+		return p.client.Generate(ctx, p.creds(hint, meta), req)
 	}
 
 	p.mu.Lock()
@@ -104,7 +104,7 @@ func (p *Pool) Generate(ctx context.Context, hint, root string, req *commandcode
 
 	var lastErr error
 	for _, ks := range candidates {
-		body, err := p.client.Generate(ctx, p.creds(ks.key, root), req)
+		body, err := p.client.Generate(ctx, p.creds(ks.key, meta), req)
 		if err == nil {
 			p.reportSuccess(ks)
 			return body, nil
@@ -192,12 +192,14 @@ func (p *Pool) open(ks *keyState, ttl time.Duration, reason string) {
 
 // creds builds per-request upstream credentials for a key. Session identity
 // derives from (key, conversation root): stable within a conversation, fresh
-// across conversations, and re-rolled when a spill changes accounts.
-func (p *Pool) creds(key, root string) commandcode.Credentials {
+// across conversations, and re-rolled when a spill changes accounts. The
+// trace ID passes through so retry attempts share one trace.
+func (p *Pool) creds(key string, meta commandcode.CallMeta) commandcode.Credentials {
 	return commandcode.Credentials{
 		APIKey:      key,
-		SessionID:   p.sessions.SessionID(key, root),
-		ProjectSlug: p.sessions.ProjectSlug(key, root),
+		SessionID:   p.sessions.SessionID(key, meta.Root),
+		ProjectSlug: p.sessions.ProjectSlug(key, meta.Root),
+		TraceID:     meta.TraceID,
 	}
 }
 

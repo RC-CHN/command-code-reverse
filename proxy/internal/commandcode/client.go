@@ -57,11 +57,27 @@ func (e *APIError) IsModelNotRecognized() bool {
 		strings.Contains(strings.ToLower(e.Message), "model/provider not recognized")
 }
 
+// CallMeta carries per-call disguise metadata that travels from the server
+// handler through the key pool into Credentials.
+type CallMeta struct {
+	// Root identifies the conversation (see convert.ConversationRoot) for
+	// session identity derivation.
+	Root string
+	// TraceID pins the W3C trace ID across retry attempts (fresh span ID
+	// per attempt), mirroring the CLI's per-iteration trace. Empty → fully
+	// random traceparent per attempt.
+	TraceID string
+}
+
 // Credentials identifies one upstream account plus per-request disguise headers.
 type Credentials struct {
 	APIKey      string
 	SessionID   string
 	ProjectSlug string
+	// TraceID pins the W3C trace ID for this request so retry attempts
+	// share it (fresh span ID per attempt), mirroring CLI iterations.
+	// Empty → fully random traceparent per call.
+	TraceID string
 }
 
 // Client talks to the Command Code API.
@@ -253,8 +269,14 @@ func (c *Client) ProviderModels(ctx context.Context, apiKey string) ([]ModelInfo
 }
 
 // headers reproduces the real CLI header set (without the old proxy's
-// phantom x-co-flag).
+// phantom x-co-flag). When creds carries a TraceID the traceparent keeps
+// it with a fresh span ID — mirroring the CLI, where retries inside one
+// iteration share the trace ID and only re-roll the span.
 func (c *Client) headers(creds Credentials) map[string]string {
+	traceparent := NewTraceparent()
+	if creds.TraceID != "" {
+		traceparent = traceparentFromTraceID(creds.TraceID)
+	}
 	return map[string]string{
 		"Content-Type":           "application/json",
 		"Authorization":          "Bearer " + creds.APIKey,
@@ -264,7 +286,7 @@ func (c *Client) headers(creds Credentials) map[string]string {
 		"x-taste-learning":       "false",
 		"x-session-id":           creds.SessionID,
 		"x-project-slug":         creds.ProjectSlug,
-		"traceparent":            NewTraceparent(),
+		"traceparent":            traceparent,
 	}
 }
 
@@ -292,10 +314,23 @@ func parseAPIError(resp *http.Response) error {
 
 // NewTraceparent returns a W3C traceparent header value (version 00, sampled).
 func NewTraceparent() string {
-	var traceID, spanID [16]byte
+	return traceparentFromTraceID(NewTraceID())
+}
+
+// NewTraceID returns a random 32-hex W3C trace ID.
+func NewTraceID() string {
+	var traceID [16]byte
 	_, _ = rand.Read(traceID[:])
-	_, _ = rand.Read(spanID[:8])
-	return fmt.Sprintf("00-%s-%s-01", hex.EncodeToString(traceID[:]), hex.EncodeToString(spanID[:8]))
+	return hex.EncodeToString(traceID[:])
+}
+
+// traceparentFromTraceID renders a traceparent for traceID with a FRESH
+// span ID. The real CLI keeps the iteration's trace ID across retry
+// attempts and regenerates only the span ID per chat span.
+func traceparentFromTraceID(traceID string) string {
+	var spanID [8]byte
+	_, _ = rand.Read(spanID[:])
+	return fmt.Sprintf("00-%s-%s-01", traceID, hex.EncodeToString(spanID[:]))
 }
 
 // ProjectSlug derives a slug from a fake working-directory path using the
