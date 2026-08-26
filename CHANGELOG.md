@@ -4,6 +4,24 @@ All notable changes to commandcode-proxy are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 versioning follows [SemVer](https://semver.org/).
 
+## [v0.1.3] - 2026-08-26
+
+### Fixed
+
+- Tool-result messages without a `name` field (optional in OpenAI, sent by
+  minimal clients like ReuleauxCoder) no longer fail the whole conversation
+  with a misleading "expected one of user|assistant" 502. The upstream wire
+  schema requires a non-empty `toolName` on every tool-result part, so the
+  name is now resolved the way the CLI does: explicit name → lookup in the
+  toolCallID→toolName map built from preceding assistant tool_calls →
+  "unknown". Verified by replaying a real 97-message agent session against
+  the live upstream: 502 before, 200 after.
+- A 403 "Model/provider not recognized" (bare model names get the default
+  `anthropic:` provider prefix upstream) no longer circuit-breaks a healthy
+  key for an hour. Unknown model IDs are a request-shape problem: no pooled
+  key will serve them, so the failure neither circuits nor rotates, and
+  downstream clients get a truthful 404 `invalid_request_error`.
+
 ## [v0.1.2] - 2026-08-25
 
 ### Fixed
