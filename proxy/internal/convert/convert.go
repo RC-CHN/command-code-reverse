@@ -176,23 +176,35 @@ func ToWire(req *ChatRequest, threadID string, maxTokensClamp, defaultMaxTokens 
 	return out, nil
 }
 
-// ConversationRoot returns a stable fingerprint of the conversation's
-// opening: prefix-chain growth means the first two messages never change
-// within one conversation, so hashing them identifies the conversation
-// without storing any content. Used to derive session/thread identity.
+// ConversationRoot returns a stable fingerprint of a conversation:
+// leading system/developer context plus the first non-system message.
+// System prompts differ wildly across clients, making the root unique per
+// (client, conversation) pair; prefix-chain growth keeps both parts
+// constant from the very first request. Only LEADING system messages count
+// — mid-conversation system injections must not move the root. Clients
+// without a system prompt hash an empty system section, which is fine.
 func ConversationRoot(msgs []Message) string {
 	h := sha256.New()
-	n := min(len(msgs), 2)
-	for i := range n {
-		m := msgs[i]
+	for _, m := range msgs {
+		writeContent := func() {
+			if t := m.ContentText(); t != "" {
+				h.Write([]byte(t))
+			} else if len(m.Content) > 0 {
+				h.Write(m.Content)
+			}
+			h.Write([]byte{0})
+		}
+		if m.Role == "system" || m.Role == "developer" {
+			h.Write([]byte("system"))
+			h.Write([]byte{0})
+			writeContent()
+			continue
+		}
+		// First turn message completes the root.
 		h.Write([]byte(m.Role))
 		h.Write([]byte{0})
-		if t := m.ContentText(); t != "" {
-			h.Write([]byte(t))
-		} else if raw := m.Content; len(raw) > 0 {
-			h.Write(raw)
-		}
-		h.Write([]byte{0})
+		writeContent()
+		break
 	}
 	return hex.EncodeToString(h.Sum(nil))[:32]
 }

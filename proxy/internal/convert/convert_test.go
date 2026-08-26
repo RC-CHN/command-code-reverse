@@ -196,20 +196,45 @@ func TestConversationRoot(t *testing.T) {
 	if len(base) != 32 {
 		t.Fatalf("root length = %d", len(base))
 	}
-	// Prefix growth keeps the root (the conversation extends, root unchanged).
-	grown := ConversationRoot(mk("hello", "hi there", "next question"))
-	if grown != base {
+	// Stable from the very first request: one message and grown chain agree.
+	if ConversationRoot(mk("hello")) != base {
+		t.Error("first request (single message) must already produce the final root")
+	}
+	if ConversationRoot(mk("hello", "hi there", "next question")) != base {
 		t.Error("root must survive prefix growth")
 	}
-	// A different opening is a different conversation.
 	if ConversationRoot(mk("other", "hi")) == base {
 		t.Error("different opening must yield a different root")
 	}
+
+	// System context participates: same opening under another client
+	// (different system prompt) is a different conversation.
+	withSys := []Message{
+		{Role: "system", Content: mustJSON(t, "you are agent X")},
+		{Role: "user", Content: mustJSON(t, "hello")},
+	}
+	if ConversationRoot(withSys) == base {
+		t.Error("system prompt must differentiate otherwise-identical openings")
+	}
+	// And it stays stable across prefix growth.
+	grownSys := append(withSys,
+		Message{Role: "assistant", Content: mustJSON(t, "hi")},
+		Message{Role: "user", Content: mustJSON(t, "more")},
+	)
+	if ConversationRoot(grownSys) != ConversationRoot(withSys) {
+		t.Error("root with system must survive prefix growth")
+	}
+	// Mid-conversation system injections must NOT move the root.
+	injected := append(grownSys, Message{Role: "system", Content: mustJSON(t, "late injection")})
+	if ConversationRoot(injected) != ConversationRoot(withSys) {
+		t.Error("mid-conversation system messages must not move the root")
+	}
+
 	// Array-form content with the same text yields the SAME root — a client
 	// switching encodings mid-conversation must not break identity.
 	parts := []Message{{Role: "user", Content: mustJSON(t, []map[string]any{{"type": "text", "text": "hello"}})}}
-	if ConversationRoot(parts) == "" {
-		t.Error("array-form content must participate in the root")
+	if ConversationRoot(parts) != base {
+		t.Error("array-form and string encodings of the same text must share the root")
 	}
 }
 
