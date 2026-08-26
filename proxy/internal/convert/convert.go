@@ -179,6 +179,11 @@ func ToWire(req *ChatRequest, threadID string, maxTokensClamp, defaultMaxTokens 
 func convertMessages(msgs []Message) (string, []commandcode.WireMessage, error) {
 	var sysParts []string
 	var out []commandcode.WireMessage
+	// toolCallID → toolName, collected from assistant tool_calls. OpenAI
+	// marks "name" on tool messages as optional, but the upstream schema
+	// requires a non-empty toolName on every tool-result part. Resolution
+	// order mirrors the CLI: explicit name → map lookup → "unknown".
+	toolNames := map[string]string{}
 
 	for _, m := range msgs {
 		switch m.Role {
@@ -222,6 +227,7 @@ func convertMessages(msgs []Message) (string, []commandcode.WireMessage, error) 
 				parts = append(parts, commandcode.WireContentPart{Type: "text", Text: t})
 			}
 			for _, tc := range m.ToolCalls {
+				toolNames[tc.ID] = tc.Function.Name
 				parts = append(parts, commandcode.WireContentPart{
 					Type:       "tool-call",
 					ToolCallID: tc.ID,
@@ -234,12 +240,19 @@ func convertMessages(msgs []Message) (string, []commandcode.WireMessage, error) 
 			}
 
 		case "tool":
+			name := m.Name
+			if name == "" {
+				name = toolNames[m.ToolCallID]
+			}
+			if name == "" {
+				name = "unknown"
+			}
 			out = append(out, commandcode.WireMessage{
 				Role: "tool",
 				Content: []commandcode.WireContentPart{{
 					Type:       "tool-result",
 					ToolCallID: m.ToolCallID,
-					ToolName:   m.Name,
+					ToolName:   name,
 					Output:     &commandcode.WireOutput{Type: "text", Value: m.ContentText()},
 				}},
 			})

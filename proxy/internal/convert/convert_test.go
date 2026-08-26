@@ -180,6 +180,42 @@ func TestToWireImageMessage(t *testing.T) {
 	}
 }
 
+func TestToolResultNameResolution(t *testing.T) {
+	mkCall := func(id, name string) ToolCall {
+		var tc ToolCall
+		tc.ID = id
+		tc.Function.Name = name
+		tc.Function.Arguments = "{}"
+		return tc
+	}
+	req := &ChatRequest{
+		Model: "m",
+		Messages: []Message{
+			{Role: "user", Content: mustJSON(t, "go")},
+			// assistant with two parallel tool calls
+			{Role: "assistant", ToolCalls: []ToolCall{mkCall("c1", "read_file"), mkCall("c2", "grep")}},
+			// 1. explicit name wins
+			{Role: "tool", ToolCallID: "c1", Name: "custom_name", Content: mustJSON(t, "r1")},
+			// 2. missing name resolves via the id→name map
+			{Role: "tool", ToolCallID: "c2", Content: mustJSON(t, "r2")},
+			// 3. unknown id falls back to "unknown"
+			{Role: "tool", ToolCallID: "c9", Content: mustJSON(t, "r3")},
+		},
+	}
+	w, err := ToWire(req, "", 200000, 64000)
+	if err != nil {
+		t.Fatalf("ToWire: %v", err)
+	}
+	msgs := w.Params.Messages
+	got := []string{msgs[2].Content[0].ToolName, msgs[3].Content[0].ToolName, msgs[4].Content[0].ToolName}
+	want := []string{"custom_name", "grep", "unknown"}
+	for i := range want {
+		if got[i] != want[i] {
+			t.Errorf("toolName[%d] = %q, want %q", i, got[i], want[i])
+		}
+	}
+}
+
 func TestToWireRejectsRemoteImageURL(t *testing.T) {
 	req := &ChatRequest{
 		Model: "m",
