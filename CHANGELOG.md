@@ -4,6 +4,24 @@ All notable changes to commandcode-proxy are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 versioning follows [SemVer](https://semver.org/).
 
+## [v0.1.4] - 2026-08-27
+
+### Changed
+
+- Session identity is now derived from the conversation instead of wall-clock
+  rotation. The upstream can reconstruct conversations by prefix-matching
+  message histories, so timer-based rotation produced impossible sequences
+  (IDs changing mid-conversation, interleaved conversations sharing one
+  eternal per-key session). The conversation root — leading system context
+  plus the first non-system message — feeds a stateless HMAC derivation:
+  threadId is conversation-scoped (survives key spills), sessionId/slug are
+  account-scoped (key+root). Stable from the very first request, fresh
+  across conversations, zero stored state.
+- Retry attempts inside one request now share a single W3C trace ID with a
+  fresh span ID per attempt, mirroring the CLI's per-iteration trace spans.
+  Previously every attempt rolled a fully random traceparent — a sequence
+  no real CLI can emit.
+
 ## [v0.1.3] - 2026-08-26
 
 ### Fixed
