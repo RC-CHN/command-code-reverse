@@ -13,7 +13,8 @@ import (
 )
 
 // Event type markers that can appear inside the NDJSON stream and signal
-// terminal (billing/plan) failures. Detected from command-code@1.32.2.
+// terminal (billing/plan) failures. Detected from command-code@1.32.2 and
+// revalidated against command-code@1.40.1.
 const (
 	MarkerPremiumCreditsExhausted = "premium_credits_exhausted"
 	MarkerModelNotInPlan          = "model_not_in_plan"

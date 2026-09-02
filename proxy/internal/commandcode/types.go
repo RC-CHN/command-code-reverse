@@ -1,7 +1,8 @@
 // Package commandcode defines the upstream wire types for the Command Code
 // API and a minimal HTTP client for POST /alpha/generate.
 //
-// Protocol reference (reverse engineered from command-code@1.32.2):
+// Protocol reference (reverse engineered from command-code@1.32.2 and
+// revalidated against command-code@1.40.1):
 //   - Request:  POST {base}/alpha/generate, JSON body, NDJSON stream response.
 //   - Response: newline-delimited JSON events (NOT SSE).
 package commandcode

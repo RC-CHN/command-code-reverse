@@ -207,6 +207,41 @@ func TestModelsFallbackAndAuth(t *testing.T) {
 	}
 }
 
+func TestFallbackModelsMatchCurrentCatalog(t *testing.T) {
+	byID := make(map[string]commandcode.ModelInfo, len(fallbackModels))
+	for _, model := range fallbackModels {
+		if _, exists := byID[model.ID]; exists {
+			t.Fatalf("duplicate fallback model %q", model.ID)
+		}
+		byID[model.ID] = model
+	}
+
+	for _, id := range []string{
+		"deepseek/deepseek-v4-flash-fast",
+		"moonshotai/Kimi-K3",
+		"z-ai/glm-5.3-flash",
+		"Qwen/Qwen3.8-Flash",
+		"tencent/hy4-preview",
+	} {
+		model, ok := byID[id]
+		if !ok {
+			t.Errorf("current model %q missing from fallback catalog", id)
+		} else if model.ContextLength == 0 {
+			t.Errorf("current model %q has no context length", id)
+		}
+	}
+
+	for _, retired := range []string{
+		"minimax/minimax-m3-free",
+		"minimax/minimax-m2.7-free",
+		"stealth/ox-alpha",
+	} {
+		if _, exists := byID[retired]; exists {
+			t.Errorf("retired model %q remains in fallback catalog", retired)
+		}
+	}
+}
+
 func TestModelsDynamicFetch(t *testing.T) {
 	up := &stubUpstream{}
 	fetch := func(ctx context.Context, key string) ([]commandcode.ModelInfo, error) {

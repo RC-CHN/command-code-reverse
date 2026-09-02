@@ -7,7 +7,8 @@
 //  2. state file         — collect-once-replay-forever (PVC-friendly)
 //  3. live collect       — gather from the actual environment, persist
 //
-// The thumbmark algorithm matches command-code@1.32.2 exactly:
+// The thumbmark algorithm matches command-code@1.32.2 exactly and was
+// revalidated against command-code@1.40.1:
 //
 //	thumbmark = sha256(namespace + "\0machine\0" + parts.join("|"))
 //	parts     = [machineId, sortedUniqueMACs.join(","),
