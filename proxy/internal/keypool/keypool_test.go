@@ -126,13 +126,18 @@ func TestSpillOnInsufficientCredits(t *testing.T) {
 func TestAllBroken(t *testing.T) {
 	broken := &commandcode.APIError{Status: 400, Message: "insufficient credits"}
 	fc := &fakeClient{failWith: map[string]error{"k1": broken, "k2": broken}}
-	p := newTestPool(fc, "k1", "k2")
+	now := time.Now()
+	p := New(fc, session.NewStore("test-secret"), []string{"k1", "k2"}, BreakerPolicy{Now: func() time.Time { return now }})
 
 	// First call breaks both keys (spill chain), second finds none healthy.
 	_, _ = p.Generate(context.Background(), "", commandcode.CallMeta{Root: "root1"}, &commandcode.GenerateRequest{})
 	_, err := p.Generate(context.Background(), "", commandcode.CallMeta{Root: "root1"}, &commandcode.GenerateRequest{})
-	if err == nil || !strings.Contains(err.Error(), "circuit-broken") {
-		t.Fatalf("err = %v", err)
+	var unavailable *UnavailableError
+	if !errors.As(err, &unavailable) {
+		t.Fatalf("err = %T %v, want *UnavailableError", err, err)
+	}
+	if unavailable.KeyCount != 2 || unavailable.RetryAfter != time.Hour {
+		t.Fatalf("unavailable = %+v", unavailable)
 	}
 }
 
@@ -151,26 +156,68 @@ func TestNoRotateOnBadRequest(t *testing.T) {
 	}
 }
 
-func TestBackoffEscalatesOnServerFailures(t *testing.T) {
+func TestServerFailureDoesNotCircuitOrRotate(t *testing.T) {
 	fc := &fakeClient{failWith: map[string]error{
-		"k1": &commandcode.APIError{Status: 502, Message: "bad gateway"},
+		"k1": &commandcode.APIError{Status: 500, Message: "internal server error"},
 	}}
-	now := time.Now()
-	p := New(fc, session.NewStore("test-secret"), []string{"k1"}, BreakerPolicy{Now: func() time.Time { return now }})
+	p := newTestPool(fc, "k1", "k2")
 
-	_, _ = p.Generate(context.Background(), "", commandcode.CallMeta{Root: "root1"}, &commandcode.GenerateRequest{})
-	snap := p.Snapshot()
-	if !snap[0]["broken"].(bool) {
-		t.Fatal("k1 should be broken after 502")
+	_, err := p.Generate(context.Background(), "", commandcode.CallMeta{Root: "root1"}, &commandcode.GenerateRequest{})
+	if err == nil {
+		t.Fatal("expected upstream 500")
+	}
+	if len(fc.calls) != 1 || fc.calls[0] != "k1" {
+		t.Fatalf("calls = %v, want [k1] (no key rotation)", fc.calls)
+	}
+	if snap := p.Snapshot(); snap[0]["broken"].(bool) {
+		t.Fatal("upstream 500 must not circuit-break k1")
 	}
 
-	// After the first backoff window passes, one retry is allowed and fails
-	// again → longer backoff.
-	now = now.Add(61 * time.Second)
-	_, _ = p.Generate(context.Background(), "", commandcode.CallMeta{Root: "root1"}, &commandcode.GenerateRequest{})
-	snap = p.Snapshot()
-	if snap[0]["consecFail"].(int) != 2 {
-		t.Fatalf("consecFail = %v", snap[0]["consecFail"])
+	delete(fc.failWith, "k1")
+	if _, err := p.Generate(context.Background(), "", commandcode.CallMeta{Root: "root1"}, &commandcode.GenerateRequest{}); err != nil {
+		t.Fatalf("Generate after recovery: %v", err)
+	}
+	if fc.calls[1] != "k1" {
+		t.Fatalf("k1 was skipped after upstream 500, calls = %v", fc.calls)
+	}
+}
+
+func TestTransportFailureDoesNotCircuitOrRotate(t *testing.T) {
+	fc := &fakeClient{failWith: map[string]error{"k1": errors.New("connection reset")}}
+	p := newTestPool(fc, "k1", "k2")
+
+	_, err := p.Generate(context.Background(), "", commandcode.CallMeta{Root: "root1"}, &commandcode.GenerateRequest{})
+	if err == nil {
+		t.Fatal("expected transport error")
+	}
+	if len(fc.calls) != 1 || fc.calls[0] != "k1" {
+		t.Fatalf("calls = %v, want [k1] (no key rotation)", fc.calls)
+	}
+	if snap := p.Snapshot(); snap[0]["broken"].(bool) {
+		t.Fatal("transport failure must not circuit-break k1")
+	}
+}
+
+func TestExpiredBreakerAllowsSingleHalfOpenProbe(t *testing.T) {
+	fc := &fakeClient{}
+	now := time.Now()
+	p := New(fc, session.NewStore("test-secret"), []string{"k1"}, BreakerPolicy{Now: func() time.Time { return now }})
+	p.open(p.keys[0], time.Minute, "test")
+	now = now.Add(time.Minute)
+
+	probe, unavailable := p.acquireCandidate(nil)
+	if probe == nil || unavailable != nil {
+		t.Fatalf("first acquire = (%v, %v), want half-open probe", probe, unavailable)
+	}
+	second, unavailable := p.acquireCandidate(nil)
+	if second != nil || unavailable == nil || unavailable.RetryAfter != time.Second {
+		t.Fatalf("concurrent acquire = (%v, %+v), want temporary unavailability", second, unavailable)
+	}
+
+	p.reportSuccess(probe)
+	next, unavailable := p.acquireCandidate(nil)
+	if next != probe || unavailable != nil || next.probing {
+		t.Fatalf("acquire after successful probe = (%v, %v)", next, unavailable)
 	}
 }
 
@@ -199,24 +246,3 @@ func TestReportTerminalBreaksKey(t *testing.T) {
 		t.Fatal("second key should stay healthy")
 	}
 }
-
-func TestSuccessResetsFailures(t *testing.T) {
-	fc := &fakeClient{failWith: map[string]error{
-		"k1": &commandcode.APIError{Status: 502, Message: "x"},
-	}}
-	now := time.Now()
-	p := New(fc, session.NewStore("test-secret"), []string{"k1"}, BreakerPolicy{Now: func() time.Time { return now }})
-
-	_, _ = p.Generate(context.Background(), "", commandcode.CallMeta{Root: "root1"}, &commandcode.GenerateRequest{})
-	delete(fc.failWith, "k1") // upstream recovers
-	now = now.Add(61 * time.Second)
-
-	if _, err := p.Generate(context.Background(), "", commandcode.CallMeta{Root: "root1"}, &commandcode.GenerateRequest{}); err != nil {
-		t.Fatalf("Generate: %v", err)
-	}
-	if snap := p.Snapshot(); snap[0]["consecFail"].(int) != 0 {
-		t.Fatalf("consecFail = %v, want reset", snap[0]["consecFail"])
-	}
-}
-
-var _ = errors.Is // keep errors import if assertion helpers change

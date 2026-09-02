@@ -25,9 +25,8 @@ type GenerateClient interface {
 
 // BreakerPolicy tunes the circuit breaker.
 type BreakerPolicy struct {
-	CreditsTTL   time.Duration // insufficient credits / dead key (default 1h)
-	RateLimitTTL time.Duration // 429 without server guidance (default 1m)
-	FailBackoffs []time.Duration
+	CreditsTTL   time.Duration    // insufficient credits / dead key (default 1h)
+	RateLimitTTL time.Duration    // 429 without server guidance (default 1m)
 	Now          func() time.Time // test hook
 }
 
@@ -39,9 +38,6 @@ func (p *BreakerPolicy) withDefaults() BreakerPolicy {
 	if out.RateLimitTTL == 0 {
 		out.RateLimitTTL = time.Minute
 	}
-	if len(out.FailBackoffs) == 0 {
-		out.FailBackoffs = []time.Duration{time.Minute, 5 * time.Minute, 15 * time.Minute}
-	}
 	if out.Now == nil {
 		out.Now = time.Now
 	}
@@ -49,9 +45,21 @@ func (p *BreakerPolicy) withDefaults() BreakerPolicy {
 }
 
 type keyState struct {
-	key        string
-	openUntil  time.Time // breaker open until this instant
-	consecFail int
+	key       string
+	openUntil time.Time // breaker open until this instant
+	probing   bool      // one half-open probe is already in flight
+}
+
+// UnavailableError means every pooled key is either circuit-open or already
+// running its single half-open probe. RetryAfter is the earliest useful time
+// for a caller to try the pool again.
+type UnavailableError struct {
+	KeyCount   int
+	RetryAfter time.Duration
+}
+
+func (e *UnavailableError) Error() string {
+	return fmt.Sprintf("keypool: all %d keys are temporarily unavailable", e.KeyCount)
 }
 
 // Pool is a fill-first key selector with circuit breaking.
@@ -88,22 +96,18 @@ func (p *Pool) Generate(ctx context.Context, hint string, meta commandcode.CallM
 		return p.client.Generate(ctx, p.creds(hint, meta), req)
 	}
 
-	p.mu.Lock()
-	candidates := make([]*keyState, 0, len(p.keys))
-	for _, ks := range p.keys {
-		if p.policy.Now().Before(ks.openUntil) {
-			continue // breaker open
-		}
-		candidates = append(candidates, ks)
-	}
-	p.mu.Unlock()
-
-	if len(candidates) == 0 {
-		return nil, fmt.Errorf("keypool: all %d keys are circuit-broken", len(p.keys))
-	}
-
+	attempted := make(map[*keyState]bool, len(p.keys))
 	var lastErr error
-	for _, ks := range candidates {
+	for {
+		ks, unavailable := p.acquireCandidate(attempted)
+		if ks == nil {
+			if lastErr != nil {
+				return nil, lastErr
+			}
+			return nil, unavailable
+		}
+		attempted[ks] = true
+
 		body, err := p.client.Generate(ctx, p.creds(ks.key, meta), req)
 		if err == nil {
 			p.reportSuccess(ks)
@@ -112,12 +116,41 @@ func (p *Pool) Generate(ctx context.Context, hint string, meta commandcode.CallM
 		lastErr = err
 		if !p.reportFailure(ks, err) {
 			// Non-key-specific failure (network, cancel): no point rotating.
-			break
+			return nil, lastErr
 		}
 		slog.Warn("keypool: key failed, spilling to next",
 			"keyPrefix", prefix(ks.key), "error", err)
 	}
-	return nil, lastErr
+}
+
+// acquireCandidate returns the first usable, not-yet-attempted key. Once an
+// open breaker expires, exactly one request is admitted as its half-open
+// probe; concurrent requests skip that key until the probe completes.
+func (p *Pool) acquireCandidate(attempted map[*keyState]bool) (*keyState, *UnavailableError) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	now := p.policy.Now()
+	for _, ks := range p.keys {
+		if attempted[ks] || ks.probing || now.Before(ks.openUntil) {
+			continue
+		}
+		if !ks.openUntil.IsZero() {
+			ks.probing = true
+		}
+		return ks, nil
+	}
+
+	var retryAfter time.Duration
+	for _, ks := range p.keys {
+		if remaining := ks.openUntil.Sub(now); remaining > 0 && (retryAfter == 0 || remaining < retryAfter) {
+			retryAfter = remaining
+		}
+	}
+	if retryAfter == 0 {
+		retryAfter = time.Second
+	}
+	return nil, &UnavailableError{KeyCount: len(p.keys), RetryAfter: retryAfter}
 }
 
 // ReportTerminal lets the stream layer report an in-band terminal marker
@@ -148,6 +181,7 @@ func (p *Pool) reportFailure(ks *keyState, err error) (rotate bool) {
 	var ae *commandcode.APIError
 	switch {
 	case errors.Is(err, context.Canceled):
+		p.releaseProbe(ks)
 		return false
 	case errors.As(err, &ae) && ae.IsInsufficientCredits():
 		p.open(ks, p.policy.CreditsTTL, "insufficient_credits")
@@ -156,35 +190,48 @@ func (p *Pool) reportFailure(ks *keyState, err error) (rotate bool) {
 	case errors.As(err, &ae) && ae.IsModelNotInPlan():
 		// Tier mismatch, not a key problem: keep the key healthy, but a
 		// higher-tier pooled key may succeed, so rotating is worthwhile.
+		p.close(ks)
 		return true
 	case errors.As(err, &ae) && ae.IsModelNotRecognized():
 		// Unknown model ID: no pooled key will serve it either.
+		p.close(ks)
 		return false
 	case errors.As(err, &ae) && (ae.Status == 401 || ae.Status == 403):
 		p.open(ks, p.policy.CreditsTTL, "auth_rejected")
 	case errors.As(err, &ae) && ae.Status >= 400 && ae.Status < 500:
+		p.close(ks)
 		return false // request-shape problem; rotating won't help
 	default:
-		// 5xx / transport: exponential backoff by consecutive failures.
-		p.mu.Lock()
-		ks.consecFail++
-		idx := min(ks.consecFail-1, len(p.policy.FailBackoffs)-1)
-		ttl := p.policy.FailBackoffs[idx]
-		p.mu.Unlock()
-		p.open(ks, ttl, "upstream_failure")
+		// 5xx and transport failures describe the upstream service/path, not
+		// a bad account. Surface the original failure without poisoning this
+		// key or multiplying one global outage across every pooled key.
+		p.close(ks)
+		return false
 	}
 	return true
 }
 
 func (p *Pool) reportSuccess(ks *keyState) {
+	p.close(ks)
+}
+
+func (p *Pool) close(ks *keyState) {
 	p.mu.Lock()
-	ks.consecFail = 0
+	ks.openUntil = time.Time{}
+	ks.probing = false
+	p.mu.Unlock()
+}
+
+func (p *Pool) releaseProbe(ks *keyState) {
+	p.mu.Lock()
+	ks.probing = false
 	p.mu.Unlock()
 }
 
 func (p *Pool) open(ks *keyState, ttl time.Duration, reason string) {
 	p.mu.Lock()
 	ks.openUntil = p.policy.Now().Add(ttl)
+	ks.probing = false
 	p.mu.Unlock()
 	slog.Warn("keypool: circuit opened",
 		"keyPrefix", prefix(ks.key), "reason", reason, "openFor", ttl)
@@ -218,9 +265,9 @@ func (p *Pool) Snapshot() []map[string]any {
 	out := make([]map[string]any, 0, len(p.keys))
 	for _, ks := range p.keys {
 		out = append(out, map[string]any{
-			"keyPrefix":  prefix(ks.key),
-			"broken":     p.policy.Now().Before(ks.openUntil),
-			"consecFail": ks.consecFail,
+			"keyPrefix": prefix(ks.key),
+			"broken":    p.policy.Now().Before(ks.openUntil),
+			"probing":   ks.probing,
 		})
 	}
 	return out
