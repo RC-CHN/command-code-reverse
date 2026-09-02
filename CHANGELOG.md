@@ -4,6 +4,26 @@ All notable changes to commandcode-proxy are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 versioning follows [SemVer](https://semver.org/).
 
+## [v0.1.5] - 2026-09-02
+
+### Fixed
+
+- Upstream 5xx and transport failures no longer circuit-break an otherwise
+  valid API key or spill the same service-wide outage across every account in
+  the pool. Breakers are now reserved for key-specific failures (rate limits,
+  exhausted credits, and rejected credentials), with a single half-open probe
+  after cooldown to prevent a retry stampede.
+- Error responses now preserve an upstream HTTP 5xx status. Transport failures
+  remain 502, while a locally unavailable key pool is reported as 503 with a
+  `keypool_unavailable` code and an accurate `Retry-After` value.
+
+### Changed
+
+- Refreshed compatibility data against `command-code@1.40.1`: the offline
+  CLI-version fallback and static model catalog now include the current
+  DeepSeek, Kimi, GLM, Qwen, and Tencent additions with context lengths.
+  Retired Ox Alpha and MiniMax free aliases remain excluded.
+
 ## [v0.1.4] - 2026-08-27
 
 ### Changed
