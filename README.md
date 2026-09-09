@@ -1,7 +1,7 @@
 # command-code-reverse
 
 Reverse engineering of the [Command Code](https://commandcode.ai) CLI
-protocol (`command-code@1.32.2`), plus a production-grade Go proxy that
+protocol (initial analysis: `1.32.2`; latest static review: `1.51.3`), plus a production-grade Go proxy that
 exposes its upstream API as an OpenAI-compatible interface.
 
 [中文文档](./README.zh-CN.md)
@@ -11,6 +11,7 @@ exposes its upstream API as an OpenAI-compatible interface.
 | Path | Description |
 |---|---|
 | `analysis/v1.32.2/` | Protocol analysis (Chinese): endpoints, auth, wire format, streaming events, plan enforcement, fingerprint algorithm, cache behavior — verified live |
+| [`analysis/v1.51.3/`](./analysis/v1.51.3/README.md) | Changes since 1.40.1: cached system blocks, spend caps, model catalog, package provenance and local compatibility tests |
 | `proxy/` | **commandcode-proxy** — Go service bridging `POST /alpha/generate` (NDJSON streaming) to `/v1/chat/completions` (OpenAI SSE) |
 | `.github/workflows/` | CI (vet + race tests + lint + image build) and tag-triggered releases |
 

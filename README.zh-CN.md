@@ -1,6 +1,6 @@
 # command-code-reverse
 
-对 [Command Code](https://commandcode.ai) CLI 协议（`command-code@1.32.2`）的
+对 [Command Code](https://commandcode.ai) CLI 协议（初始分析 `1.32.2`，最新静态核对 `1.51.3`）的
 逆向工程分析，外加一个生产级 Go 代理，把它的上游 API 包装成 OpenAI 兼容接口。
 
 [English README](./README.md)
@@ -10,6 +10,7 @@
 | 路径 | 说明 |
 |---|---|
 | `analysis/v1.32.2/` | 协议分析（端点、鉴权、wire 格式、流事件、套餐校验、指纹算法、缓存行为——均已实测验证） |
+| [`analysis/v1.51.3/`](./analysis/v1.51.3/README.md) | 相对 1.40.1 的新版协议差异、发布包校验记录、模型目录对比与本地兼容测试 |
 | `proxy/` | **commandcode-proxy**——把 `POST /alpha/generate`（NDJSON 流）桥接成 `/v1/chat/completions`（OpenAI SSE）的 Go 服务 |
 | `.github/workflows/` | CI（vet + race 测试 + lint + 镜像构建）与 tag 触发的发版流水线 |
 

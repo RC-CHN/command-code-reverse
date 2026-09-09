@@ -1,0 +1,183 @@
+{
+  "old": {
+    "path": "references/command-code-npm/extracted-1.40.1/dist/cli.beautified.mjs",
+    "sha256": "ddce9e6c292e2ebcbe5a7eacf1a5385a8dd2d42d6bf3e87d4d8bd38828426502"
+  },
+  "new": {
+    "path": "references/command-code-npm/extracted-1.51.3/package/dist/cli.beautified.mjs",
+    "sha256": "1311bef16697db0bf94321068781cf223122fdb4a32ebff453f31c74d8d7db1c"
+  },
+  "functions": {
+    "buildCommandAuthHeaders": {
+      "old": {
+        "line": 27199,
+        "sha256": "b87474c40c3ba2dd4751ddf19f633d93a52eee70888e0b40ca46a6e159db3a71"
+      },
+      "new": {
+        "line": 28189,
+        "sha256": "f0bb2505a93e9ea122524b27d886a8a47c8e9ad8b7c5f7707e3f61c3984330dd"
+      }
+    },
+    "buildCommandApiHeaders": {
+      "old": {
+        "line": 27402,
+        "sha256": "0e42feff5cfc8d0d86ee3f3e11b753c0bd53694a53ac812680a1f9a50824256e"
+      },
+      "new": {
+        "line": 28392,
+        "sha256": "0e42feff5cfc8d0d86ee3f3e11b753c0bd53694a53ac812680a1f9a50824256e"
+      }
+    },
+    "buildMachineFingerprint": {
+      "old": {
+        "line": 42519,
+        "sha256": "3c1916557f7ae46a8a79a58fbdd68f6e3d61efadd227dd23ee4a8d2b2bf27640"
+      },
+      "new": {
+        "line": 43660,
+        "sha256": "d209369e2301b84375d4c8cdca0fbf9fe33c1b4b1421882e080b7f898d19abe0"
+      }
+    },
+    "createModelClient": {
+      "old": {
+        "line": 35806,
+        "sha256": "d9fb8e751b82014e4cbbe28e5d356544ead0386fb615cb181623ec385d281249"
+      },
+      "new": {
+        "line": 37044,
+        "sha256": "13e6ae528fe7d2c5ecd4124561d6fa6a7739a17f1614fdd055a4a326a7e84b4d"
+      }
+    },
+    "createSystemPromptBuilder": {
+      "old": {
+        "line": 34276,
+        "sha256": "2b6b17c6d87d45b760adf8c4d5cef209f8f9796ca57eea8a36c1cd949460cc00"
+      },
+      "new": {
+        "line": 35471,
+        "sha256": "e938ff0370e6fbac64af2c4bf25976709b0216ecebdf0d5445c319b5b468952c"
+      }
+    },
+    "toWireSystem": {
+      "old": null,
+      "new": {
+        "line": 36755,
+        "sha256": "81544772646e5ead3554422f35e823d7836704466d33484b87860443ae01d5fe"
+      }
+    },
+    "toWireMessages": {
+      "old": {
+        "line": 35507,
+        "sha256": "dd74fb4e04a3428c34ddc5ec09d1e4a91c7c51c3b01f710d1a2d869f3cc4a6b9"
+      },
+      "new": {
+        "line": 36707,
+        "sha256": "dd74fb4e04a3428c34ddc5ec09d1e4a91c7c51c3b01f710d1a2d869f3cc4a6b9"
+      }
+    },
+    "toWireTools": {
+      "old": {
+        "line": 35488,
+        "sha256": "de73d50b44a23d80221e2b7fe032eeb74dd71d3a027e379d1bccabbfb773332e"
+      },
+      "new": {
+        "line": 36688,
+        "sha256": "de73d50b44a23d80221e2b7fe032eeb74dd71d3a027e379d1bccabbfb773332e"
+      }
+    },
+    "toWirePermissionMode": {
+      "old": {
+        "line": 35579,
+        "sha256": "6a7f002b84bea463b2ed7f6cfd190bf74a4ef4ba52b3f7f03a8319e14cdde361"
+      },
+      "new": {
+        "line": 36811,
+        "sha256": "6a7f002b84bea463b2ed7f6cfd190bf74a4ef4ba52b3f7f03a8319e14cdde361"
+      }
+    },
+    "toWireThreadId": {
+      "old": {
+        "line": 35586,
+        "sha256": "154cd872a94ad3fe8f0c7cffcbfc9727982d78c422079de995f17be0c5b13877"
+      },
+      "new": {
+        "line": 36818,
+        "sha256": "fec353ee07d1b07ccb83b16a91f994a7e611ebce1dbdbc72bda5e82eb4fd612b"
+      }
+    },
+    "readStreamErrorEvent": {
+      "old": {
+        "line": 35555,
+        "sha256": "8c247537365a4ad689fe7ba34bc67ea9b734c9254ac5bae0aa29c29f18deb702"
+      },
+      "new": {
+        "line": 36787,
+        "sha256": "8c247537365a4ad689fe7ba34bc67ea9b734c9254ac5bae0aa29c29f18deb702"
+      }
+    },
+    "consumeStream": {
+      "old": {
+        "line": 35634,
+        "sha256": "0af590ec01ff593d2ea503a27a320323b7ed56b3fa70819cd553b72463fb8ab3"
+      },
+      "new": {
+        "line": 36866,
+        "sha256": "1a3f5892c02ebd9bbba6d0207284d6bc0a4aa32315ea82072aa6d8021f3efef8"
+      }
+    },
+    "readCacheWriteTokens1h": {
+      "old": null,
+      "new": {
+        "line": 36763,
+        "sha256": "2a150c580785638f6668ef60e683f6472692922e35f093287a8e8b00b27342f2"
+      }
+    },
+    "parseSpendCapError": {
+      "old": null,
+      "new": {
+        "line": 28508,
+        "sha256": "6f9233a7d6d1b78ca24c52476c97126365197e965d5cd792284107378d64a9db"
+      }
+    }
+  },
+  "catalog_counts": {
+    "old": 62,
+    "new": 68
+  },
+  "added_models": [
+    {
+      "id": "Qwen/Qwen3.8-Max-0902",
+      "name": "Qwen 3.8 Max 0902",
+      "context_length": 1000000
+    },
+    {
+      "id": "google/gemini-3.8-flash",
+      "name": "Gemini 3.8 Flash",
+      "context_length": 1000000
+    },
+    {
+      "id": "gpt-6-astra",
+      "name": "GPT-6 Astra",
+      "context_length": 1050000
+    },
+    {
+      "id": "meituan/LongCat-2.0:free",
+      "name": "LongCat 2.0",
+      "context_length": 1048576
+    },
+    {
+      "id": "meta/muse-spark-1.3",
+      "name": "Muse Spark 1.3",
+      "context_length": 1048576
+    },
+    {
+      "id": "meta/muse-spark-1.3-contributor",
+      "name": "Muse Spark 1.3 Contributor",
+      "context_length": 1048576
+    }
+  ],
+  "removed_models": [],
+  "changed_models": [],
+  "added_literal_routes": [],
+  "removed_literal_routes": []
+}

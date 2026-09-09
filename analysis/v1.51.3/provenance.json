@@ -1,0 +1,17 @@
+{
+  "checked_at": "2026-09-09",
+  "package": "command-code",
+  "version": "1.51.3",
+  "registry": "https://registry.npmjs.org/command-code/latest",
+  "dist": {
+    "tarball": "https://registry.npmjs.org/command-code/-/command-code-1.51.3.tgz",
+    "integrity": "sha512-lsbpNsOUZHXVBcbGiJX9COO7v4xdPUAzwcKFScDU3KXCil1VNXq/GPipNk10OurgFeTPZTmDL6QK1INK12iTsQ==",
+    "shasum": "cc4af25b9ce226455b39b731965dd420032ed2f5"
+  },
+  "tarball_sha256": "ad3c30718e935e1c40d7720791580da5ea234c6a08f01a9a4da9967963294d66",
+  "cli_sha256": "d408a372d5d6c8a8851610e2a9840f806929595584d1cd8d909d501928c0037c",
+  "prettier_version": "3.6.2",
+  "official_repository_head": "5c8f1b48c9d6704210cb3f9a476fdcffe5093e9a",
+  "reference_proxy_head": "487f219f9586b2a4ba7f7435eed7ee19dabc53ec",
+  "validation": "npm integrity verified; static source comparison, local race tests, and later authorized live inference; see LIVE.md and live-results.json"
+}

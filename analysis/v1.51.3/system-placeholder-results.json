@@ -1,0 +1,296 @@
+{
+  "date": "2026-09-09",
+  "key_index": 1,
+  "suite": "full",
+  "version": "1.51.3",
+  "auth_mode": "managed",
+  "fixed_seed_configured": false,
+  "synthetic_test_seed": false,
+  "transport": "actual Go proxy through local capture relay to real upstream",
+  "cases": [
+    {
+      "name": "plain",
+      "http": 200,
+      "elapsed_s": 3.67,
+      "success": true,
+      "text": "OK",
+      "tool_calls": [],
+      "finish": [
+        "stop"
+      ],
+      "done": false,
+      "usage": {
+        "prompt_tokens": 15,
+        "completion_tokens": 2,
+        "total_tokens": 17,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "errors": [],
+      "upstream_requests": 1,
+      "upstream_http": 200,
+      "body_sha256": "2f4dababbade04494ef0fc1f13ed0ff53347e051fd9b0751ccca4afefbcdf3b8",
+      "system_type": "str",
+      "system_is_single_space": false,
+      "identity_hashes": {
+        "thread": "823600fa488fa57ed6a42abf2a83d2cecd3d3ad69d382ba0b7493b5bf11412dc",
+        "session": "3b953df42d8410bfa0e91e208d84b2855023b4f3944379674346aeed8e85ec93",
+        "project": "1891f0049bfa43c14c80a9b3fee8f5e8a40aa719563a91a1a60a9b10e3ba46f4"
+      },
+      "header_checks": {
+        "upstream_key_used": true,
+        "proxy_key_not_forwarded": true,
+        "cli_version": true,
+        "user_agent": true,
+        "environment": true,
+        "traceparent": true,
+        "project_slug_matches_working_dir": true
+      },
+      "upstream_event_types": [
+        "finish",
+        "finish-step",
+        "provider-metadata",
+        "start",
+        "start-step",
+        "text-delta",
+        "text-end",
+        "text-start"
+      ],
+      "upstream_usage": {
+        "inputTokens": 15,
+        "inputTokenDetails": {
+          "noCacheTokens": 15,
+          "cacheReadTokens": 0
+        },
+        "outputTokens": 2,
+        "outputTokenDetails": {
+          "textTokens": 2,
+          "reasoningTokens": 0
+        },
+        "totalTokens": 17,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 0
+      },
+      "reported_cost_usd": null
+    },
+    {
+      "name": "no_system",
+      "http": 200,
+      "elapsed_s": 2.28,
+      "success": true,
+      "text": "OK.",
+      "tool_calls": [],
+      "finish": [
+        "stop"
+      ],
+      "done": false,
+      "usage": {
+        "prompt_tokens": 87,
+        "completion_tokens": 17,
+        "total_tokens": 104,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 14
+        }
+      },
+      "errors": [],
+      "upstream_requests": 1,
+      "upstream_http": 200,
+      "body_sha256": "4485dc83210216fc6048a9c8d6a86ceff9fea28fb6ed5ac175583829df6681ab",
+      "system_type": "str",
+      "system_is_single_space": true,
+      "identity_hashes": {
+        "thread": "26e47ff83312dd574e75febc6aec47ff4c9b598dba07d910dc37219e9717f010",
+        "session": "dec141da731700791b057229f966d682bcd6bc533a63344f080b6af08149719f",
+        "project": "86a584a6917a58e6c31cfbdb4c82f2e9491f574cd0c8cb6caf90160d9536cf4f"
+      },
+      "header_checks": {
+        "upstream_key_used": true,
+        "proxy_key_not_forwarded": true,
+        "cli_version": true,
+        "user_agent": true,
+        "environment": true,
+        "traceparent": true,
+        "project_slug_matches_working_dir": true
+      },
+      "upstream_event_types": [
+        "finish",
+        "finish-step",
+        "provider-metadata",
+        "reasoning-delta",
+        "reasoning-end",
+        "reasoning-start",
+        "start",
+        "start-step",
+        "text-delta",
+        "text-end",
+        "text-start"
+      ],
+      "upstream_usage": {
+        "inputTokens": 87,
+        "inputTokenDetails": {
+          "noCacheTokens": 87,
+          "cacheReadTokens": 0
+        },
+        "outputTokens": 17,
+        "outputTokenDetails": {
+          "textTokens": 3,
+          "reasoningTokens": 14
+        },
+        "totalTokens": 104,
+        "reasoningTokens": 14,
+        "cachedInputTokens": 0
+      },
+      "reported_cost_usd": "0.00006072"
+    },
+    {
+      "name": "blank_system",
+      "http": 200,
+      "elapsed_s": 3.3,
+      "success": true,
+      "text": "OK.",
+      "tool_calls": [],
+      "finish": [
+        "stop"
+      ],
+      "done": false,
+      "usage": {
+        "prompt_tokens": 87,
+        "completion_tokens": 33,
+        "total_tokens": 120,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 30
+        }
+      },
+      "errors": [],
+      "upstream_requests": 1,
+      "upstream_http": 200,
+      "body_sha256": "e10268f6895dd8095fc322b76ad9566cd128dc25ed008af09fa96201470ec562",
+      "system_type": "str",
+      "system_is_single_space": true,
+      "identity_hashes": {
+        "thread": "8d05e09c812e02e23bcc54f794ba48ef79dd5fe1311afdaae5189675e51b6438",
+        "session": "e0a280a21d5b3da8cfa9b501aca40d178b75f88f2c6853953defbfaaad99f1be",
+        "project": "d82d1c7fd8cbb84a3ec52607c893c6ff7878a3e3ed87e217ec6aa31e7cda3af4"
+      },
+      "header_checks": {
+        "upstream_key_used": true,
+        "proxy_key_not_forwarded": true,
+        "cli_version": true,
+        "user_agent": true,
+        "environment": true,
+        "traceparent": true,
+        "project_slug_matches_working_dir": true
+      },
+      "upstream_event_types": [
+        "finish",
+        "finish-step",
+        "provider-metadata",
+        "reasoning-delta",
+        "reasoning-end",
+        "reasoning-start",
+        "start",
+        "start-step",
+        "text-delta",
+        "text-end",
+        "text-start"
+      ],
+      "upstream_usage": {
+        "inputTokens": 87,
+        "inputTokenDetails": {
+          "noCacheTokens": 87,
+          "cacheReadTokens": 0
+        },
+        "outputTokens": 33,
+        "outputTokenDetails": {
+          "textTokens": 3,
+          "reasoningTokens": 30
+        },
+        "totalTokens": 120,
+        "reasoningTokens": 30,
+        "cachedInputTokens": 0
+      },
+      "reported_cost_usd": "0.00008184"
+    },
+    {
+      "name": "empty_system",
+      "http": 200,
+      "elapsed_s": 6.14,
+      "success": true,
+      "text": "OK",
+      "tool_calls": [],
+      "finish": [
+        "stop"
+      ],
+      "done": false,
+      "usage": {
+        "prompt_tokens": 8,
+        "completion_tokens": 2,
+        "total_tokens": 10,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "errors": [],
+      "upstream_requests": 1,
+      "upstream_http": 200,
+      "body_sha256": "5282d5b22acc89f7742d8a86e60a70565ce0ce208622f29817d883440d89ac79",
+      "system_type": "str",
+      "system_is_single_space": true,
+      "identity_hashes": {
+        "thread": "b27306bd108ed601ac2e638b5cb9ee4a818ee59a4cf3bcab421aff98cef7277d",
+        "session": "40cc15e02e13a8325f9d1bb1c84eb3364f555446cb57a345bc880faff0b00fbf",
+        "project": "e4dd2fe9bd04b9c3947ca0bc9731266e6ee0f011ed45ec4bbb70c2532f53f4cc"
+      },
+      "header_checks": {
+        "upstream_key_used": true,
+        "proxy_key_not_forwarded": true,
+        "cli_version": true,
+        "user_agent": true,
+        "environment": true,
+        "traceparent": true,
+        "project_slug_matches_working_dir": true
+      },
+      "upstream_event_types": [
+        "finish",
+        "finish-step",
+        "provider-metadata",
+        "start",
+        "start-step",
+        "text-delta",
+        "text-end",
+        "text-start"
+      ],
+      "upstream_usage": {
+        "inputTokens": 8,
+        "inputTokenDetails": {
+          "noCacheTokens": 8,
+          "cacheReadTokens": 0
+        },
+        "outputTokens": 2,
+        "outputTokenDetails": {
+          "textTokens": 2,
+          "reasoningTokens": 0
+        },
+        "totalTokens": 10,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 0
+      },
+      "reported_cost_usd": null
+    }
+  ],
+  "comparisons": {},
+  "implementation": "automatic single-space placeholder for missing/empty system"
+}

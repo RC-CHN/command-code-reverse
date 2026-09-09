@@ -1,0 +1,3227 @@
+{
+  "date": "2026-09-09",
+  "scope": "Two configured accounts; synthetic prompts only; real Go proxy via local HTTP capture relay. Not a real CLI execution or TLS-fingerprint comparison.",
+  "preflight": {
+    "key1_whoami": 200,
+    "key2_whoami": 200,
+    "key1_models_count": 67,
+    "key2_models_count": 67
+  },
+  "summary": {
+    "case_count": 46,
+    "upstream_generate_requests": 43,
+    "observed_cost_usd": "0.003970200",
+    "cost_note": "Sum of cost metadata from completed observed streams; not an account billing reconciliation.",
+    "verdict_counts": {
+      "expected_rejection": 5,
+      "failed": 1,
+      "passed": 37,
+      "test_output_budget_exhausted": 3
+    }
+  },
+  "runs": {
+    "key1": {
+      "date": "2026-09-09",
+      "key_index": 1,
+      "suite": "full",
+      "version": "1.51.3",
+      "fixed_seed_configured": false,
+      "transport": "actual Go proxy through local capture relay to real upstream",
+      "cases": [
+        {
+          "name": "missing_auth",
+          "http": 401,
+          "elapsed_s": 0.0,
+          "success": false,
+          "text": "",
+          "tool_calls": [],
+          "finish": [],
+          "done": false,
+          "usage": null,
+          "errors": [
+            "{\"message\": \"Invalid or missing proxy API key. Send Authorization: Bearer <key>.\", \"type\": \"authentication_error\"}"
+          ],
+          "upstream_requests": 0,
+          "verdict": "expected_rejection"
+        },
+        {
+          "name": "plain",
+          "http": 200,
+          "elapsed_s": 2.0,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 15,
+            "completion_tokens": 2,
+            "total_tokens": 17,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "e6b7393416440d8928cfd9ea88e1fb5c4e8d6c201102e40a33f72c73ee2a4a24",
+          "system_type": "str",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": false
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 15,
+            "inputTokenDetails": {
+              "noCacheTokens": 15,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 2,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 0
+            },
+            "totalTokens": 17,
+            "reasoningTokens": 0,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": null,
+          "verdict": "passed"
+        },
+        {
+          "name": "repeat",
+          "http": 200,
+          "elapsed_s": 1.97,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 15,
+            "completion_tokens": 2,
+            "total_tokens": 17,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "e6b7393416440d8928cfd9ea88e1fb5c4e8d6c201102e40a33f72c73ee2a4a24",
+          "system_type": "str",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": false
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 15,
+            "inputTokenDetails": {
+              "noCacheTokens": 15,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 2,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 0
+            },
+            "totalTokens": 17,
+            "reasoningTokens": 0,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": null,
+          "verdict": "passed"
+        },
+        {
+          "name": "stream",
+          "http": 200,
+          "elapsed_s": 5.18,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": true,
+          "usage": {
+            "prompt_tokens": 15,
+            "completion_tokens": 2,
+            "total_tokens": 17,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "e6b7393416440d8928cfd9ea88e1fb5c4e8d6c201102e40a33f72c73ee2a4a24",
+          "system_type": "str",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": false
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 15,
+            "inputTokenDetails": {
+              "noCacheTokens": 15,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 2,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 0
+            },
+            "totalTokens": 17,
+            "reasoningTokens": 0,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": null,
+          "verdict": "passed"
+        },
+        {
+          "name": "extended",
+          "http": 200,
+          "elapsed_s": 2.95,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 24,
+            "completion_tokens": 2,
+            "total_tokens": 26,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "6c33d4d27d24921264a71b64110e279e24dad4a6727e3c50c26d455578a3c3f9",
+          "system_type": "str",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": false
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 24,
+            "inputTokenDetails": {
+              "noCacheTokens": 24,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 2,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 0
+            },
+            "totalTokens": 26,
+            "reasoningTokens": 0,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": null,
+          "verdict": "passed"
+        },
+        {
+          "name": "different_root",
+          "http": 200,
+          "elapsed_s": 7.38,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 19,
+            "completion_tokens": 2,
+            "total_tokens": 21,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "7cc7173f062962463fdafadecd628452d05f68ee19fee5417dbf3cef73495181",
+          "system_type": "str",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": false
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 19,
+            "inputTokenDetails": {
+              "noCacheTokens": 19,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 2,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 0
+            },
+            "totalTokens": 21,
+            "reasoningTokens": 0,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": null,
+          "verdict": "passed"
+        },
+        {
+          "name": "no_system",
+          "http": 200,
+          "elapsed_s": 2.85,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 7641,
+            "completion_tokens": 28,
+            "total_tokens": 7669,
+            "prompt_tokens_details": {
+              "cached_tokens": 7552
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 26
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "c386ac647f746511f5f71598bb5de8e15526a6ee164f5be0d5e512d1321a0085",
+          "system_type": "NoneType",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": false
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 7641,
+            "inputTokenDetails": {
+              "noCacheTokens": 89,
+              "cacheReadTokens": 7552
+            },
+            "outputTokens": 28,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 26
+            },
+            "totalTokens": 7669,
+            "reasoningTokens": 26,
+            "cachedInputTokens": 7552
+          },
+          "reported_cost_usd": "0.000181848",
+          "verdict": "passed"
+        },
+        {
+          "name": "developer",
+          "http": 200,
+          "elapsed_s": 1.69,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 15,
+            "completion_tokens": 2,
+            "total_tokens": 17,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "e6b7393416440d8928cfd9ea88e1fb5c4e8d6c201102e40a33f72c73ee2a4a24",
+          "system_type": "str",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": false
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 15,
+            "inputTokenDetails": {
+              "noCacheTokens": 15,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 2,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 0
+            },
+            "totalTokens": 17,
+            "reasoningTokens": 0,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": null,
+          "verdict": "passed"
+        },
+        {
+          "name": "cache_blocks",
+          "http": 200,
+          "elapsed_s": 3.11,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 1417,
+            "completion_tokens": 55,
+            "total_tokens": 1472,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 53
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "70b0bd0c2e6a9dccaf704d5737f2ee196cd564af70ff066e7c2982d7a4be0abd",
+          "system_type": "list",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": false
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 1417,
+            "inputTokenDetails": {
+              "noCacheTokens": 1417,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 55,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 53
+            },
+            "totalTokens": 1472,
+            "reasoningTokens": 53,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": "0.00069608",
+          "verdict": "passed"
+        },
+        {
+          "name": "cache_repeat",
+          "http": 200,
+          "elapsed_s": 2.97,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 1417,
+            "completion_tokens": 60,
+            "total_tokens": 1477,
+            "prompt_tokens_details": {
+              "cached_tokens": 1408
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 58
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "70b0bd0c2e6a9dccaf704d5737f2ee196cd564af70ff066e7c2982d7a4be0abd",
+          "system_type": "list",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": false
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 1417,
+            "inputTokenDetails": {
+              "noCacheTokens": 9,
+              "cacheReadTokens": 1408
+            },
+            "outputTokens": 60,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 58
+            },
+            "totalTokens": 1477,
+            "reasoningTokens": 58,
+            "cachedInputTokens": 1408
+          },
+          "reported_cost_usd": "0.000102872",
+          "verdict": "passed"
+        },
+        {
+          "name": "cache_off",
+          "http": 200,
+          "elapsed_s": 2.84,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 1417,
+            "completion_tokens": 21,
+            "total_tokens": 1438,
+            "prompt_tokens_details": {
+              "cached_tokens": 1408
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 19
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "c39084b4db88e8e59f92d9083a8515529a2c9c49fba27a93b3919eeea770be35",
+          "system_type": "list",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": false
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 1417,
+            "inputTokenDetails": {
+              "noCacheTokens": 9,
+              "cacheReadTokens": 1408
+            },
+            "outputTokens": 21,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 19
+            },
+            "totalTokens": 1438,
+            "reasoningTokens": 19,
+            "cachedInputTokens": 1408
+          },
+          "reported_cost_usd": "0.000051392",
+          "verdict": "passed"
+        },
+        {
+          "name": "tool_call",
+          "http": 200,
+          "elapsed_s": 3.05,
+          "success": true,
+          "text": "",
+          "tool_calls": [
+            {
+              "function": {
+                "arguments": "{\"value\":\"OK\"}",
+                "name": "echo"
+              },
+              "id": "call_00_IZQ8pW5Dgdoz2JTdiYpn3467",
+              "type": "function"
+            }
+          ],
+          "finish": [
+            "tool_calls"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 373,
+            "completion_tokens": 61,
+            "total_tokens": 434,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 18
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "ee87ebda1d698f54a60bc2a50623399ff4fd22dcd33386635e3446e5f63cd35d",
+          "system_type": "str",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": false
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "tool-call",
+            "tool-input-delta",
+            "tool-input-end",
+            "tool-input-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 373,
+            "inputTokenDetails": {
+              "noCacheTokens": 373,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 61,
+            "outputTokenDetails": {
+              "textTokens": 43,
+              "reasoningTokens": 18
+            },
+            "totalTokens": 434,
+            "reasoningTokens": 18,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": "0.00024464",
+          "verdict": "passed"
+        },
+        {
+          "name": "tool_result_without_name",
+          "http": 502,
+          "elapsed_s": 1.9,
+          "success": false,
+          "text": "",
+          "tool_calls": [],
+          "finish": [],
+          "done": false,
+          "usage": null,
+          "errors": [
+            "{\"message\": \"Upstream error: Invalid request error. Often missing required parameters or typo. HINT: Validation error: Invalid input: expected \\\"auto\\\" at \\\"params.tool_choice.type\\\" or Invalid input: expected \\\"any\\\" at \\\"params.tool_choice.type\\\" or Invalid input: expected \\\"tool\\\" at \\\"params.tool_choice.type\\\"; Invalid input: expected string, received undefined at \\\"params.tool_choice.name\\\"\", \"type\": \"upstream_error\"}"
+          ],
+          "upstream_requests": 1,
+          "upstream_http": 400,
+          "body_sha256": "6b4351b7cf14b093d82e20bac6ad898ee616bbe9a4b0ccdca5cb6a5a5d0704a8",
+          "system_type": "str",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": false
+          },
+          "upstream_event_types": [
+            "unknown"
+          ],
+          "upstream_usage": null,
+          "reported_cost_usd": null,
+          "verdict": "failed"
+        },
+        {
+          "name": "invalid_model",
+          "http": 404,
+          "elapsed_s": 0.96,
+          "success": false,
+          "text": "",
+          "tool_calls": [],
+          "finish": [],
+          "done": false,
+          "usage": null,
+          "errors": [
+            "{\"message\": \"Upstream does not recognize the model: Model/provider not recognized: anthropic:invalid/compatibility-probe-nonexistent\", \"type\": \"invalid_request_error\"}"
+          ],
+          "upstream_requests": 1,
+          "upstream_http": 403,
+          "body_sha256": "41c3e14cebf107c141c8820ca04504d0da593a305590b84c1ef8ba193a3ef03f",
+          "system_type": "str",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": false
+          },
+          "upstream_event_types": [
+            "unknown"
+          ],
+          "upstream_usage": null,
+          "reported_cost_usd": null,
+          "verdict": "expected_rejection"
+        },
+        {
+          "name": "remote_image_rejected",
+          "http": 400,
+          "elapsed_s": 0.0,
+          "success": false,
+          "text": "",
+          "tool_calls": [],
+          "finish": [],
+          "done": false,
+          "usage": null,
+          "errors": [
+            "{\"message\": \"image_url must be a base64 data URL (data:<mime>;base64,...), remote URLs are not supported: https://example.com/test.png\", \"type\": \"invalid_request_error\"}"
+          ],
+          "upstream_requests": 0,
+          "verdict": "expected_rejection"
+        }
+      ],
+      "comparisons": {
+        "plain__repeat": {
+          "same_thread": true,
+          "same_session": true,
+          "same_project": true,
+          "same_body": true,
+          "fresh_trace": true
+        },
+        "plain__stream": {
+          "same_thread": true,
+          "same_session": true,
+          "same_project": true,
+          "same_body": true,
+          "fresh_trace": true
+        },
+        "plain__extended": {
+          "same_thread": true,
+          "same_session": true,
+          "same_project": true,
+          "same_body": false,
+          "fresh_trace": true
+        },
+        "plain__different_root": {
+          "same_thread": false,
+          "same_session": false,
+          "same_project": false,
+          "same_body": false,
+          "fresh_trace": true
+        },
+        "cache_blocks__cache_repeat": {
+          "same_thread": true,
+          "same_session": true,
+          "same_project": true,
+          "same_body": true,
+          "fresh_trace": true
+        },
+        "cache_blocks__cache_off": {
+          "same_thread": true,
+          "same_session": true,
+          "same_project": true,
+          "same_body": false,
+          "fresh_trace": true
+        },
+        "tool_call__tool_result_without_name": {
+          "same_thread": true,
+          "same_session": true,
+          "same_project": true,
+          "same_body": false,
+          "fresh_trace": true
+        }
+      },
+      "implementation": "before live fixes"
+    },
+    "contrasts": {
+      "date": "2026-09-09",
+      "key_index": 1,
+      "suite": "full",
+      "version": "1.51.3",
+      "fixed_seed_configured": false,
+      "transport": "actual Go proxy through local capture relay to real upstream",
+      "cases": [
+        {
+          "name": "blank_system",
+          "http": 200,
+          "elapsed_s": 2.18,
+          "success": true,
+          "text": "OK.",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 87,
+            "completion_tokens": 8,
+            "total_tokens": 95,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 5
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "a970c7bcbedbd42b3e00ed01b83df03dd871ce135a0047713a1610e7ffbaf74d",
+          "system_type": "str",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": false
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 87,
+            "inputTokenDetails": {
+              "noCacheTokens": 87,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 8,
+            "outputTokenDetails": {
+              "textTokens": 3,
+              "reasoningTokens": 5
+            },
+            "totalTokens": 95,
+            "reasoningTokens": 5,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": "0.00004884",
+          "verdict": "passed"
+        },
+        {
+          "name": "cache_string",
+          "http": 200,
+          "elapsed_s": 3.04,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 1417,
+            "completion_tokens": 12,
+            "total_tokens": 1429,
+            "prompt_tokens_details": {
+              "cached_tokens": 1408
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 10
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "8aa78aaee37b7f7ad25f5bc835138067724fbe861dc8efb588b3250863140b2a",
+          "system_type": "str",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": false
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 1417,
+            "inputTokenDetails": {
+              "noCacheTokens": 9,
+              "cacheReadTokens": 1408
+            },
+            "outputTokens": 12,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 10
+            },
+            "totalTokens": 1429,
+            "reasoningTokens": 10,
+            "cachedInputTokens": 1408
+          },
+          "reported_cost_usd": "0.000039512",
+          "verdict": "passed"
+        },
+        {
+          "name": "cache_string_repeat",
+          "http": 200,
+          "elapsed_s": 3.86,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 1417,
+            "completion_tokens": 14,
+            "total_tokens": 1431,
+            "prompt_tokens_details": {
+              "cached_tokens": 1408
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 12
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "8aa78aaee37b7f7ad25f5bc835138067724fbe861dc8efb588b3250863140b2a",
+          "system_type": "str",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": false
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 1417,
+            "inputTokenDetails": {
+              "noCacheTokens": 9,
+              "cacheReadTokens": 1408
+            },
+            "outputTokens": 14,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 12
+            },
+            "totalTokens": 1431,
+            "reasoningTokens": 12,
+            "cachedInputTokens": 1408
+          },
+          "reported_cost_usd": "0.000042152",
+          "verdict": "passed"
+        },
+        {
+          "name": "qwen",
+          "http": 200,
+          "elapsed_s": 4.2,
+          "success": true,
+          "text": "OK.",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 52,
+            "completion_tokens": 21,
+            "total_tokens": 73,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 16
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "3e79eae17c4b2df44cdb27c18bd4d0a7da24643e4691369e5a5ab224cb294bab",
+          "system_type": "str",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": false
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 52,
+            "inputTokenDetails": {
+              "noCacheTokens": 52,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 21,
+            "outputTokenDetails": {
+              "textTokens": 5,
+              "reasoningTokens": 16
+            },
+            "totalTokens": 73,
+            "reasoningTokens": 16,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": null,
+          "verdict": "passed"
+        }
+      ],
+      "comparisons": {
+        "cache_string__cache_string_repeat": {
+          "same_thread": true,
+          "same_session": true,
+          "same_project": true,
+          "same_body": true,
+          "fresh_trace": true
+        }
+      },
+      "implementation": "before live fixes"
+    },
+    "key1-fixed": {
+      "date": "2026-09-09",
+      "key_index": 1,
+      "suite": "full",
+      "version": "1.51.3",
+      "fixed_seed_configured": false,
+      "transport": "actual Go proxy through local capture relay to real upstream",
+      "cases": [
+        {
+          "name": "plain",
+          "http": 200,
+          "elapsed_s": 2.82,
+          "success": true,
+          "text": "OK.",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 94,
+            "completion_tokens": 14,
+            "total_tokens": 108,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 11
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "07047478f6eb19407b1fc92cbb8efefff8da2a560b00599ca9770592c025b5dd",
+          "system_type": "str",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": true
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 94,
+            "inputTokenDetails": {
+              "noCacheTokens": 94,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 14,
+            "outputTokenDetails": {
+              "textTokens": 3,
+              "reasoningTokens": 11
+            },
+            "totalTokens": 108,
+            "reasoningTokens": 11,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": "0.00005984",
+          "verdict": "passed"
+        },
+        {
+          "name": "repeat",
+          "http": 200,
+          "elapsed_s": 3.59,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 94,
+            "completion_tokens": 18,
+            "total_tokens": 112,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 16
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "07047478f6eb19407b1fc92cbb8efefff8da2a560b00599ca9770592c025b5dd",
+          "system_type": "str",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": true
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 94,
+            "inputTokenDetails": {
+              "noCacheTokens": 94,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 18,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 16
+            },
+            "totalTokens": 112,
+            "reasoningTokens": 16,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": "0.00006512",
+          "verdict": "passed"
+        },
+        {
+          "name": "stream",
+          "http": 200,
+          "elapsed_s": 4.65,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": true,
+          "usage": {
+            "prompt_tokens": 94,
+            "completion_tokens": 28,
+            "total_tokens": 122,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 26
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "07047478f6eb19407b1fc92cbb8efefff8da2a560b00599ca9770592c025b5dd",
+          "system_type": "str",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": true
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 94,
+            "inputTokenDetails": {
+              "noCacheTokens": 94,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 28,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 26
+            },
+            "totalTokens": 122,
+            "reasoningTokens": 26,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": "0.00007832",
+          "verdict": "passed"
+        },
+        {
+          "name": "extended",
+          "http": 200,
+          "elapsed_s": 3.01,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 103,
+            "completion_tokens": 28,
+            "total_tokens": 131,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 26
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "f6f50aa44ac38166d8859e1063c56de5303c0281a6b9dd39786f8ea9b173bd1e",
+          "system_type": "str",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": true
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 103,
+            "inputTokenDetails": {
+              "noCacheTokens": 103,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 28,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 26
+            },
+            "totalTokens": 131,
+            "reasoningTokens": 26,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": "0.00008228",
+          "verdict": "passed"
+        },
+        {
+          "name": "different_root",
+          "http": 200,
+          "elapsed_s": 2.39,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 98,
+            "completion_tokens": 53,
+            "total_tokens": 151,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 51
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "9fc3e899c3008dd9d883e65598a8598f690edcc3533d470b8e1a8b7e745d1bc8",
+          "system_type": "str",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": true
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 98,
+            "inputTokenDetails": {
+              "noCacheTokens": 98,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 53,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 51
+            },
+            "totalTokens": 151,
+            "reasoningTokens": 51,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": "0.00011308",
+          "verdict": "passed"
+        },
+        {
+          "name": "tool_call",
+          "http": 200,
+          "elapsed_s": 3.88,
+          "success": true,
+          "text": "",
+          "tool_calls": [
+            {
+              "function": {
+                "arguments": "{\"value\":\"OK\"}",
+                "name": "echo"
+              },
+              "id": "call_00_wNWxQjeFFiy3T00tOwb16971",
+              "type": "function"
+            }
+          ],
+          "finish": [
+            "tool_calls"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 373,
+            "completion_tokens": 66,
+            "total_tokens": 439,
+            "prompt_tokens_details": {
+              "cached_tokens": 256
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 23
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "155a2a9ec21f92c4bfb1b28286ee36f6322dd5f2b3f5933432337f0d651d9907",
+          "system_type": "str",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": true
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "tool-call",
+            "tool-input-delta",
+            "tool-input-end",
+            "tool-input-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 373,
+            "inputTokenDetails": {
+              "noCacheTokens": 117,
+              "cacheReadTokens": 256
+            },
+            "outputTokens": 66,
+            "outputTokenDetails": {
+              "textTokens": 43,
+              "reasoningTokens": 23
+            },
+            "totalTokens": 439,
+            "reasoningTokens": 23,
+            "cachedInputTokens": 256
+          },
+          "reported_cost_usd": "0.000142184",
+          "verdict": "passed"
+        },
+        {
+          "name": "tool_result_without_name",
+          "http": 200,
+          "elapsed_s": 2.37,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 159,
+            "completion_tokens": 17,
+            "total_tokens": 176,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 15
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "940b3b091afedf2de8e64453dbdc82442c2ca786162398db66d01b912a823993",
+          "system_type": "str",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": true
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 159,
+            "inputTokenDetails": {
+              "noCacheTokens": 159,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 17,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 15
+            },
+            "totalTokens": 176,
+            "reasoningTokens": 15,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": "0.0000924",
+          "verdict": "passed"
+        }
+      ],
+      "comparisons": {
+        "plain__repeat": {
+          "same_thread": true,
+          "same_session": true,
+          "same_project": true,
+          "same_body": true,
+          "fresh_trace": true
+        },
+        "plain__stream": {
+          "same_thread": true,
+          "same_session": true,
+          "same_project": true,
+          "same_body": true,
+          "fresh_trace": true
+        },
+        "plain__extended": {
+          "same_thread": true,
+          "same_session": true,
+          "same_project": true,
+          "same_body": false,
+          "fresh_trace": true
+        },
+        "plain__different_root": {
+          "same_thread": false,
+          "same_session": false,
+          "same_project": false,
+          "same_body": false,
+          "fresh_trace": true
+        },
+        "tool_call__tool_result_without_name": {
+          "same_thread": true,
+          "same_session": true,
+          "same_project": true,
+          "same_body": false,
+          "fresh_trace": true
+        }
+      },
+      "implementation": "after live fixes"
+    },
+    "key2": {
+      "date": "2026-09-09",
+      "key_index": 2,
+      "suite": "basic",
+      "version": "1.51.3",
+      "fixed_seed_configured": false,
+      "transport": "actual Go proxy through local capture relay to real upstream",
+      "cases": [
+        {
+          "name": "missing_auth",
+          "http": 401,
+          "elapsed_s": 0.0,
+          "success": false,
+          "text": "",
+          "tool_calls": [],
+          "finish": [],
+          "done": false,
+          "usage": null,
+          "errors": [
+            "{\"message\": \"Invalid or missing proxy API key. Send Authorization: Bearer <key>.\", \"type\": \"authentication_error\"}"
+          ],
+          "upstream_requests": 0,
+          "verdict": "expected_rejection"
+        },
+        {
+          "name": "plain",
+          "http": 200,
+          "elapsed_s": 3.83,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 94,
+            "completion_tokens": 16,
+            "total_tokens": 110,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 14
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "7a92e645e4011cd98d39a9e33d491bd735668d2237bd4da99834f123cdb2fd2b",
+          "system_type": "str",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": true
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 94,
+            "inputTokenDetails": {
+              "noCacheTokens": 94,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 16,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 14
+            },
+            "totalTokens": 110,
+            "reasoningTokens": 14,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": "0.00006248",
+          "verdict": "passed"
+        },
+        {
+          "name": "repeat",
+          "http": 200,
+          "elapsed_s": 2.53,
+          "success": true,
+          "text": "OK.",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 94,
+            "completion_tokens": 13,
+            "total_tokens": 107,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 10
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "7a92e645e4011cd98d39a9e33d491bd735668d2237bd4da99834f123cdb2fd2b",
+          "system_type": "str",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": true
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 94,
+            "inputTokenDetails": {
+              "noCacheTokens": 94,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 13,
+            "outputTokenDetails": {
+              "textTokens": 3,
+              "reasoningTokens": 10
+            },
+            "totalTokens": 107,
+            "reasoningTokens": 10,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": "0.00005852",
+          "verdict": "passed"
+        },
+        {
+          "name": "stream",
+          "http": 200,
+          "elapsed_s": 3.46,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": true,
+          "usage": {
+            "prompt_tokens": 94,
+            "completion_tokens": 29,
+            "total_tokens": 123,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 27
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "7a92e645e4011cd98d39a9e33d491bd735668d2237bd4da99834f123cdb2fd2b",
+          "system_type": "str",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": true
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 94,
+            "inputTokenDetails": {
+              "noCacheTokens": 94,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 29,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 27
+            },
+            "totalTokens": 123,
+            "reasoningTokens": 27,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": "0.00007964",
+          "verdict": "passed"
+        },
+        {
+          "name": "extended",
+          "http": 200,
+          "elapsed_s": 3.17,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 103,
+            "completion_tokens": 31,
+            "total_tokens": 134,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 29
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "d26e1feba95c1d555c729c2fd10fe818f7d04ad96e51e153b0070c2aa091b98b",
+          "system_type": "str",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": true
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 103,
+            "inputTokenDetails": {
+              "noCacheTokens": 103,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 31,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 29
+            },
+            "totalTokens": 134,
+            "reasoningTokens": 29,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": "0.00008624",
+          "verdict": "passed"
+        },
+        {
+          "name": "different_root",
+          "http": 200,
+          "elapsed_s": 3.19,
+          "success": false,
+          "text": "",
+          "tool_calls": [],
+          "finish": [
+            "length"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 98,
+            "completion_tokens": 96,
+            "total_tokens": 194,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 96
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "14854ccceaa8502976cb07f7e2d3fe6f2cf0b644f0378cb12121407d81fac4e9",
+          "system_type": "str",
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": true
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step"
+          ],
+          "upstream_usage": {
+            "inputTokens": 98,
+            "inputTokenDetails": {
+              "noCacheTokens": 98,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 96,
+            "outputTokenDetails": {
+              "textTokens": 0,
+              "reasoningTokens": 96
+            },
+            "totalTokens": 194,
+            "reasoningTokens": 96,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": "0.00016984",
+          "verdict": "test_output_budget_exhausted"
+        }
+      ],
+      "comparisons": {
+        "plain__repeat": {
+          "same_thread": true,
+          "same_session": true,
+          "same_project": true,
+          "same_body": true,
+          "fresh_trace": true
+        },
+        "plain__stream": {
+          "same_thread": true,
+          "same_session": true,
+          "same_project": true,
+          "same_body": true,
+          "fresh_trace": true
+        },
+        "plain__extended": {
+          "same_thread": true,
+          "same_session": true,
+          "same_project": true,
+          "same_body": false,
+          "fresh_trace": true
+        },
+        "plain__different_root": {
+          "same_thread": false,
+          "same_session": false,
+          "same_project": false,
+          "same_body": false,
+          "fresh_trace": true
+        }
+      },
+      "implementation": "after live fixes"
+    },
+    "restart-unseeded": {
+      "date": "2026-09-09",
+      "key_index": 1,
+      "suite": "basic",
+      "version": "1.51.3",
+      "fixed_seed_configured": false,
+      "synthetic_test_seed": false,
+      "transport": "actual Go proxy through local capture relay to real upstream",
+      "cases": [
+        {
+          "name": "plain",
+          "http": 200,
+          "elapsed_s": 4.38,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 94,
+            "completion_tokens": 25,
+            "total_tokens": 119,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 23
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "ae0dbf4cb9bfef9b13a899577eb0064468424834f1b167bb3a272fc7da9b255a",
+          "system_type": "str",
+          "identity_hashes": {
+            "thread": "db9883fef3bd6391e69cdf2f6930fdd23250b50dc3ff0256f9c885ef16b61ad9",
+            "session": "d9569b6f0616ef02c97254ba52c5e236fb622be374e9808b08d726324003b553",
+            "project": "007cf95b61a8aa77612684e4a78ea58d6e87be0a1f046973789a55ad4a0779cb"
+          },
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": true
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 94,
+            "inputTokenDetails": {
+              "noCacheTokens": 94,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 25,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 23
+            },
+            "totalTokens": 119,
+            "reasoningTokens": 23,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": "0.00007436",
+          "verdict": "passed"
+        },
+        {
+          "name": "restart_same_request",
+          "http": 200,
+          "elapsed_s": 3.17,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 94,
+            "completion_tokens": 19,
+            "total_tokens": 113,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 17
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "d034bc0d309936d5ff69030913f582da769d7194d05d5958219643ed8286ccc7",
+          "system_type": "str",
+          "identity_hashes": {
+            "thread": "a2f0a349e3b12e78f4111bde3634fb868dcd8e0449f88c9f833239966b3b4947",
+            "session": "69181d1f20b720f463259bb886771bb69de28c7d67bfb73d7202f80b9dff4c53",
+            "project": "3e45f41375aecdf02d78913d772f675b5a93479ecf7c3c243d390608ce42e132"
+          },
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": true
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 94,
+            "inputTokenDetails": {
+              "noCacheTokens": 94,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 19,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 17
+            },
+            "totalTokens": 113,
+            "reasoningTokens": 17,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": "0.00006644",
+          "verdict": "passed"
+        }
+      ],
+      "comparisons": {
+        "plain__restart_same_request": {
+          "same_thread": false,
+          "same_session": false,
+          "same_project": false,
+          "same_body": false,
+          "fresh_trace": true
+        }
+      },
+      "implementation": "after live fixes"
+    },
+    "restart-seeded": {
+      "date": "2026-09-09",
+      "key_index": 1,
+      "suite": "basic",
+      "version": "1.51.3",
+      "fixed_seed_configured": true,
+      "synthetic_test_seed": true,
+      "transport": "actual Go proxy through local capture relay to real upstream",
+      "cases": [
+        {
+          "name": "plain",
+          "http": 200,
+          "elapsed_s": 5.52,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 94,
+            "completion_tokens": 18,
+            "total_tokens": 112,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 16
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "dd04521402d52e677cfdabd17c5e4e74499b98abf8f89bb68b2a026daeafc9c0",
+          "system_type": "str",
+          "identity_hashes": {
+            "thread": "6e74ed3706f37544aab429b132d113c6ee16abc7f1a6419fb7de7828661b1f9e",
+            "session": "cf147309e18ab37dd84f152aaeb48ba29c1130be840b4cb6e7bf47d528a4c78f",
+            "project": "be02e9f85c9db1a3c25ef844da361d7ebab24590f880cb04f9b5f698d6df8205"
+          },
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": true
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 94,
+            "inputTokenDetails": {
+              "noCacheTokens": 94,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 18,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 16
+            },
+            "totalTokens": 112,
+            "reasoningTokens": 16,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": "0.00006512",
+          "verdict": "passed"
+        },
+        {
+          "name": "restart_same_request",
+          "http": 200,
+          "elapsed_s": 4.9,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 94,
+            "completion_tokens": 31,
+            "total_tokens": 125,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 29
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "dd04521402d52e677cfdabd17c5e4e74499b98abf8f89bb68b2a026daeafc9c0",
+          "system_type": "str",
+          "identity_hashes": {
+            "thread": "6e74ed3706f37544aab429b132d113c6ee16abc7f1a6419fb7de7828661b1f9e",
+            "session": "cf147309e18ab37dd84f152aaeb48ba29c1130be840b4cb6e7bf47d528a4c78f",
+            "project": "be02e9f85c9db1a3c25ef844da361d7ebab24590f880cb04f9b5f698d6df8205"
+          },
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": true
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 94,
+            "inputTokenDetails": {
+              "noCacheTokens": 94,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 31,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 29
+            },
+            "totalTokens": 125,
+            "reasoningTokens": 29,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": "0.00008228",
+          "verdict": "passed"
+        }
+      ],
+      "comparisons": {
+        "plain__restart_same_request": {
+          "same_thread": true,
+          "same_session": true,
+          "same_project": true,
+          "same_body": true,
+          "fresh_trace": true
+        }
+      },
+      "implementation": "after live fixes"
+    },
+    "key2-budget": {
+      "date": "2026-09-09",
+      "key_index": 2,
+      "suite": "basic",
+      "version": "1.51.3",
+      "fixed_seed_configured": false,
+      "synthetic_test_seed": false,
+      "transport": "actual Go proxy through local capture relay to real upstream",
+      "cases": [
+        {
+          "name": "different_root",
+          "http": 200,
+          "elapsed_s": 2.07,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 19,
+            "completion_tokens": 2,
+            "total_tokens": 21,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "4e5f895224df13176c41047195ef7fa51666153613987081909efd2c3ed6dd35",
+          "system_type": "str",
+          "identity_hashes": {
+            "thread": "cea72098cabf189851438b7193ac94ff5c0bdab6b7dbf0f4ffb7532b45c0f46c",
+            "session": "accbb25d898cc492fe60c9854ed7de2532481508734f6ed66ee7a227d821b76a",
+            "project": "f20fbba0398155b26b15adaf4987dfa7b6639b7d63ad7f5d11c581a70e4a224d"
+          },
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": true
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 19,
+            "inputTokenDetails": {
+              "noCacheTokens": 19,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 2,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 0
+            },
+            "totalTokens": 21,
+            "reasoningTokens": 0,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": null,
+          "verdict": "passed"
+        }
+      ],
+      "comparisons": {},
+      "implementation": "after live fixes"
+    },
+    "multimodal": {
+      "date": "2026-09-09",
+      "key_index": 1,
+      "suite": "full",
+      "version": "1.51.3",
+      "auth_mode": "managed",
+      "fixed_seed_configured": false,
+      "synthetic_test_seed": false,
+      "transport": "actual Go proxy through local capture relay to real upstream",
+      "cases": [
+        {
+          "name": "tool_call_stream",
+          "http": 200,
+          "elapsed_s": 3.73,
+          "success": true,
+          "text": "",
+          "tool_calls": [
+            {
+              "function": {
+                "arguments": "{\"value\":\"OK\"}",
+                "name": "echo"
+              },
+              "id": "call_00_Y9tCnJlSt94xi95lbo8f1781",
+              "index": 0,
+              "type": "function"
+            }
+          ],
+          "finish": [
+            "tool_calls"
+          ],
+          "done": true,
+          "usage": {
+            "prompt_tokens": 373,
+            "completion_tokens": 66,
+            "total_tokens": 439,
+            "prompt_tokens_details": {
+              "cached_tokens": 256
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 23
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "8c09f563a75f8bd42ce02048337d039ef33eb114731dd2bff54c2bbc17bc4ec1",
+          "system_type": "str",
+          "identity_hashes": {
+            "thread": "38cf55aa9ef54ef1d0d8cf659f7055261d8ba7f13fcd7a8c48c3c2f6fabd3554",
+            "session": "8d34eae81623cb3512d471f2efd8f29e2d96d9a0dffb4fe47c750062a67626c7",
+            "project": "843172c95c1277229c616b752669925ad2b80959800c1c639c666efddda214c9"
+          },
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": true
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "tool-call",
+            "tool-input-delta",
+            "tool-input-end",
+            "tool-input-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 373,
+            "inputTokenDetails": {
+              "noCacheTokens": 117,
+              "cacheReadTokens": 256
+            },
+            "outputTokens": 66,
+            "outputTokenDetails": {
+              "textTokens": 43,
+              "reasoningTokens": 23
+            },
+            "totalTokens": 439,
+            "reasoningTokens": 23,
+            "cachedInputTokens": 256
+          },
+          "reported_cost_usd": "0.000142184",
+          "verdict": "passed"
+        },
+        {
+          "name": "vision_data_url",
+          "http": 200,
+          "elapsed_s": 4.24,
+          "success": false,
+          "text": "",
+          "tool_calls": [],
+          "finish": [
+            "length"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 215,
+            "completion_tokens": 128,
+            "total_tokens": 343,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 128
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "762110d5870cc9c73ea36faeb9525ca75ff5ff7dac6bdfa8cb30b8e3c931bfef",
+          "system_type": "str",
+          "identity_hashes": {
+            "thread": "c4f7041e08576a8708dafecbd65a529e4c5b60fb0891eab6c2d66e9bd1492b7e",
+            "session": "9e07f4b8c1f0c1e19121e2167c05297f90ce9644b6408c3be5ba553a7c603b9c",
+            "project": "ab15f65197559afa22e1f1ba2d77992809fe250103f48dfd2faaa7b3955dc7f1"
+          },
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": true
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step"
+          ],
+          "upstream_usage": {
+            "inputTokens": 215,
+            "inputTokenDetails": {
+              "noCacheTokens": 215,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 128,
+            "outputTokenDetails": {
+              "textTokens": 0,
+              "reasoningTokens": 128
+            },
+            "totalTokens": 343,
+            "reasoningTokens": 128,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": "0.00026356",
+          "verdict": "test_output_budget_exhausted"
+        },
+        {
+          "name": "astra_access",
+          "http": 403,
+          "elapsed_s": 3.1,
+          "success": false,
+          "text": "",
+          "tool_calls": [],
+          "finish": [],
+          "done": false,
+          "usage": null,
+          "errors": [
+            "{\"message\": \"The requested model is not included in the upstream account's plan: MODEL_NOT_IN_PLAN: GPT-6 Astra available in Provider and above plans or extra on demand usage\", \"type\": \"plan_error\"}"
+          ],
+          "upstream_requests": 1,
+          "upstream_http": 403,
+          "body_sha256": "2f64584611ee02725f4898301bcd8f98d097b534cc052fd102c16d1f18a7b93a",
+          "system_type": "str",
+          "identity_hashes": {
+            "thread": "a05ae96f1824f76d355363fc7ca7327df46a3c4fb81ccbe1eba24d811f755009",
+            "session": "25d76ead6c6b747b38e052ffc2b7e6f63367ade306f82613e6da57a4e6290f0a",
+            "project": "3c2eed2792c84d835a25b6dd84bf4a36f01ac8af6a05ed0211cdb0318920d55c"
+          },
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": true
+          },
+          "upstream_event_types": [
+            "unknown"
+          ],
+          "upstream_usage": null,
+          "reported_cost_usd": null,
+          "verdict": "expected_rejection"
+        }
+      ],
+      "comparisons": {},
+      "implementation": "after live fixes"
+    },
+    "passthrough": {
+      "date": "2026-09-09",
+      "key_index": 1,
+      "suite": "basic",
+      "version": "1.51.3",
+      "auth_mode": "passthrough",
+      "fixed_seed_configured": false,
+      "synthetic_test_seed": false,
+      "transport": "actual Go proxy through local capture relay to real upstream",
+      "cases": [
+        {
+          "name": "plain",
+          "http": 200,
+          "elapsed_s": 4.34,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 94,
+            "completion_tokens": 13,
+            "total_tokens": 107,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 11
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "9d6a8702568533344693d9a1047cec495e9a8d9e65325cd3bb19f95a9b1f7322",
+          "system_type": "str",
+          "identity_hashes": {
+            "thread": "436d2fc6e44900ffee16ed7c9b8df750d302601d66ff4c944053be1fe888cd76",
+            "session": "946b42084a251970c3963e6b84a0154bfcb6d2785bdf7d7cf2afb5a902981f98",
+            "project": "08059c66115c67d23e8d08dbed58298ebcff0d780d73ef9c9ca2f69547e5d75c"
+          },
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": true
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 94,
+            "inputTokenDetails": {
+              "noCacheTokens": 94,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 13,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 11
+            },
+            "totalTokens": 107,
+            "reasoningTokens": 11,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": "0.00005852",
+          "verdict": "passed"
+        },
+        {
+          "name": "repeat",
+          "http": 200,
+          "elapsed_s": 2.28,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 94,
+            "completion_tokens": 12,
+            "total_tokens": 106,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 10
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "9d6a8702568533344693d9a1047cec495e9a8d9e65325cd3bb19f95a9b1f7322",
+          "system_type": "str",
+          "identity_hashes": {
+            "thread": "436d2fc6e44900ffee16ed7c9b8df750d302601d66ff4c944053be1fe888cd76",
+            "session": "946b42084a251970c3963e6b84a0154bfcb6d2785bdf7d7cf2afb5a902981f98",
+            "project": "08059c66115c67d23e8d08dbed58298ebcff0d780d73ef9c9ca2f69547e5d75c"
+          },
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": true
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 94,
+            "inputTokenDetails": {
+              "noCacheTokens": 94,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 12,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 10
+            },
+            "totalTokens": 106,
+            "reasoningTokens": 10,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": "0.0000572",
+          "verdict": "passed"
+        }
+      ],
+      "comparisons": {
+        "plain__repeat": {
+          "same_thread": true,
+          "same_session": true,
+          "same_project": true,
+          "same_body": true,
+          "fresh_trace": true
+        }
+      },
+      "implementation": "after live fixes"
+    },
+    "vision-budget": {
+      "date": "2026-09-09",
+      "key_index": 1,
+      "suite": "full",
+      "version": "1.51.3",
+      "auth_mode": "managed",
+      "fixed_seed_configured": false,
+      "synthetic_test_seed": false,
+      "transport": "actual Go proxy through local capture relay to real upstream",
+      "cases": [
+        {
+          "name": "vision_data_url",
+          "http": 200,
+          "elapsed_s": 5.38,
+          "success": true,
+          "text": "Red",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 215,
+            "completion_tokens": 246,
+            "total_tokens": 461,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 244
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "e9f7ff52ee9c0c13345465599ce24b75c5de497f8effccbb8f93757c4327c07e",
+          "system_type": "str",
+          "identity_hashes": {
+            "thread": "7ed10980e4537c2dfc3c3e80e43bf206ae6ab7c15c1cb11f7c0913458b696174",
+            "session": "f4f2bb5a2be519dfeee696adc68c5003b62c62ccb4242af7426329e8a2de35b5",
+            "project": "c3b148f4320a95b2cffdac637af0bfa25aed6e643b4454a292e4e780abea77d5"
+          },
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": true
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 215,
+            "inputTokenDetails": {
+              "noCacheTokens": 215,
+              "cacheReadTokens": 0
+            },
+            "outputTokens": 246,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 244
+            },
+            "totalTokens": 461,
+            "reasoningTokens": 244,
+            "cachedInputTokens": 0
+          },
+          "reported_cost_usd": "0.00041932",
+          "verdict": "passed"
+        }
+      ],
+      "comparisons": {},
+      "implementation": "after live fixes"
+    },
+    "cache-fixed": {
+      "date": "2026-09-09",
+      "key_index": 1,
+      "suite": "full",
+      "version": "1.51.3",
+      "auth_mode": "managed",
+      "fixed_seed_configured": false,
+      "synthetic_test_seed": false,
+      "transport": "actual Go proxy through local capture relay to real upstream",
+      "cases": [
+        {
+          "name": "cache_blocks",
+          "http": 200,
+          "elapsed_s": 2.44,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 1417,
+            "completion_tokens": 15,
+            "total_tokens": 1432,
+            "prompt_tokens_details": {
+              "cached_tokens": 1408
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 13
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "a89d619c65fb471e6c6557120397e07dce65bf8aea31e54893355ca264b91750",
+          "system_type": "list",
+          "identity_hashes": {
+            "thread": "e32be0ddc730611cdbc3a4edc0314d44c26eabd79adf217e105326ee1d072080",
+            "session": "20cb87d4c5a5a4bd1e936440e34013798ed63a09aece05ea3c88a9b4a15e19c2",
+            "project": "0b3022918419e148cbd52e4cca8874c74ef62320fd1272963f14971909ca60ef"
+          },
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": true
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 1417,
+            "inputTokenDetails": {
+              "noCacheTokens": 9,
+              "cacheReadTokens": 1408
+            },
+            "outputTokens": 15,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 13
+            },
+            "totalTokens": 1432,
+            "reasoningTokens": 13,
+            "cachedInputTokens": 1408
+          },
+          "reported_cost_usd": "0.000043472",
+          "verdict": "passed"
+        },
+        {
+          "name": "cache_repeat",
+          "http": 200,
+          "elapsed_s": 3.36,
+          "success": false,
+          "text": "",
+          "tool_calls": [],
+          "finish": [
+            "length"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 1417,
+            "completion_tokens": 96,
+            "total_tokens": 1513,
+            "prompt_tokens_details": {
+              "cached_tokens": 1408
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 96
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "a89d619c65fb471e6c6557120397e07dce65bf8aea31e54893355ca264b91750",
+          "system_type": "list",
+          "identity_hashes": {
+            "thread": "e32be0ddc730611cdbc3a4edc0314d44c26eabd79adf217e105326ee1d072080",
+            "session": "20cb87d4c5a5a4bd1e936440e34013798ed63a09aece05ea3c88a9b4a15e19c2",
+            "project": "0b3022918419e148cbd52e4cca8874c74ef62320fd1272963f14971909ca60ef"
+          },
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": true
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step"
+          ],
+          "upstream_usage": {
+            "inputTokens": 1417,
+            "inputTokenDetails": {
+              "noCacheTokens": 9,
+              "cacheReadTokens": 1408
+            },
+            "outputTokens": 96,
+            "outputTokenDetails": {
+              "textTokens": 0,
+              "reasoningTokens": 96
+            },
+            "totalTokens": 1513,
+            "reasoningTokens": 96,
+            "cachedInputTokens": 1408
+          },
+          "reported_cost_usd": "0.000150392",
+          "verdict": "test_output_budget_exhausted"
+        },
+        {
+          "name": "cache_off",
+          "http": 200,
+          "elapsed_s": 2.57,
+          "success": true,
+          "text": "OK",
+          "tool_calls": [],
+          "finish": [
+            "stop"
+          ],
+          "done": false,
+          "usage": {
+            "prompt_tokens": 1417,
+            "completion_tokens": 20,
+            "total_tokens": 1437,
+            "prompt_tokens_details": {
+              "cached_tokens": 1408
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 18
+            }
+          },
+          "errors": [],
+          "upstream_requests": 1,
+          "upstream_http": 200,
+          "body_sha256": "e1b7b559c2e7a2a507d07ad7e056d44341eee72d440a6fa0d451087cf68682b1",
+          "system_type": "list",
+          "identity_hashes": {
+            "thread": "e32be0ddc730611cdbc3a4edc0314d44c26eabd79adf217e105326ee1d072080",
+            "session": "20cb87d4c5a5a4bd1e936440e34013798ed63a09aece05ea3c88a9b4a15e19c2",
+            "project": "0b3022918419e148cbd52e4cca8874c74ef62320fd1272963f14971909ca60ef"
+          },
+          "header_checks": {
+            "upstream_key_used": true,
+            "proxy_key_not_forwarded": true,
+            "cli_version": true,
+            "user_agent": true,
+            "environment": true,
+            "traceparent": true,
+            "project_slug_matches_working_dir": true
+          },
+          "upstream_event_types": [
+            "finish",
+            "finish-step",
+            "provider-metadata",
+            "reasoning-delta",
+            "reasoning-end",
+            "reasoning-start",
+            "start",
+            "start-step",
+            "text-delta",
+            "text-end",
+            "text-start"
+          ],
+          "upstream_usage": {
+            "inputTokens": 1417,
+            "inputTokenDetails": {
+              "noCacheTokens": 9,
+              "cacheReadTokens": 1408
+            },
+            "outputTokens": 20,
+            "outputTokenDetails": {
+              "textTokens": 2,
+              "reasoningTokens": 18
+            },
+            "totalTokens": 1437,
+            "reasoningTokens": 18,
+            "cachedInputTokens": 1408
+          },
+          "reported_cost_usd": "0.000050072",
+          "verdict": "passed"
+        }
+      ],
+      "comparisons": {
+        "cache_blocks__cache_repeat": {
+          "same_thread": true,
+          "same_session": true,
+          "same_project": true,
+          "same_body": true,
+          "fresh_trace": true
+        },
+        "cache_blocks__cache_off": {
+          "same_thread": true,
+          "same_session": true,
+          "same_project": true,
+          "same_body": false,
+          "fresh_trace": true
+        }
+      },
+      "implementation": "after live fixes"
+    }
+  }
+}

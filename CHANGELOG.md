@@ -4,6 +4,56 @@ All notable changes to commandcode-proxy are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 versioning follows [SemVer](https://semver.org/).
 
+## [Unreleased]
+
+### Changed
+
+- Revalidated the gateway protocol against `command-code@1.51.3`; added
+  a versioned static analysis, package integrity/provenance, and a reproducible
+  bundle comparison script. Updated the offline CLI version fallback.
+- Added Qwen 3.8 Max 0902, LongCat 2.0, Gemini 3.8 Flash, Muse Spark 1.3
+  and Contributor, and GPT-6 Astra to the fallback catalog. The withdrawn
+  DeepSeek V4.1 Flash Beta remains excluded.
+
+### Added
+
+- Explicit system/developer text-block `cache_control: {type: "ephemeral"}`
+  preserves system sections on the upstream wire; ordinary prompts keep the
+  string form. Optional `prompt_cache: "off"` forwards the CLI cache-policy hint;
+  live DeepSeek requests can still report provider-side cache hits.
+- `USAGE_EXCEEDED` organization/model spend caps return 403
+  `spend_limit_error`, preserving the code and message without rotating or
+  circuit-breaking accounts.
+
+### Fixed
+
+- Missing or empty system/developer content now sends a single-space system
+  placeholder, preventing upstream default CLI prompt injection. Non-empty
+  prompts and explicit cache sections are preserved.
+- String and object stream errors are surfaced for both streaming and
+  non-streaming requests, including after partial output, instead of becoming
+  empty 429s or successful partial completions.
+- Nested cache/reasoning token details are recognized alongside legacy flat
+  counters; explicit nested zeros take precedence without double-counting.
+- Corrected obsolete README guidance about circuit-breaking upstream 5xx.
+- Live testing found `tool_choice: "none"` is rejected by the upstream wire
+  schema. It now sends an explicit empty tools list and omits tool_choice;
+  tool-result follow-ups without a name complete successfully.
+- Project slugs and `config.workingDir` now derive from the same stable Linux
+  path, replacing the inconsistent Windows-derived slug/Linux body pair.
+  Per-attempt request copies preserve caller data when pooled keys change.
+
+### Validation
+
+- Static npm bundle comparison, `go vet`, and full race regression tests.
+- Opt-in live tests with both configured accounts: ordinary/SSE requests,
+  conversation continuity, tools, cache sections, managed/passthrough auth,
+  and process restart identity. Redacted results are under `analysis/v1.51.3/`.
+- Confirmed that omitting system can inject the upstream CLI prompt (~7.6k
+  input tokens in this sample), and that an unseeded process restart changes
+  identity; a fixed test seed preserves it. Neither behavior was hidden by
+  changing the user's .env.
+
 ## [v0.1.5] - 2026-09-02
 
 ### Fixed
