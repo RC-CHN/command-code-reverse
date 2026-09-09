@@ -195,7 +195,8 @@ func ToWire(req *ChatRequest, threadID string, maxTokensClamp, defaultMaxTokens 
 
 // convertSystem uses the string wire form unless the caller explicitly
 // marks a system/developer text block for caching. Text remains identical
-// to convertMessages, including separators between system messages.
+// to convertMessages, including separators between system messages. Missing
+// or empty system content gets a space to suppress the upstream CLI default.
 func convertSystem(msgs []Message, fallback string) (any, error) {
 	var sections []commandcode.WireSystemPart
 	marked := false
@@ -229,7 +230,7 @@ func convertSystem(msgs []Message, fallback string) (any, error) {
 		return sections, nil
 	}
 	if fallback == "" {
-		return nil, nil
+		return " ", nil
 	}
 	return fallback, nil
 }
