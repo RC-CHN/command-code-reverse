@@ -18,6 +18,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"strconv"
 
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/commandcode"
 )
@@ -53,17 +54,18 @@ func (s *Store) SessionID(key, root string) string {
 	return s.uuid("session", key, root)
 }
 
-// ProjectSlug derives a deterministic fake project slug from the session ID
-// (shape-compatible with the real CLI's slugs).
-func (s *Store) ProjectSlug(key, root string) string {
+// ProjectPath derives a stable Linux workspace path, matching the proxy's
+// request environment. Headers and request config must describe this same path.
+func (s *Store) ProjectPath(key, root string) string {
 	sid := s.SessionID(key, root)
-	var n int
-	for _, c := range sid[:4] {
-		n = n*16 + int(c)
-	}
-	name := projectNames[n%len(projectNames)]
-	fakePath := fmt.Sprintf(`C:\Users\dev\projects\%s-%s`, name, sid[:4])
-	return commandcode.ProjectSlug(fakePath)
+	n, _ := strconv.ParseUint(sid[:4], 16, 16)
+	name := projectNames[n%uint64(len(projectNames))]
+	return fmt.Sprintf("/home/dev/projects/%s-%s", name, sid[:4])
+}
+
+// ProjectSlug uses the same workspace path sent in config.workingDir.
+func (s *Store) ProjectSlug(key, root string) string {
+	return commandcode.ProjectSlug(s.ProjectPath(key, root))
 }
 
 // uuid renders HMAC(secret, label\0key\0root) as a version-4-shaped UUID.

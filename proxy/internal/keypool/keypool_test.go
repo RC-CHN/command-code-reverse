@@ -16,14 +16,56 @@ type fakeClient struct {
 	// per-key behavior: key → error to return (nil = success)
 	failWith map[string]error
 	calls    []string
+	creds    []commandcode.Credentials
+	requests []commandcode.GenerateRequest
 }
 
 func (f *fakeClient) Generate(ctx context.Context, creds commandcode.Credentials, req *commandcode.GenerateRequest) (io.ReadCloser, error) {
 	f.calls = append(f.calls, creds.APIKey)
+	f.creds = append(f.creds, creds)
+	f.requests = append(f.requests, *req)
 	if err := f.failWith[creds.APIKey]; err != nil {
 		return nil, err
 	}
 	return io.NopCloser(strings.NewReader(`{"type":"start"}` + "\n")), nil
+}
+
+func TestProjectContextMatchesHeadersAcrossSpill(t *testing.T) {
+	fc := &fakeClient{failWith: map[string]error{"k1": &commandcode.APIError{Status: 429}}}
+	p := newTestPool(fc, "k1", "k2")
+	req := &commandcode.GenerateRequest{ThreadID: "stable-thread", Config: commandcode.RequestConfig{WorkingDir: "/original", Environment: "original"}}
+	meta := commandcode.CallMeta{Root: "root", TraceID: "0123456789abcdef0123456789abcdef"}
+	body, err := p.Generate(context.Background(), "", meta, req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_ = body.Close()
+	if len(fc.requests) != 2 {
+		t.Fatalf("attempts = %d", len(fc.requests))
+	}
+	for i, wire := range fc.requests {
+		if wire.Config.Environment != "linux" || !strings.HasPrefix(wire.Config.WorkingDir, "/home/dev/projects/") || commandcode.ProjectSlug(wire.Config.WorkingDir) != fc.creds[i].ProjectSlug {
+			t.Fatalf("inconsistent project at attempt %d", i)
+		}
+		if wire.ThreadID != req.ThreadID || fc.creds[i].TraceID != meta.TraceID {
+			t.Fatal("spill changed thread/trace")
+		}
+	}
+	if fc.creds[0].SessionID == fc.creds[1].SessionID {
+		t.Fatal("accounts share session identity")
+	}
+	if req.Config.WorkingDir != "/original" || req.Config.Environment != "original" {
+		t.Fatal("mutated shared request")
+	}
+	fc.failWith = nil
+	body, err = p.Generate(context.Background(), "passthrough", meta, req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_ = body.Close()
+	if fc.creds[2].ProjectSlug != commandcode.ProjectSlug(fc.requests[2].Config.WorkingDir) {
+		t.Fatal("passthrough context mismatch")
+	}
 }
 
 func newTestPool(fc *fakeClient, keys ...string) *Pool {

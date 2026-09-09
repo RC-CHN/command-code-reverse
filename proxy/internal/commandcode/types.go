@@ -38,7 +38,7 @@ type RequestConfig struct {
 type Params struct {
 	Model           string        `json:"model"`
 	Messages        []WireMessage `json:"messages"`
-	Tools           []WireTool    `json:"tools,omitempty"`
+	Tools           []WireTool    `json:"tools"`            // explicit [] means no tools
 	System          any           `json:"system,omitempty"` // string or []WireSystemPart (verified in CLI 1.51.3)
 	MaxTokens       int           `json:"max_tokens"`
 	Stream          bool          `json:"stream"` // always true upstream
@@ -97,7 +97,8 @@ type WireTool struct {
 	InputSchema any    `json:"input_schema"`
 }
 
-// WireToolChoice object form: {"type":"auto"|"any"|"none"} or {"type":"tool","name":...}.
+// WireToolChoice object form: {"type":"auto"|"any"} or {"type":"tool","name":...}.
+// Downstream "none" is represented by an empty tools array, not this field.
 type WireToolChoice struct {
 	Type string `json:"type"`
 	Name string `json:"name,omitempty"`

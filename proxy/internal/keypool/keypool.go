@@ -93,7 +93,7 @@ func New(client GenerateClient, sessions *session.Store, keys []string, policy B
 func (p *Pool) Generate(ctx context.Context, hint string, meta commandcode.CallMeta, req *commandcode.GenerateRequest) (io.ReadCloser, error) {
 	if hint != "" {
 		// Passthrough mode: downstream supplied its own key; no pooling.
-		return p.client.Generate(ctx, p.creds(hint, meta), req)
+		return p.generate(ctx, hint, meta, req)
 	}
 
 	attempted := make(map[*keyState]bool, len(p.keys))
@@ -108,7 +108,7 @@ func (p *Pool) Generate(ctx context.Context, hint string, meta commandcode.CallM
 		}
 		attempted[ks] = true
 
-		body, err := p.client.Generate(ctx, p.creds(ks.key, meta), req)
+		body, err := p.generate(ctx, ks.key, meta, req)
 		if err == nil {
 			p.reportSuccess(ks)
 			return body, nil
@@ -121,6 +121,15 @@ func (p *Pool) Generate(ctx context.Context, hint string, meta commandcode.CallM
 		slog.Warn("keypool: key failed, spilling to next",
 			"keyPrefix", prefix(ks.key), "error", err)
 	}
+}
+
+// generate aligns account-scoped project headers with the body without
+// mutating the caller's request (which can be shared by retries/callers).
+func (p *Pool) generate(ctx context.Context, key string, meta commandcode.CallMeta, req *commandcode.GenerateRequest) (io.ReadCloser, error) {
+	wire := *req
+	wire.Config.WorkingDir = p.sessions.ProjectPath(key, meta.Root)
+	wire.Config.Environment = "linux"
+	return p.client.Generate(ctx, p.creds(key, meta), &wire)
 }
 
 // acquireCandidate returns the first usable, not-yet-attempted key. Once an

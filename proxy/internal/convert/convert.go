@@ -149,6 +149,7 @@ func ToWire(req *ChatRequest, threadID string, maxTokensClamp, defaultMaxTokens 
 		Params: commandcode.Params{
 			Model:           req.Model,
 			Messages:        messages,
+			Tools:           []commandcode.WireTool{},
 			System:          wireSystem,
 			MaxTokens:       maxTokens,
 			Stream:          true, // upstream is always streamed
@@ -180,7 +181,13 @@ func ToWire(req *ChatRequest, threadID string, maxTokensClamp, defaultMaxTokens 
 	if tc, err := convertToolChoice(req.ToolChoice); err != nil {
 		return nil, err
 	} else if tc != nil {
-		out.Params.ToolChoice = tc
+		if choice, ok := tc.(commandcode.WireToolChoice); ok && choice.Type == "none" {
+			// The live schema accepts auto/any/tool, but rejects none.
+			// Removing offered tools enforces OpenAI's no-tool choice.
+			out.Params.Tools = []commandcode.WireTool{}
+		} else {
+			out.Params.ToolChoice = tc
+		}
 	}
 
 	return out, nil

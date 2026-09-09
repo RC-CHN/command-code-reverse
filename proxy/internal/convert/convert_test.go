@@ -142,6 +142,27 @@ func TestToWireToolsAndChoice(t *testing.T) {
 	}
 }
 
+func TestToolChoiceNoneSendsEmptyTools(t *testing.T) {
+	var req ChatRequest
+	if err := json.Unmarshal([]byte(`{"model":"m","tool_choice":"none","tools":[{"type":"function","function":{"name":"echo","parameters":{"type":"object"}}}],"messages":[{"role":"user","content":"hi"}]}`), &req); err != nil {
+		t.Fatal(err)
+	}
+	wire, err := ToWire(&req, "", 200000, 64000)
+	if err != nil {
+		t.Fatal(err)
+	}
+	raw, err := json.Marshal(wire)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(raw), `"tools":[]`) || strings.Contains(string(raw), `"tool_choice"`) || strings.Contains(string(raw), `"name":"echo"`) {
+		t.Fatalf("invalid no-tool wire: %s", raw)
+	}
+	if len(req.Tools) != 1 {
+		t.Fatal("mutated caller tools")
+	}
+}
+
 func TestToWireToolChoiceFunction(t *testing.T) {
 	req := &ChatRequest{
 		Model:      "m",
