@@ -194,6 +194,21 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 			return
 		}
 
+		if ae := ev.APIError(); ae != nil {
+			s.recordFailure(req, req.Stream, "upstream_error")
+			if !started {
+				writeUpstreamError(w, ae)
+			} else {
+				_, body, _ := classifyUpstreamError(ae)
+				b, _ := json.Marshal(openAIError{Error: body})
+				_, _ = io.WriteString(w, "data: "+string(b)+"\n\n"+stream.DoneSSE)
+				if flusher != nil {
+					flusher.Flush()
+				}
+			}
+			return
+		}
+
 		switch ev.Type {
 		case "text-delta":
 			if ev.Text == "" {
@@ -300,6 +315,12 @@ func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.
 			slog.Warn("terminal marker in stream", "marker", te.Message, "model", req.Model)
 			s.recordFailure(req, false, "terminal_marker")
 			writeError(w, status, typ, msg, 0)
+			return
+		}
+
+		if ae := ev.APIError(); ae != nil {
+			s.recordFailure(req, req.Stream, "upstream_error")
+			writeUpstreamError(w, ae)
 			return
 		}
 

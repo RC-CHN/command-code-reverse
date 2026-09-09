@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -11,6 +12,64 @@ import (
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/commandcode"
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/config"
 )
+
+func TestExplicitStreamFailures(t *testing.T) {
+	for _, tc := range []struct {
+		name, line, typ string
+		status          int
+	}{
+		{"string", `{"type":"error","error":"service unavailable"}`, "server_error", 502},
+		{"object", `{"type":"error","error":{"message":"service unavailable","statusCode":503}}`, "server_error", 503},
+		{"spend cap", `{"type":"error","error":{"message":"Org cap reached","code":"USAGE_EXCEEDED","statusCode":403}}`, "spend_limit_error", 403},
+		{"billing", `{"type":"error","error":"premium_credits_exhausted"}`, "billing_error", 402},
+	} {
+		for _, streamed := range []bool{false, true} {
+			for _, partial := range []bool{false, true} {
+				t.Run(fmt.Sprintf("%s/stream=%t/partial=%t", tc.name, streamed, partial), func(t *testing.T) {
+					ndjson := tc.line + "\n"
+					if partial {
+						ndjson = `{"type":"text-delta","text":"partial"}` + "\n" + ndjson
+					}
+					// A later finish must never turn an explicit failure into success.
+					ndjson += `{"type":"finish","finishReason":"stop","totalUsage":{"inputTokens":5,"outputTokens":2}}` + "\n"
+					h := New(testConfig(), Deps{Upstream: &stubUpstream{ndjson: ndjson}}, nil)
+					rec := httptest.NewRecorder()
+					h.ServeHTTP(rec, authedReq(t, "POST", "/v1/chat/completions", fmt.Sprintf(`{"model":"m","stream":%t,"messages":[{"role":"user","content":"hi"}]}`, streamed)))
+					wantStatus := tc.status
+					if streamed && partial {
+						wantStatus = 200
+					}
+					if rec.Code != wantStatus {
+						t.Fatalf("status=%d body=%s", rec.Code, rec.Body.String())
+					}
+					body := rec.Body.String()
+					if !strings.Contains(body, `"type":"`+tc.typ+`"`) || strings.Contains(body, "Empty response") || strings.Contains(body, `"finish_reason":"stop"`) {
+						t.Fatalf("failure lost: %s", body)
+					}
+					if streamed && partial && !strings.HasSuffix(body, "data: [DONE]\n\n") {
+						t.Fatalf("missing terminal frame: %s", body)
+					}
+					if tc.name == "spend cap" && (!strings.Contains(body, `"code":"USAGE_EXCEEDED"`) || !strings.Contains(body, "Org cap reached")) {
+						t.Fatalf("spend cap detail lost: %s", body)
+					}
+				})
+			}
+		}
+	}
+}
+
+func TestNestedUsageReachesChatResponse(t *testing.T) {
+	for _, streamed := range []bool{false, true} {
+		h := New(testConfig(), Deps{Upstream: &stubUpstream{ndjson: `{"type":"text-delta","text":"ok"}
+{"type":"finish","finishReason":"stop","totalUsage":{"inputTokens":100,"outputTokens":20,"inputTokenDetails":{"cacheReadTokens":80},"outputTokenDetails":{"reasoningTokens":5}}}
+`}}, nil)
+		rec := httptest.NewRecorder()
+		h.ServeHTTP(rec, authedReq(t, "POST", "/v1/chat/completions", fmt.Sprintf(`{"model":"m","stream":%t,"messages":[{"role":"user","content":"hi"}]}`, streamed)))
+		if rec.Code != 200 || !strings.Contains(rec.Body.String(), `"cached_tokens":80`) || !strings.Contains(rec.Body.String(), `"reasoning_tokens":5`) {
+			t.Fatalf("status=%d body=%s", rec.Code, rec.Body.String())
+		}
+	}
+}
 
 // stubUpstream replays canned NDJSON or a canned error.
 type stubUpstream struct {
@@ -222,6 +281,12 @@ func TestFallbackModelsMatchCurrentCatalog(t *testing.T) {
 		"z-ai/glm-5.3-flash",
 		"Qwen/Qwen3.8-Flash",
 		"tencent/hy4-preview",
+		"Qwen/Qwen3.8-Max-0902",
+		"google/gemini-3.8-flash",
+		"gpt-6-astra",
+		"meituan/LongCat-2.0:free",
+		"meta/muse-spark-1.3",
+		"meta/muse-spark-1.3-contributor",
 	} {
 		model, ok := byID[id]
 		if !ok {
@@ -235,6 +300,7 @@ func TestFallbackModelsMatchCurrentCatalog(t *testing.T) {
 		"minimax/minimax-m3-free",
 		"minimax/minimax-m2.7-free",
 		"stealth/ox-alpha",
+		"deepseek/deepseek-v4.1-flash-beta",
 	} {
 		if _, exists := byID[retired]; exists {
 			t.Errorf("retired model %q remains in fallback catalog", retired)

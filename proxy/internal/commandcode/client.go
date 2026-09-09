@@ -14,7 +14,7 @@ import (
 
 // Event type markers that can appear inside the NDJSON stream and signal
 // terminal (billing/plan) failures. Detected from command-code@1.32.2 and
-// revalidated against command-code@1.40.1.
+// revalidated against command-code@1.51.3.
 const (
 	MarkerPremiumCreditsExhausted = "premium_credits_exhausted"
 	MarkerModelNotInPlan          = "model_not_in_plan"
@@ -40,6 +40,10 @@ func (e *APIError) IsInsufficientCredits() bool {
 
 // IsRateLimited reports 429.
 func (e *APIError) IsRateLimited() bool { return e.Status == 429 }
+
+// IsSpendCapExceeded identifies the organization/model spend cap added in
+// CLI 1.49.1. It is a policy limit, not a rejected credential.
+func (e *APIError) IsSpendCapExceeded() bool { return e.Code == "USAGE_EXCEEDED" }
 
 // IsModelNotInPlan reports the 403 + "MODEL_NOT_IN_PLAN" signature: the key
 // itself is valid, only the requested model is above the account's tier.

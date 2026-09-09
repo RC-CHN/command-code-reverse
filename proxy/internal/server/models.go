@@ -16,8 +16,16 @@ const modelCatalogTTL = 5 * time.Minute
 
 // fallbackModels is the static catalog used until the first successful
 // upstream fetch (or when the upstream is unreachable). Model IDs follow
-// the upstream "vendor/name" convention (standard-tier, goat-compatible).
+// the CLI gateway catalog, including canonical IDs without a vendor prefix.
+// Listing a model does not guarantee access under the caller's plan.
+// Refreshed against command-code@1.51.3; dynamic upstream data takes priority.
 var fallbackModels = []commandcode.ModelInfo{
+	{ID: "Qwen/Qwen3.8-Max-0902", Name: "Qwen 3.8 Max 0902", ContextLength: 1_000_000},
+	{ID: "google/gemini-3.8-flash", Name: "Gemini 3.8 Flash", ContextLength: 1_000_000},
+	{ID: "gpt-6-astra", Name: "GPT-6 Astra", ContextLength: 1_050_000},
+	{ID: "meituan/LongCat-2.0:free", Name: "LongCat 2.0", ContextLength: 1_048_576},
+	{ID: "meta/muse-spark-1.3", Name: "Muse Spark 1.3", ContextLength: 1_048_576},
+	{ID: "meta/muse-spark-1.3-contributor", Name: "Muse Spark 1.3 Contributor", ContextLength: 1_048_576},
 	{ID: "deepseek/deepseek-v4-pro", Name: "DeepSeek V4 Pro (latest)", ContextLength: 1_000_000},
 	{ID: "deepseek/deepseek-v4-flash", Name: "DeepSeek V4 Flash (latest)", ContextLength: 1_000_000},
 	{ID: "deepseek/deepseek-v4-flash-vision-exp", Name: "DeepSeek V4 Flash Vision (exp)", ContextLength: 1_000_000},

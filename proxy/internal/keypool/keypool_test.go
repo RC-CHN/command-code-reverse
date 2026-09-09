@@ -30,6 +30,27 @@ func newTestPool(fc *fakeClient, keys ...string) *Pool {
 	return New(fc, session.NewStore("test-secret"), keys, BreakerPolicy{})
 }
 
+func TestSpendCapDoesNotRotateOrBreakKey(t *testing.T) {
+	for _, status := range []int{400, 403, 429} {
+		capErr := &commandcode.APIError{Status: status, Code: "USAGE_EXCEEDED", Message: "Org model spend cap reached"}
+		fc := &fakeClient{failWith: map[string]error{"k1": capErr}}
+		p := newTestPool(fc, "k1", "k2")
+		_, err := p.Generate(context.Background(), "", commandcode.CallMeta{}, &commandcode.GenerateRequest{})
+		if !errors.Is(err, capErr) || len(fc.calls) != 1 {
+			t.Fatalf("status=%d err=%v calls=%v", status, err, fc.calls)
+		}
+		fc.failWith = nil
+		body, err := p.Generate(context.Background(), "", commandcode.CallMeta{}, &commandcode.GenerateRequest{})
+		if err != nil {
+			t.Fatal(err)
+		}
+		_ = body.Close()
+		if fc.calls[1] != "k1" {
+			t.Fatalf("key was broken: %v", fc.calls)
+		}
+	}
+}
+
 func TestModelNotInPlanKeepsKeyHealthy(t *testing.T) {
 	planErr := &commandcode.APIError{
 		Status:  403,

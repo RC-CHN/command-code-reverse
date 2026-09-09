@@ -183,6 +183,11 @@ func (p *Pool) reportFailure(ks *keyState, err error) (rotate bool) {
 	case errors.Is(err, context.Canceled):
 		p.releaseProbe(ks)
 		return false
+	case errors.As(err, &ae) && ae.IsSpendCapExceeded():
+		// Caps may be organization-wide or model-specific. Preserve the
+		// key and surface the policy limit without rotating accounts.
+		p.close(ks)
+		return false
 	case errors.As(err, &ae) && ae.IsInsufficientCredits():
 		p.open(ks, p.policy.CreditsTTL, "insufficient_credits")
 	case errors.As(err, &ae) && ae.IsRateLimited():

@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/commandcode"
@@ -35,7 +36,8 @@ type Event struct {
 	ProviderMetadata *ProviderMetadata `json:"providerMetadata,omitempty"`
 
 	// error
-	Error *StreamError `json:"error,omitempty"`
+	Error   *StreamError `json:"error,omitempty"`
+	Message string       `json:"message,omitempty"`
 
 	// raw line, retained for unknown-event logging
 	Raw json.RawMessage `json:"-"`
@@ -52,10 +54,93 @@ type Usage struct {
 	ReasoningTokens   int `json:"reasoningTokens"`
 }
 
+// UnmarshalJSON accepts both legacy flat counters and the nested AI SDK
+// usage read by CLI 1.51.3. An explicit nested zero overrides a flat value.
+func (u *Usage) UnmarshalJSON(data []byte) error {
+	type plain Usage
+	var wire struct {
+		plain
+		InputTokenDetails *struct {
+			CacheReadTokens *int `json:"cacheReadTokens"`
+		} `json:"inputTokenDetails"`
+		OutputTokenDetails *struct {
+			ReasoningTokens *int `json:"reasoningTokens"`
+		} `json:"outputTokenDetails"`
+	}
+	if err := json.Unmarshal(data, &wire); err != nil {
+		return err
+	}
+	*u = Usage(wire.plain)
+	if wire.InputTokenDetails != nil && wire.InputTokenDetails.CacheReadTokens != nil {
+		u.CachedInputTokens = *wire.InputTokenDetails.CacheReadTokens
+	}
+	if wire.OutputTokenDetails != nil && wire.OutputTokenDetails.ReasoningTokens != nil {
+		u.ReasoningTokens = *wire.OutputTokenDetails.ReasoningTokens
+	}
+	return nil
+}
+
 // StreamError is the payload of an "error" event.
 type StreamError struct {
 	Message    string `json:"message"`
 	StatusCode int    `json:"statusCode,omitempty"`
+	Code       string `json:"code,omitempty"`
+}
+
+// UnmarshalJSON mirrors readStreamErrorEvent: error can be a string or object.
+func (e *StreamError) UnmarshalJSON(data []byte) error {
+	var message string
+	if json.Unmarshal(data, &message) == nil {
+		*e = StreamError{Message: message}
+		return nil
+	}
+	type plain StreamError
+	return json.Unmarshal(data, (*plain)(e))
+}
+
+// APIError extracts stream failures, including JSON envelopes embedded in
+// the error message. Unknown failures become 502 rather than empty success.
+func (e *Event) APIError() *commandcode.APIError {
+	if e.Type != "error" {
+		return nil
+	}
+	out := &commandcode.APIError{Status: 502, Message: e.Message}
+	if e.Error != nil {
+		out.Code = e.Error.Code
+		if e.Error.Message != "" {
+			out.Message = e.Error.Message
+		}
+		if e.Error.StatusCode >= 400 && e.Error.StatusCode <= 599 {
+			out.Status = e.Error.StatusCode
+		}
+	}
+	if i := strings.IndexByte(out.Message, '{'); i >= 0 {
+		var envelope struct {
+			Error struct {
+				Code    string `json:"code"`
+				Message string `json:"message"`
+				Status  int    `json:"status"`
+			} `json:"error"`
+		}
+		if json.Unmarshal([]byte(out.Message[i:]), &envelope) == nil && envelope.Error.Message != "" {
+			prefix := strings.Trim(strings.TrimSpace(out.Message[:i]), "<>")
+			status, _ := strconv.Atoi(prefix)
+			if envelope.Error.Status >= 400 && envelope.Error.Status <= 599 {
+				status = envelope.Error.Status
+			}
+			if status >= 400 && status <= 599 {
+				out.Status = status
+			}
+			if envelope.Error.Code != "" {
+				out.Code = envelope.Error.Code
+			}
+			out.Message = envelope.Error.Message
+		}
+	}
+	if out.Message == "" {
+		out.Message = "Upstream stream error"
+	}
+	return out
 }
 
 // ProviderMetadata carries the gateway cost/routing info leaked in

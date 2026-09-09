@@ -2,7 +2,7 @@
 // API and a minimal HTTP client for POST /alpha/generate.
 //
 // Protocol reference (reverse engineered from command-code@1.32.2 and
-// revalidated against command-code@1.40.1):
+// revalidated against command-code@1.51.3):
 //   - Request:  POST {base}/alpha/generate, JSON body, NDJSON stream response.
 //   - Response: newline-delimited JSON events (NOT SSE).
 package commandcode
@@ -14,8 +14,9 @@ type GenerateRequest struct {
 	Taste          any           `json:"taste"`  // always null
 	Skills         any           `json:"skills"` // always null
 	PermissionMode string        `json:"permissionMode"`
-	Mode           string        `json:"mode"`               // "agent" for chat
-	ThreadID       string        `json:"threadId,omitempty"` // only when a valid UUID
+	Mode           string        `json:"mode"`                  // "agent" for chat
+	ThreadID       string        `json:"threadId,omitempty"`    // only when a valid UUID
+	PromptCache    string        `json:"promptCache,omitempty"` // "off" hint; provider cache hits can still occur
 	Params         Params        `json:"params"`
 }
 
@@ -38,12 +39,24 @@ type Params struct {
 	Model           string        `json:"model"`
 	Messages        []WireMessage `json:"messages"`
 	Tools           []WireTool    `json:"tools,omitempty"`
-	System          string        `json:"system,omitempty"`
+	System          any           `json:"system,omitempty"` // string or []WireSystemPart (verified in CLI 1.51.3)
 	MaxTokens       int           `json:"max_tokens"`
 	Stream          bool          `json:"stream"` // always true upstream
 	Temperature     *float64      `json:"temperature,omitempty"`
 	ReasoningEffort string        `json:"reasoning_effort,omitempty"`
 	ToolChoice      any           `json:"tool_choice,omitempty"`
+}
+
+// WireSystemPart preserves explicit cache boundaries in a system prompt.
+type WireSystemPart struct {
+	Type         string        `json:"type"`
+	Text         string        `json:"text"`
+	CacheControl *CacheControl `json:"cache_control,omitempty"`
+}
+
+// CacheControl is the cache marker emitted by the CLI's toWireSystem.
+type CacheControl struct {
+	Type string `json:"type"`
 }
 
 // WireMessage is a message in upstream format. Role is "user" | "assistant" | "tool".

@@ -26,6 +26,7 @@ type ChatRequest struct {
 	ReasoningEffort string          `json:"reasoning_effort,omitempty"`
 	Tools           []Tool          `json:"tools,omitempty"`
 	ToolChoice      json.RawMessage `json:"tool_choice,omitempty"`
+	PromptCache     string          `json:"prompt_cache,omitempty"` // extension: "off"
 }
 
 // Message is an OpenAI chat message. Content may be a string or an array
@@ -60,9 +61,10 @@ type Tool struct {
 
 // ContentPart is one element of an OpenAI array-form content field.
 type ContentPart struct {
-	Type     string `json:"type"`
-	Text     string `json:"text,omitempty"`
-	ImageURL *struct {
+	Type         string                    `json:"type"`
+	Text         string                    `json:"text,omitempty"`
+	CacheControl *commandcode.CacheControl `json:"cache_control,omitempty"`
+	ImageURL     *struct {
 		URL string `json:"url"`
 	} `json:"image_url,omitempty"`
 }
@@ -107,8 +109,15 @@ func ToWire(req *ChatRequest, threadID string, maxTokensClamp, defaultMaxTokens 
 	if req.Model == "" {
 		return nil, fmt.Errorf("convert: model is required")
 	}
+	if req.PromptCache != "" && req.PromptCache != "off" {
+		return nil, fmt.Errorf("convert: prompt_cache must be empty or off")
+	}
 
 	system, messages, err := convertMessages(req.Messages)
+	if err != nil {
+		return nil, err
+	}
+	wireSystem, err := convertSystem(req.Messages, system)
 	if err != nil {
 		return nil, err
 	}
@@ -136,10 +145,11 @@ func ToWire(req *ChatRequest, threadID string, maxTokensClamp, defaultMaxTokens 
 		PermissionMode: "standard", // wire value; proxy never executes tools server-side
 		Mode:           "agent",
 		ThreadID:       threadID, // caller guarantees valid UUID or empty
+		PromptCache:    req.PromptCache,
 		Params: commandcode.Params{
 			Model:           req.Model,
 			Messages:        messages,
-			System:          system,
+			System:          wireSystem,
 			MaxTokens:       maxTokens,
 			Stream:          true, // upstream is always streamed
 			Temperature:     req.Temperature,
@@ -174,6 +184,47 @@ func ToWire(req *ChatRequest, threadID string, maxTokensClamp, defaultMaxTokens 
 	}
 
 	return out, nil
+}
+
+// convertSystem uses the string wire form unless the caller explicitly
+// marks a system/developer text block for caching. Text remains identical
+// to convertMessages, including separators between system messages.
+func convertSystem(msgs []Message, fallback string) (any, error) {
+	var sections []commandcode.WireSystemPart
+	marked := false
+	for _, m := range msgs {
+		if m.Role != "system" && m.Role != "developer" {
+			continue
+		}
+		var parts []commandcode.WireSystemPart
+		if raw := m.ContentParts(); raw != nil {
+			for _, p := range raw {
+				if p.CacheControl != nil && (p.Type != "text" || p.CacheControl.Type != "ephemeral") {
+					return nil, fmt.Errorf("convert: system cache_control requires a text block and type ephemeral")
+				}
+				if p.Type == "text" {
+					parts = append(parts, commandcode.WireSystemPart{Type: "text", Text: p.Text, CacheControl: p.CacheControl})
+					marked = marked || p.CacheControl != nil
+				}
+			}
+		} else if text := m.ContentText(); text != "" {
+			parts = append(parts, commandcode.WireSystemPart{Type: "text", Text: text})
+		}
+		if m.ContentText() == "" {
+			continue
+		}
+		if len(sections) > 0 {
+			sections[len(sections)-1].Text += "\n"
+		}
+		sections = append(sections, parts...)
+	}
+	if marked && len(sections) > 0 {
+		return sections, nil
+	}
+	if fallback == "" {
+		return nil, nil
+	}
+	return fallback, nil
 }
 
 // ConversationRoot returns a stable fingerprint of a conversation:

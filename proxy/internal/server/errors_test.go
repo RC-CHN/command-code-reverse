@@ -35,6 +35,15 @@ func TestWriteUpstreamErrorPreservesServerStatus(t *testing.T) {
 	assertErrorBody(t, rec, "server_error", "")
 }
 
+func TestWriteUpstreamSpendCap(t *testing.T) {
+	rec := httptest.NewRecorder()
+	writeUpstreamError(rec, &commandcode.APIError{Status: 403, Code: "USAGE_EXCEEDED", Message: "Org model spend cap reached"})
+	if rec.Code != 403 || rec.Header().Get("Retry-After") != "" {
+		t.Fatalf("status=%d headers=%v", rec.Code, rec.Header())
+	}
+	assertErrorBody(t, rec, "spend_limit_error", "USAGE_EXCEEDED")
+}
+
 func TestWriteUpstreamErrorTransportFailure(t *testing.T) {
 	rec := httptest.NewRecorder()
 	writeUpstreamError(rec, errors.New("connection reset"))
