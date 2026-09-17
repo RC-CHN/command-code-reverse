@@ -265,7 +265,8 @@ func TestExpiredBreakerAllowsSingleHalfOpenProbe(t *testing.T) {
 	fc := &fakeClient{}
 	now := time.Now()
 	p := New(fc, session.NewStore("test-secret"), []string{"k1"}, BreakerPolicy{Now: func() time.Time { return now }})
-	p.open(p.keys[0], time.Minute, "test")
+	initial, _ := p.acquireCandidate(nil)
+	p.open(initial, time.Minute, "test")
 	now = now.Add(time.Minute)
 
 	probe, unavailable := p.acquireCandidate(nil)
@@ -279,7 +280,7 @@ func TestExpiredBreakerAllowsSingleHalfOpenProbe(t *testing.T) {
 
 	p.reportSuccess(probe)
 	next, unavailable := p.acquireCandidate(nil)
-	if next != probe || unavailable != nil || next.probing {
+	if next == nil || next.state != probe.state || unavailable != nil || next.state.probing {
 		t.Fatalf("acquire after successful probe = (%v, %v)", next, unavailable)
 	}
 }
@@ -293,19 +294,5 @@ func TestPassthroughBypassesPool(t *testing.T) {
 	}
 	if fc.calls[0] != "downstream-key" {
 		t.Fatalf("calls = %v", fc.calls)
-	}
-}
-
-func TestReportTerminalBreaksKey(t *testing.T) {
-	fc := &fakeClient{}
-	p := newTestPool(fc, "k1", "k2")
-
-	p.ReportTerminal("", commandcode.MarkerPremiumCreditsExhausted)
-	snap := p.Snapshot()
-	if !snap[0]["broken"].(bool) {
-		t.Fatal("first key should be broken after terminal marker")
-	}
-	if snap[1]["broken"].(bool) {
-		t.Fatal("second key should stay healthy")
 	}
 }

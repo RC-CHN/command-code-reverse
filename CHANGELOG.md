@@ -13,12 +13,33 @@ versioning follows [SemVer](https://semver.org/).
   surfacing transport errors, including when the last line has no newline.
 - Report oversized chat request bodies as HTTP 413 with the configured byte
   limit and `MAX_BODY_BYTES` guidance instead of a generic invalid-JSON 400.
+- Bind pooled request outcomes to the breaker generation that admitted them.
+  Late responses cannot clear a newly opened breaker, release another
+  request's half-open probe, or break a recovered key. Canceled/deadline-expired
+  probes release their slot without declaring recovery; canceled requests
+  stop before attempting another account.
+- Move model/readiness network calls outside cache locks. Concurrent cold
+  loads share one bounded fetch, while callers can cancel their own wait.
+  Readiness continues to require a fresh probe when its cache expires.
+- Serve the last model catalog during refresh and back off for 30 seconds
+  after failed/empty fetches. Passthrough credentials use separate caches,
+  capped at 128 entries with idle eviction and static fallback at capacity.
+- Remove an unused terminal-marker hook that guessed which pooled account
+  served a stream and could select the wrong account under concurrency.
 
 ### Changed
 
 - Raise the default incoming request limit from 10 MiB to 64 MiB for base64
   image conversations. `MAX_BODY_BYTES` continues to override it at startup;
   explicit values in existing deployments remain in effect.
+
+### Performance
+
+- Stop retaining unused full text/reasoning in SSE relays; use builders for
+  non-streaming aggregation. A local 64 KiB relay benchmark reduced allocated
+  bytes per request by about 90% (SSE) and 95% (non-streaming) versus v0.1.6.
+  Reproduction details and concurrency coverage are in
+  `analysis/concurrency-review.md`.
 
 ## [v0.1.6] - 2026-09-09
 

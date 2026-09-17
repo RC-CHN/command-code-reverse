@@ -45,9 +45,17 @@ func (p *BreakerPolicy) withDefaults() BreakerPolicy {
 }
 
 type keyState struct {
-	key       string
-	openUntil time.Time // breaker open until this instant
-	probing   bool      // one half-open probe is already in flight
+	key        string
+	openUntil  time.Time // breaker open until this instant
+	probing    bool      // one half-open probe is already in flight
+	generation uint64    // invalidates results from requests admitted before a transition
+}
+
+// keyLease ties a request outcome to the breaker state that admitted it.
+// A late response from an older generation cannot undo a newer decision.
+type keyLease struct {
+	state      *keyState
+	generation uint64
 }
 
 // UnavailableError means every pooled key is either circuit-open or already
@@ -99,6 +107,9 @@ func (p *Pool) Generate(ctx context.Context, hint string, meta commandcode.CallM
 	attempted := make(map[*keyState]bool, len(p.keys))
 	var lastErr error
 	for {
+		if err := ctx.Err(); err != nil {
+			return nil, err
+		}
 		ks, unavailable := p.acquireCandidate(attempted)
 		if ks == nil {
 			if lastErr != nil {
@@ -106,9 +117,9 @@ func (p *Pool) Generate(ctx context.Context, hint string, meta commandcode.CallM
 			}
 			return nil, unavailable
 		}
-		attempted[ks] = true
+		attempted[ks.state] = true
 
-		body, err := p.generate(ctx, ks.key, meta, req)
+		body, err := p.generate(ctx, ks.state.key, meta, req)
 		if err == nil {
 			p.reportSuccess(ks)
 			return body, nil
@@ -119,7 +130,7 @@ func (p *Pool) Generate(ctx context.Context, hint string, meta commandcode.CallM
 			return nil, lastErr
 		}
 		slog.Warn("keypool: key failed, spilling to next",
-			"keyPrefix", prefix(ks.key), "error", err)
+			"keyPrefix", prefix(ks.state.key), "error", err)
 	}
 }
 
@@ -135,7 +146,7 @@ func (p *Pool) generate(ctx context.Context, key string, meta commandcode.CallMe
 // acquireCandidate returns the first usable, not-yet-attempted key. Once an
 // open breaker expires, exactly one request is admitted as its half-open
 // probe; concurrent requests skip that key until the probe completes.
-func (p *Pool) acquireCandidate(attempted map[*keyState]bool) (*keyState, *UnavailableError) {
+func (p *Pool) acquireCandidate(attempted map[*keyState]bool) (*keyLease, *UnavailableError) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
@@ -146,8 +157,9 @@ func (p *Pool) acquireCandidate(attempted map[*keyState]bool) (*keyState, *Unava
 		}
 		if !ks.openUntil.IsZero() {
 			ks.probing = true
+			ks.generation++
 		}
-		return ks, nil
+		return &keyLease{state: ks, generation: ks.generation}, nil
 	}
 
 	var retryAfter time.Duration
@@ -162,34 +174,12 @@ func (p *Pool) acquireCandidate(attempted map[*keyState]bool) (*keyState, *Unava
 	return nil, &UnavailableError{KeyCount: len(p.keys), RetryAfter: retryAfter}
 }
 
-// ReportTerminal lets the stream layer report an in-band terminal marker
-// (billing/plan) against the key that served the stream. Satisfies the
-// optional server reporter hook.
-func (p *Pool) ReportTerminal(hint, marker string) {
-	if hint != "" {
-		return // passthrough keys are not pooled
-	}
-	p.mu.Lock()
-	defer p.mu.Unlock()
-	// Fill-first means the first healthy key served it; find the first
-	// non-open key and break it. (Single-key deployments: trivially correct.)
-	for _, ks := range p.keys {
-		if !p.policy.Now().Before(ks.openUntil) {
-			ks.openUntil = p.policy.Now().Add(p.policy.CreditsTTL)
-			slog.Warn("keypool: terminal marker, key circuit-broken",
-				"keyPrefix", prefix(ks.key), "marker", marker,
-				"openFor", p.policy.CreditsTTL)
-			return
-		}
-	}
-}
-
 // reportFailure opens the breaker according to the failure class and
 // reports whether rotating to the next key makes sense.
-func (p *Pool) reportFailure(ks *keyState, err error) (rotate bool) {
+func (p *Pool) reportFailure(ks *keyLease, err error) (rotate bool) {
 	var ae *commandcode.APIError
 	switch {
-	case errors.Is(err, context.Canceled):
+	case errors.Is(err, context.Canceled), errors.Is(err, context.DeadlineExceeded):
 		p.releaseProbe(ks)
 		return false
 	case errors.As(err, &ae) && ae.IsSpendCapExceeded():
@@ -225,28 +215,41 @@ func (p *Pool) reportFailure(ks *keyState, err error) (rotate bool) {
 	return true
 }
 
-func (p *Pool) reportSuccess(ks *keyState) {
+func (p *Pool) reportSuccess(ks *keyLease) {
 	p.close(ks)
 }
 
-func (p *Pool) close(ks *keyState) {
+func (p *Pool) close(lease *keyLease) {
 	p.mu.Lock()
+	defer p.mu.Unlock()
+	ks := lease.state
+	if ks.generation != lease.generation {
+		return
+	}
 	ks.openUntil = time.Time{}
 	ks.probing = false
-	p.mu.Unlock()
 }
 
-func (p *Pool) releaseProbe(ks *keyState) {
+func (p *Pool) releaseProbe(lease *keyLease) {
 	p.mu.Lock()
-	ks.probing = false
-	p.mu.Unlock()
+	defer p.mu.Unlock()
+	if lease.state.generation == lease.generation {
+		lease.state.probing = false
+	}
 }
 
-func (p *Pool) open(ks *keyState, ttl time.Duration, reason string) {
+func (p *Pool) open(lease *keyLease, ttl time.Duration, reason string) {
 	p.mu.Lock()
+	ks := lease.state
+	if ks.generation != lease.generation {
+		p.mu.Unlock()
+		return
+	}
 	ks.openUntil = p.policy.Now().Add(ttl)
 	ks.probing = false
+	ks.generation++
 	p.mu.Unlock()
+
 	slog.Warn("keypool: circuit opened",
 		"keyPrefix", prefix(ks.key), "reason", reason, "openFor", ttl)
 }

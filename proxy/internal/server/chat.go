@@ -99,8 +99,8 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 
 // streamState tracks an in-flight upstream stream for both handlers.
 type streamState struct {
-	fullText     string
-	reasoning    string
+	fullText     strings.Builder
+	reasoning    strings.Builder
 	toolCalls    []map[string]any
 	toolCallIdx  int
 	finishReason string
@@ -221,7 +221,6 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 			if ev.Text == "" {
 				continue
 			}
-			st.fullText += ev.Text
 			delta := map[string]any{"content": ev.Text}
 			if st.chunkCount == 0 {
 				delta["role"] = "assistant"
@@ -233,7 +232,6 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 			if ev.Text == "" {
 				continue
 			}
-			st.reasoning += ev.Text
 			delta := map[string]any{"reasoning_content": ev.Text}
 			if st.chunkCount == 0 {
 				delta["role"] = "assistant"
@@ -333,9 +331,9 @@ func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.
 
 		switch ev.Type {
 		case "text-delta":
-			st.fullText += ev.Text
+			st.fullText.WriteString(ev.Text)
 		case "reasoning-delta":
-			st.reasoning += ev.Text
+			st.reasoning.WriteString(ev.Text)
 		case "tool-call":
 			st.toolCalls = append(st.toolCalls, map[string]any{
 				"id":   ev.ToolCallID,
@@ -358,16 +356,16 @@ func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.
 	}
 
 	message := map[string]any{"role": "assistant"}
-	if st.fullText != "" {
-		message["content"] = st.fullText
+	if st.fullText.Len() > 0 {
+		message["content"] = st.fullText.String()
 	} else {
 		message["content"] = nil
 	}
 	if len(st.toolCalls) > 0 {
 		message["tool_calls"] = st.toolCalls
 	}
-	if st.reasoning != "" {
-		message["reasoning_content"] = st.reasoning
+	if st.reasoning.Len() > 0 {
+		message["reasoning_content"] = st.reasoning.String()
 	}
 
 	resp := map[string]any{

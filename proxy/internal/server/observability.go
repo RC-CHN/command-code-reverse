@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
-	"sync"
 	"time"
 
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/commandcode"
@@ -99,11 +98,7 @@ func (s *Server) handleMetrics(w http.ResponseWriter, _ *http.Request) {
 // readyzTTL is how long a probe result is cached.
 const readyzTTL = 30 * time.Second
 
-type readyzCache struct {
-	mu      sync.Mutex
-	ok      bool
-	checked time.Time
-}
+type readyzCache = cachedFetch[struct{}]
 
 // handleReadyz reports readiness using a cached upstream probe.
 func (s *Server) handleReadyz(w http.ResponseWriter, r *http.Request) {
@@ -114,23 +109,21 @@ func (s *Server) handleReadyz(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s.readyz.mu.Lock()
-	fresh := time.Since(s.readyz.checked) < readyzTTL
-	if !fresh {
-		ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
+	_, err := s.readyz.get(r.Context(), cachePolicy{
+		ttl: readyzTTL, failureTTL: readyzTTL, timeout: 10 * time.Second,
+	}, func(ctx context.Context) (struct{}, error) {
 		err := s.deps.Probe(ctx)
-		cancel()
-		s.readyz.ok = err == nil
-		s.readyz.checked = time.Now()
 		if err != nil {
 			slog.Warn("readiness probe failed", "error", err)
 		}
+		return struct{}{}, err
+	})
+	if r.Context().Err() != nil {
+		return
 	}
-	ok := s.readyz.ok
-	s.readyz.mu.Unlock()
 
 	w.Header().Set("Content-Type", "text/plain")
-	if !ok {
+	if err != nil {
 		w.WriteHeader(http.StatusServiceUnavailable)
 		_, _ = w.Write([]byte("NOT READY"))
 		return

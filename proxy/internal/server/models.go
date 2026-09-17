@@ -2,7 +2,9 @@ package server
 
 import (
 	"context"
+	"crypto/sha256"
 	"encoding/json"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"sync"
@@ -60,38 +62,89 @@ var fallbackModels = []commandcode.ModelInfo{
 	{ID: "tencent/hy3-paid", Name: "Tencent Hy3", ContextLength: 262_144},
 }
 
-// modelCatalog serves the model list with a TTL cache and static fallback.
+// Bound memory used by passthrough accounts; never retain raw API keys.
+const modelCatalogCapacity = 128
+
+var modelCachePolicy = cachePolicy{
+	ttl: modelCatalogTTL, failureTTL: 30 * time.Second,
+	timeout: 10 * time.Second, serveStale: true,
+}
+
+// modelCatalog keeps independent caches for managed/passthrough credentials.
 type modelCatalog struct {
-	fetch func(ctx context.Context, downstreamKey string) ([]commandcode.ModelInfo, error)
-
+	fetch   func(ctx context.Context, downstreamKey string) ([]commandcode.ModelInfo, error)
 	mu      sync.Mutex
-	models  []commandcode.ModelInfo
-	fetched time.Time
+	entries map[[32]byte]*modelCatalogEntry
 }
 
-// newModelCatalog wraps a fetcher. fetch may be nil (static-only mode).
+type modelCatalogEntry struct {
+	cache cachedFetch[[]commandcode.ModelInfo]
+	used  time.Time
+	users int
+}
+
 func newModelCatalog(fetch func(ctx context.Context, downstreamKey string) ([]commandcode.ModelInfo, error)) *modelCatalog {
-	return &modelCatalog{fetch: fetch}
+	return &modelCatalog{fetch: fetch, entries: make(map[[32]byte]*modelCatalogEntry)}
 }
 
-// list returns the current catalog, refreshing when stale.
-// Any fetch failure falls back to the last good list, then the static table.
-func (c *modelCatalog) list(ctx context.Context, downstreamKey string) []commandcode.ModelInfo {
+func (c *modelCatalog) entry(key string) *modelCatalogEntry {
+	id := sha256.Sum256([]byte(key))
 	c.mu.Lock()
 	defer c.mu.Unlock()
-
-	if c.fetch != nil && time.Since(c.fetched) > modelCatalogTTL {
-		if models, err := c.fetch(ctx, downstreamKey); err == nil && len(models) > 0 {
-			c.models = models
-			c.fetched = time.Now()
-			slog.Info("model catalog refreshed", "count", len(models))
-		} else if err != nil {
-			slog.Warn("model catalog fetch failed, using cached/fallback", "error", err)
+	entry := c.entries[id]
+	if entry == nil {
+		if len(c.entries) >= modelCatalogCapacity {
+			var oldest *modelCatalogEntry
+			var victim [32]byte
+			for k, candidate := range c.entries {
+				if candidate.users == 0 && !candidate.cache.refreshing() && (oldest == nil || candidate.used.Before(oldest.used)) {
+					victim, oldest = k, candidate
+				}
+			}
+			if oldest == nil {
+				return nil // all slots are fetching; serve static data
+			}
+			delete(c.entries, victim)
 		}
+		entry = &modelCatalogEntry{}
+		c.entries[id] = entry
 	}
+	entry.used = time.Now()
+	entry.users++
+	return entry
+}
 
-	if len(c.models) > 0 {
-		return c.models
+func (c *modelCatalog) release(entry *modelCatalogEntry) {
+	c.mu.Lock()
+	entry.users--
+	c.mu.Unlock()
+}
+
+// list coalesces cold loads, serves stale data during refresh, and briefly
+// caches failures so an outage cannot turn queued callers into a retry storm.
+func (c *modelCatalog) list(ctx context.Context, downstreamKey string) []commandcode.ModelInfo {
+	if c.fetch == nil || ctx.Err() != nil {
+		return fallbackModels
+	}
+	entry := c.entry(downstreamKey)
+	if entry == nil {
+		return fallbackModels
+	}
+	defer c.release(entry)
+	models, _ := entry.cache.get(ctx, modelCachePolicy, func(ctx context.Context) ([]commandcode.ModelInfo, error) {
+		models, err := c.fetch(ctx, downstreamKey)
+		if err == nil && len(models) == 0 {
+			err = fmt.Errorf("models response contained no models")
+		}
+		if err != nil {
+			slog.Warn("model catalog fetch failed, using cached/fallback", "error", err)
+		} else {
+			slog.Info("model catalog refreshed", "count", len(models))
+		}
+		return models, err
+	})
+	if len(models) > 0 {
+		return models
 	}
 	return fallbackModels
 }
