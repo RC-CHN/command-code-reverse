@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
@@ -36,6 +37,12 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 
 	var req convert.ChatRequest
 	if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, s.cfg.MaxBodyBytes)).Decode(&req); err != nil {
+		var sizeErr *http.MaxBytesError
+		if errors.As(err, &sizeErr) {
+			writeError(w, http.StatusRequestEntityTooLarge, "invalid_request_error",
+				fmt.Sprintf("Request body exceeds the configured limit of %d bytes; reduce image sizes or increase MAX_BODY_BYTES", sizeErr.Limit), 0)
+			return
+		}
 		writeError(w, http.StatusBadRequest, "invalid_request_error", "Invalid JSON body: "+err.Error(), 0)
 		return
 	}

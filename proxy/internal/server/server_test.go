@@ -2,15 +2,18 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"testing/iotest"
 
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/commandcode"
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/config"
+	"github.com/RC-CHN/command-code-reverse/proxy/internal/stream"
 )
 
 func TestExplicitStreamFailures(t *testing.T) {
@@ -73,8 +76,9 @@ func TestNestedUsageReachesChatResponse(t *testing.T) {
 
 // stubUpstream replays canned NDJSON or a canned error.
 type stubUpstream struct {
-	ndjson string
-	err    error
+	ndjson  string
+	err     error
+	readErr error
 
 	gotHint string
 	gotMeta commandcode.CallMeta
@@ -88,7 +92,11 @@ func (u *stubUpstream) Generate(ctx context.Context, hint string, meta commandco
 	if u.err != nil {
 		return nil, u.err
 	}
-	return io.NopCloser(strings.NewReader(u.ndjson)), nil
+	var body io.Reader = strings.NewReader(u.ndjson)
+	if u.readErr != nil {
+		body = io.MultiReader(body, iotest.ErrReader(u.readErr))
+	}
+	return io.NopCloser(body), nil
 }
 
 func testConfig() *config.Config {
@@ -191,6 +199,99 @@ func TestChatCompletionsNonStream(t *testing.T) {
 	} {
 		if !strings.Contains(body, want) {
 			t.Errorf("body missing %q:\n%s", want, body)
+		}
+	}
+}
+
+// TestChatCompletionsHugeStartStep reproduces the multi-image failure: the
+// upstream start-step event echoes the whole forwarded request (base64 image
+// data URLs), whose single NDJSON line can exceed the old 4 MiB scanner cap.
+func TestChatCompletionsHugeStartStep(t *testing.T) {
+	for _, streamed := range []bool{false, true} {
+		huge := strings.Repeat("A", 5*1024*1024)
+		ndjson := `{"type":"start-step","request":{"body":{"padding":"` + huge + `"}}}` + "\n" +
+			`{"type":"text-delta","text":"ok"}` + "\n" +
+			`{"type":"finish","finishReason":"stop","totalUsage":{"inputTokens":5,"outputTokens":2}}` + "\n"
+
+		h := New(testConfig(), Deps{Upstream: &stubUpstream{ndjson: ndjson}}, nil)
+		rec := httptest.NewRecorder()
+		h.ServeHTTP(rec, authedReq(t, "POST", "/v1/chat/completions",
+			fmt.Sprintf(`{"model":"m","stream":%t,"messages":[{"role":"user","content":"hi"}]}`, streamed)))
+
+		if rec.Code != 200 {
+			t.Fatalf("stream=%t status=%d body=%s", streamed, rec.Code, rec.Body.String())
+		}
+		assertChatContent(t, rec, streamed, "ok")
+	}
+}
+
+func assertChatContent(t *testing.T, rec *httptest.ResponseRecorder, streamed bool, want string) {
+	t.Helper()
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status=%d body=%s", rec.Code, rec.Body.String())
+	}
+	if !streamed {
+		var response struct {
+			Choices []struct {
+				Message struct {
+					Content string `json:"content"`
+				} `json:"message"`
+			} `json:"choices"`
+		}
+		if err := json.Unmarshal(rec.Body.Bytes(), &response); err != nil {
+			t.Fatal(err)
+		}
+		if len(response.Choices) != 1 || response.Choices[0].Message.Content != want {
+			t.Fatalf("unexpected response content: %s", rec.Body.String())
+		}
+		return
+	}
+	var content strings.Builder
+	finished := false
+	for _, line := range strings.Split(rec.Body.String(), "\n") {
+		if !strings.HasPrefix(line, "data: ") || line == "data: [DONE]" {
+			continue
+		}
+		var chunk stream.Chunk
+		if err := json.Unmarshal([]byte(strings.TrimPrefix(line, "data: ")), &chunk); err != nil {
+			t.Fatal(err)
+		}
+		if len(chunk.Choices) != 1 {
+			t.Fatalf("unexpected SSE event: %s", line)
+		}
+		choice := chunk.Choices[0]
+		if text, ok := choice.Delta["content"].(string); ok {
+			content.WriteString(text)
+		}
+		if choice.FinishReason != nil && *choice.FinishReason == "stop" {
+			finished = true
+		}
+	}
+	if content.String() != want || !finished || !strings.HasSuffix(rec.Body.String(), stream.DoneSSE) {
+		t.Fatalf("incomplete SSE response: %s", rec.Body.String())
+	}
+}
+
+func TestChatFinalErrorBeforeTransportFailure(t *testing.T) {
+	for _, streamed := range []bool{false, true} {
+		for _, partial := range []bool{false, true} {
+			t.Run(fmt.Sprintf("stream=%t/partial=%t", streamed, partial), func(t *testing.T) {
+				line := `{"type":"error","error":{"message":"Org cap reached","code":"USAGE_EXCEEDED","statusCode":403}}`
+				if partial {
+					line = "{\"type\":\"text-delta\",\"text\":\"partial\"}\n" + line
+				}
+				h := New(testConfig(), Deps{Upstream: &stubUpstream{ndjson: line, readErr: io.ErrUnexpectedEOF}}, nil)
+				rec := httptest.NewRecorder()
+				h.ServeHTTP(rec, authedReq(t, "POST", "/v1/chat/completions", fmt.Sprintf(`{"model":"m","stream":%t,"messages":[{"role":"user","content":"hi"}]}`, streamed)))
+				wantStatus := http.StatusForbidden
+				if streamed && partial {
+					wantStatus = http.StatusOK
+				}
+				body := rec.Body.String()
+				if rec.Code != wantStatus || !strings.Contains(body, `"code":"USAGE_EXCEEDED"`) || strings.Contains(body, "Response timeout") {
+					t.Fatalf("lost spend-cap error: status=%d body=%s", rec.Code, body)
+				}
+			})
 		}
 	}
 }

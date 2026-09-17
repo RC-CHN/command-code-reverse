@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -14,7 +15,7 @@ func isolate(t *testing.T) {
 		"COMMAND_CODE_API_KEY", "COMMAND_CODE_API_BASE", "COMMAND_CODE_VERSION",
 		"COMMAND_CODE_VERSION_PIN", "AUTH_MODE", "PROXY_API_KEY",
 		"FINGERPRINT_ENABLED", "FINGERPRINT_SEED", "FINGERPRINT_STATE_FILE",
-		"HOST", "PORT", "LOG_FORMAT", "LOG_LEVEL",
+		"HOST", "PORT", "LOG_FORMAT", "LOG_LEVEL", "MAX_BODY_BYTES",
 	} {
 		t.Setenv(k, "")
 		_ = os.Unsetenv(k)
@@ -41,6 +42,33 @@ func TestLoadDefaults(t *testing.T) {
 	}
 	if len(c.APIKeys) != 1 || c.APIKeys[0] != "k1" {
 		t.Errorf("APIKeys = %v", c.APIKeys)
+	}
+	if c.MaxBodyBytes != 64*1024*1024 {
+		t.Errorf("MaxBodyBytes = %d, want 64 MiB", c.MaxBodyBytes)
+	}
+}
+
+func TestMaxBodyBytesOverride(t *testing.T) {
+	isolate(t)
+	t.Setenv("COMMAND_CODE_API_KEY", "k1")
+	t.Setenv("PROXY_API_KEY", "p")
+	for _, value := range []string{"10485760", "134217728", "0", "-1"} {
+		t.Run(value, func(t *testing.T) {
+			t.Setenv("MAX_BODY_BYTES", value)
+			c, err := Load()
+			if value == "0" || value == "-1" {
+				if err == nil {
+					t.Fatal("non-positive body limit accepted")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			if fmt.Sprint(c.MaxBodyBytes) != value {
+				t.Fatalf("MaxBodyBytes = %d, want %s", c.MaxBodyBytes, value)
+			}
+		})
 	}
 }
 

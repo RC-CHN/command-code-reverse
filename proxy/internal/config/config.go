@@ -72,7 +72,7 @@ func Load() (*Config, error) {
 		FingerprintStateFile: getEnv("FINGERPRINT_STATE_FILE", "./data/fingerprint.json"),
 		Host:                 getEnv("HOST", "0.0.0.0"),
 		ShutdownDrain:        time.Duration(getEnvInt("SHUTDOWN_DRAIN_SECONDS", 30)) * time.Second,
-		MaxBodyBytes:         int64(getEnvInt("MAX_BODY_BYTES", 10*1024*1024)),
+		MaxBodyBytes:         int64(getEnvInt("MAX_BODY_BYTES", 64*1024*1024)),
 		MaxTokensClamp:       getEnvInt("MAX_TOKENS_CLAMP", 200000),
 		StreamIdleTimeout:    time.Duration(getEnvInt("STREAM_IDLE_TIMEOUT_SECONDS", 30)) * time.Second,
 		NonStreamIdleTimeout: time.Duration(getEnvInt("NONSTREAM_IDLE_TIMEOUT_SECONDS", 90)) * time.Second,

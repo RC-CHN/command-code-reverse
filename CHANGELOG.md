@@ -4,6 +4,22 @@ All notable changes to commandcode-proxy are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 versioning follows [SemVer](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- Read upstream NDJSON events larger than 4 MiB, including `start-step`
+  echoes of multi-image requests. Preserve complete final events before
+  surfacing transport errors, including when the last line has no newline.
+- Report oversized chat request bodies as HTTP 413 with the configured byte
+  limit and `MAX_BODY_BYTES` guidance instead of a generic invalid-JSON 400.
+
+### Changed
+
+- Raise the default incoming request limit from 10 MiB to 64 MiB for base64
+  image conversations. `MAX_BODY_BYTES` continues to override it at startup;
+  explicit values in existing deployments remain in effect.
+
 ## [v0.1.6] - 2026-09-09
 
 ### Changed

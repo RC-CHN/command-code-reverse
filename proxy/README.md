@@ -125,10 +125,15 @@ docker run --env-file ../.env -p 3050:3050 commandcode-proxy
 
 | 变量 | 必填 | 默认 | 说明 |
 |---|---|---|---|
-| `MAX_BODY_BYTES` | | `10485760` (10MB) | 请求体上限 |
+| `MAX_BODY_BYTES` | | `67108864` (64 MiB) | 启动时读取的请求体字节上限，包含 base64 图片和 JSON；超限返回 413 |
 | `MAX_TOKENS_CLAMP` | | `200000` | max_tokens 钳制上限 |
 | `STREAM_IDLE_TIMEOUT_SECONDS` | | `30` | 流式事件空闲超时（超时取消上游请求；连续 3 次提示压缩上下文） |
 | `NONSTREAM_IDLE_TIMEOUT_SECONDS` | | `90` | 非流式空闲超时 |
+
+多图请求的大小按编码后的整个 JSON 计算，base64 数据通常比原图片大约三分之一。
+可在启动环境中设置 `MAX_BODY_BYTES=134217728`，将上限提高到 128 MiB。
+旧 `.env` 中显式设置的 `MAX_BODY_BYTES=10485760` 会继续覆盖新默认值，需修改后重启。
+此入口限制与上游 NDJSON 单行读取独立；上游 `start-step` 回显不再受原 4 MiB 单行限制。
 
 ### 可观测性
 

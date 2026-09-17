@@ -2,9 +2,11 @@ package stream
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"strings"
 	"testing"
+	"testing/iotest"
 )
 
 const sampleNDJSON = `{"type":"start"}
@@ -47,6 +49,31 @@ func TestReaderEventSequence(t *testing.T) {
 	}
 }
 
+// TestReaderHandlesHugeLine guards against the bufio.Scanner 4 MiB token
+// cap: start-step echoes the entire forwarded request on one line, which
+// grows past the cap as a conversation lengthens.
+func TestReaderHandlesHugeLine(t *testing.T) {
+	huge := strings.Repeat("x", 5*1024*1024)
+	ndjson := `{"type":"start-step","request":{"body":{"padding":"` + huge + `"}}}` + "\n" +
+		`{"type":"text-delta","text":"Hi"}` + "\n"
+
+	r := NewReader(strings.NewReader(ndjson))
+	ev, err := r.Next()
+	if err != nil {
+		t.Fatalf("Next(first): %v", err)
+	}
+	if ev.Type != "start-step" {
+		t.Fatalf("Type = %q, want start-step", ev.Type)
+	}
+	ev, err = r.Next()
+	if err != nil {
+		t.Fatalf("Next(second): %v", err)
+	}
+	if ev.Type != "text-delta" || ev.Text != "Hi" {
+		t.Fatalf("ev = %+v", ev)
+	}
+}
+
 func TestReaderSkipsNoise(t *testing.T) {
 	r := NewReader(strings.NewReader("\n[DONE]\n: keepalive\nnot json\n{\"type\":\"text-delta\",\"text\":\"a\"}\n"))
 	ev, err := r.Next()
@@ -58,6 +85,45 @@ func TestReaderSkipsNoise(t *testing.T) {
 	}
 	if _, err := r.Next(); !errors.Is(err, io.EOF) {
 		t.Errorf("expected EOF, got %v", err)
+	}
+}
+
+func TestReaderFinalLineBeforeReadError(t *testing.T) {
+	for _, readErr := range []error{io.EOF, io.ErrUnexpectedEOF} {
+		for _, size := range []int{1, 64 * 1024, 5 * 1024 * 1024} {
+			for _, sameRead := range []bool{false, true} {
+				t.Run(fmt.Sprintf("error=%v/size=%d/sameRead=%t", readErr, size, sameRead), func(t *testing.T) {
+					text := strings.Repeat("x", size)
+					line := `{"type":"text-delta","text":"` + text + `"}`
+					input := io.MultiReader(strings.NewReader(line), iotest.ErrReader(readErr))
+					if sameRead {
+						input = iotest.DataErrReader(input)
+					}
+					r := NewReader(input)
+					ev, err := r.Next()
+					if err != nil {
+						t.Fatalf("complete final event lost: %v", err)
+					}
+					if ev.Type != "text-delta" || ev.Text != text {
+						t.Fatalf("final event changed: type=%q text length=%d", ev.Type, len(ev.Text))
+					}
+					for range 2 {
+						if _, err := r.Next(); !errors.Is(err, readErr) {
+							t.Fatalf("read error = %v, want %v", err, readErr)
+						}
+					}
+				})
+			}
+		}
+	}
+}
+
+func TestReaderMalformedTailPreservesReadError(t *testing.T) {
+	for _, tail := range []string{"", "\n[DONE]\n: keepalive\n", `{"type":"text-delta"`} {
+		r := NewReader(io.MultiReader(strings.NewReader(tail), iotest.ErrReader(io.ErrUnexpectedEOF)))
+		if _, err := r.Next(); !errors.Is(err, io.ErrUnexpectedEOF) {
+			t.Fatalf("tail %q: got %v, want unexpected EOF", tail, err)
+		}
 	}
 }
 
