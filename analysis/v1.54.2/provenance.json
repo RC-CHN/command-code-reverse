@@ -1,0 +1,26 @@
+{
+  "checked_at": "2026-09-17T07:06:55+00:00",
+  "package": "command-code",
+  "version": "1.54.2",
+  "baseline_version": "1.51.3",
+  "registry": "https://registry.npmjs.org/command-code/latest",
+  "version_metadata_url": "https://registry.npmjs.org/command-code/1.54.2",
+  "dist": {
+    "tarball": "https://registry.npmjs.org/command-code/-/command-code-1.54.2.tgz",
+    "integrity": "sha512-vJjifCaeIb5O1ED5lToXFiWujOpZpS2WGXZvngmzoFO9NNy4Trf+uwIABd8pYemuhsuqh1g3svOscmi/JN78rg==",
+    "shasum": "22d00c0ef14e2948fae5c39e533dbb5d9106b4cc",
+    "fileCount": 71,
+    "unpackedSize": 7084634
+  },
+  "tarball_sha256": "c1c839d26d4018d1a36b05ef1f3fe9fb65128aef03a06093b7694cd729bbce1b",
+  "metadata_sha256": "e169279ea04c2b669f4ccc59b3fb951ebfab45048ccd96b0c23ea97517959e2a",
+  "cli_sha256": "551a17d143fd6687e4dc9085bf5f2e601a01f9f95faa6528a1c1011ff8a54828",
+  "beautified_cli_sha256": "89d968be39b94b2dee27b7e0af75d85241aece775854c6d6eef38b760f39e3d1",
+  "package_json_sha256": "5c211eea133c350a814658416a06039923a0d291718703dfcf17ecc940957f4e",
+  "prettier_version": "3.6.2",
+  "comparison_script": "analysis/v1.51.3/scripts/compare.py",
+  "comparison_script_sha256": "f182269b06cc228c15e37668463a29ddfa20290b40619389d035b19ad9e5de8f",
+  "validation": "npm SHA-512 integrity and SHA-1 verified; static text comparison only; upstream CLI was not executed; no live inference requests",
+  "core_functions_compared": 14,
+  "core_functions_identical": 14
+}

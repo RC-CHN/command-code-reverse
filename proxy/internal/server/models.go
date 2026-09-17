@@ -20,8 +20,10 @@ const modelCatalogTTL = 5 * time.Minute
 // upstream fetch (or when the upstream is unreachable). Model IDs follow
 // the CLI gateway catalog, including canonical IDs without a vendor prefix.
 // Listing a model does not guarantee access under the caller's plan.
-// Refreshed against command-code@1.51.3; dynamic upstream data takes priority.
+// Refreshed against command-code@1.54.2; dynamic upstream data takes priority.
 var fallbackModels = []commandcode.ModelInfo{
+	{ID: "deepseek/deepseek-v4.1-flash", Name: "DeepSeek V4.1 Flash", ContextLength: 1_000_000},
+	{ID: "inclusionai/ling-3.0-flash-sante:free", Name: "Ling 3.0 Flash Sante", ContextLength: 262_144},
 	{ID: "Qwen/Qwen3.8-Max-0902", Name: "Qwen 3.8 Max 0902", ContextLength: 1_000_000},
 	{ID: "google/gemini-3.8-flash", Name: "Gemini 3.8 Flash", ContextLength: 1_000_000},
 	{ID: "gpt-6-astra", Name: "GPT-6 Astra", ContextLength: 1_050_000},

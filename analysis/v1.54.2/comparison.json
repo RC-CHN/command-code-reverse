@@ -1,0 +1,172 @@
+{
+  "old": {
+    "path": "references/command-code-npm/extracted-1.51.3/package/dist/cli.beautified.mjs",
+    "sha256": "1311bef16697db0bf94321068781cf223122fdb4a32ebff453f31c74d8d7db1c"
+  },
+  "new": {
+    "path": "references/command-code-npm/extracted-1.54.2/package/dist/cli.beautified.mjs",
+    "sha256": "89d968be39b94b2dee27b7e0af75d85241aece775854c6d6eef38b760f39e3d1"
+  },
+  "functions": {
+    "buildCommandAuthHeaders": {
+      "old": {
+        "line": 28189,
+        "sha256": "f0bb2505a93e9ea122524b27d886a8a47c8e9ad8b7c5f7707e3f61c3984330dd"
+      },
+      "new": {
+        "line": 28211,
+        "sha256": "f0bb2505a93e9ea122524b27d886a8a47c8e9ad8b7c5f7707e3f61c3984330dd"
+      }
+    },
+    "buildCommandApiHeaders": {
+      "old": {
+        "line": 28392,
+        "sha256": "0e42feff5cfc8d0d86ee3f3e11b753c0bd53694a53ac812680a1f9a50824256e"
+      },
+      "new": {
+        "line": 28414,
+        "sha256": "0e42feff5cfc8d0d86ee3f3e11b753c0bd53694a53ac812680a1f9a50824256e"
+      }
+    },
+    "buildMachineFingerprint": {
+      "old": {
+        "line": 43660,
+        "sha256": "d209369e2301b84375d4c8cdca0fbf9fe33c1b4b1421882e080b7f898d19abe0"
+      },
+      "new": {
+        "line": 43790,
+        "sha256": "d209369e2301b84375d4c8cdca0fbf9fe33c1b4b1421882e080b7f898d19abe0"
+      }
+    },
+    "createModelClient": {
+      "old": {
+        "line": 37044,
+        "sha256": "13e6ae528fe7d2c5ecd4124561d6fa6a7739a17f1614fdd055a4a326a7e84b4d"
+      },
+      "new": {
+        "line": 37069,
+        "sha256": "13e6ae528fe7d2c5ecd4124561d6fa6a7739a17f1614fdd055a4a326a7e84b4d"
+      }
+    },
+    "createSystemPromptBuilder": {
+      "old": {
+        "line": 35471,
+        "sha256": "e938ff0370e6fbac64af2c4bf25976709b0216ecebdf0d5445c319b5b468952c"
+      },
+      "new": {
+        "line": 35496,
+        "sha256": "e938ff0370e6fbac64af2c4bf25976709b0216ecebdf0d5445c319b5b468952c"
+      }
+    },
+    "toWireSystem": {
+      "old": {
+        "line": 36755,
+        "sha256": "81544772646e5ead3554422f35e823d7836704466d33484b87860443ae01d5fe"
+      },
+      "new": {
+        "line": 36780,
+        "sha256": "81544772646e5ead3554422f35e823d7836704466d33484b87860443ae01d5fe"
+      }
+    },
+    "toWireMessages": {
+      "old": {
+        "line": 36707,
+        "sha256": "dd74fb4e04a3428c34ddc5ec09d1e4a91c7c51c3b01f710d1a2d869f3cc4a6b9"
+      },
+      "new": {
+        "line": 36732,
+        "sha256": "dd74fb4e04a3428c34ddc5ec09d1e4a91c7c51c3b01f710d1a2d869f3cc4a6b9"
+      }
+    },
+    "toWireTools": {
+      "old": {
+        "line": 36688,
+        "sha256": "de73d50b44a23d80221e2b7fe032eeb74dd71d3a027e379d1bccabbfb773332e"
+      },
+      "new": {
+        "line": 36713,
+        "sha256": "de73d50b44a23d80221e2b7fe032eeb74dd71d3a027e379d1bccabbfb773332e"
+      }
+    },
+    "toWirePermissionMode": {
+      "old": {
+        "line": 36811,
+        "sha256": "6a7f002b84bea463b2ed7f6cfd190bf74a4ef4ba52b3f7f03a8319e14cdde361"
+      },
+      "new": {
+        "line": 36836,
+        "sha256": "6a7f002b84bea463b2ed7f6cfd190bf74a4ef4ba52b3f7f03a8319e14cdde361"
+      }
+    },
+    "toWireThreadId": {
+      "old": {
+        "line": 36818,
+        "sha256": "fec353ee07d1b07ccb83b16a91f994a7e611ebce1dbdbc72bda5e82eb4fd612b"
+      },
+      "new": {
+        "line": 36843,
+        "sha256": "fec353ee07d1b07ccb83b16a91f994a7e611ebce1dbdbc72bda5e82eb4fd612b"
+      }
+    },
+    "readStreamErrorEvent": {
+      "old": {
+        "line": 36787,
+        "sha256": "8c247537365a4ad689fe7ba34bc67ea9b734c9254ac5bae0aa29c29f18deb702"
+      },
+      "new": {
+        "line": 36812,
+        "sha256": "8c247537365a4ad689fe7ba34bc67ea9b734c9254ac5bae0aa29c29f18deb702"
+      }
+    },
+    "consumeStream": {
+      "old": {
+        "line": 36866,
+        "sha256": "1a3f5892c02ebd9bbba6d0207284d6bc0a4aa32315ea82072aa6d8021f3efef8"
+      },
+      "new": {
+        "line": 36891,
+        "sha256": "1a3f5892c02ebd9bbba6d0207284d6bc0a4aa32315ea82072aa6d8021f3efef8"
+      }
+    },
+    "readCacheWriteTokens1h": {
+      "old": {
+        "line": 36763,
+        "sha256": "2a150c580785638f6668ef60e683f6472692922e35f093287a8e8b00b27342f2"
+      },
+      "new": {
+        "line": 36788,
+        "sha256": "2a150c580785638f6668ef60e683f6472692922e35f093287a8e8b00b27342f2"
+      }
+    },
+    "parseSpendCapError": {
+      "old": {
+        "line": 28508,
+        "sha256": "6f9233a7d6d1b78ca24c52476c97126365197e965d5cd792284107378d64a9db"
+      },
+      "new": {
+        "line": 28530,
+        "sha256": "6f9233a7d6d1b78ca24c52476c97126365197e965d5cd792284107378d64a9db"
+      }
+    }
+  },
+  "catalog_counts": {
+    "old": 68,
+    "new": 70
+  },
+  "added_models": [
+    {
+      "id": "deepseek/deepseek-v4.1-flash",
+      "name": "DeepSeek V4.1 Flash",
+      "context_length": 1000000
+    },
+    {
+      "id": "inclusionai/ling-3.0-flash-sante:free",
+      "name": "Ling 3.0 Flash Sante",
+      "context_length": 262144
+    }
+  ],
+  "removed_models": [],
+  "changed_models": [],
+  "added_literal_routes": [],
+  "removed_literal_routes": []
+}

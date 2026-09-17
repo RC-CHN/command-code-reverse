@@ -4,7 +4,8 @@ Go 版 Command Code → OpenAI 兼容代理。把 `POST /alpha/generate`（NDJSO
 包装成标准 OpenAI 接口，可直接对接任何 OpenAI SDK / 生态工具。
 
 协议依据：`analysis/v1.32.2/README.md`（command-code@1.32.2 静态逆向 + 实测）。
-新版差异：[command-code@1.51.3](../analysis/v1.51.3/README.md)（静态源码核对 + 本地测试 + [真实上游验证](../analysis/v1.51.3/LIVE.md)）。
+最新核对：[command-code@1.54.2](../analysis/v1.54.2/README.md)（静态源码核对 + 本地测试；已更新离线版本兜底和新增模型目录）。
+此前的 [1.51.3 协议分析](../analysis/v1.51.3/README.md) 和 [真实上游验证](../analysis/v1.51.3/LIVE.md) 保留作为历史记录。
 零第三方依赖（标准库 only）。
 
 ## 功能

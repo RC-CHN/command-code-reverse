@@ -29,6 +29,11 @@ versioning follows [SemVer](https://semver.org/).
 
 ### Changed
 
+- Refresh the offline CLI version fallback to `1.54.2` after checking the
+  official npm package; core gateway request and stream handling are unchanged.
+- Add DeepSeek V4.1 Flash and Ling 3.0 Flash Sante to the fallback model catalog.
+  Dynamic upstream catalogs still take priority; the retired V4.1 Flash Beta
+  remains excluded.
 - Raise the default incoming request limit from 10 MiB to 64 MiB for base64
   image conversations. `MAX_BODY_BYTES` continues to override it at startup;
   explicit values in existing deployments remain in effect.

@@ -377,6 +377,8 @@ func TestFallbackModelsMatchCurrentCatalog(t *testing.T) {
 	}
 
 	for _, id := range []string{
+		"deepseek/deepseek-v4.1-flash",
+		"inclusionai/ling-3.0-flash-sante:free",
 		"deepseek/deepseek-v4-flash-fast",
 		"moonshotai/Kimi-K3",
 		"z-ai/glm-5.3-flash",
