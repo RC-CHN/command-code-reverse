@@ -6,6 +6,8 @@ versioning follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+## [v0.2.0] - 2026-09-22
+
 ### Fixed
 
 - Report optional fingerprint telemetry once per logical CLI session across
