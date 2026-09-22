@@ -13,7 +13,8 @@ import (
 
 // Deps bundles the injectable dependencies of the HTTP surface.
 type Deps struct {
-	Upstream Upstream
+	Upstream  Upstream
+	SystemOne SystemOneUpstream
 
 	// Version is the proxy build version (stamped via ldflags).
 	Version string

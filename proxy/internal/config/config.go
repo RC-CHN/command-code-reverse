@@ -47,6 +47,9 @@ type Config struct {
 	MaxTokensClamp       int
 	StreamIdleTimeout    time.Duration
 	NonStreamIdleTimeout time.Duration
+	JevUnlockMaxOptions  bool
+	JevTimeout           time.Duration
+	JevMaxResponseBytes  int64
 
 	// Observability
 	LogFormat         string // "json" or "text"
@@ -65,6 +68,24 @@ func Load() (*Config, error) {
 	if err != nil {
 		return nil, fmt.Errorf("config: CMD_ZDR must be a boolean (1/0 or true/false)")
 	}
+	unlock, err := strconv.ParseBool(getEnv("JEV_UNLOCK_MAX_OPTIONS", "false"))
+	if err != nil {
+		return nil, fmt.Errorf("config: JEV_UNLOCK_MAX_OPTIONS must be a boolean (1/0 or true/false)")
+	}
+	jevTimeout, err := positiveInt64("JEV_TIMEOUT_SECONDS", 90)
+	if err != nil {
+		return nil, err
+	}
+	if jevTimeout > int64((1<<63-1)/time.Second) {
+		return nil, fmt.Errorf("config: JEV_TIMEOUT_SECONDS is too large")
+	}
+	jevMaxResponse, err := positiveInt64("JEV_MAX_RESPONSE_BYTES", 8<<20)
+	if err != nil {
+		return nil, err
+	}
+	if jevMaxResponse == 1<<63-1 {
+		return nil, fmt.Errorf("config: JEV_MAX_RESPONSE_BYTES is too large")
+	}
 
 	c := &Config{
 		APIBase:              getEnv("COMMAND_CODE_API_BASE", "https://api.commandcode.ai"),
@@ -82,6 +103,9 @@ func Load() (*Config, error) {
 		MaxTokensClamp:       getEnvInt("MAX_TOKENS_CLAMP", 200000),
 		StreamIdleTimeout:    time.Duration(getEnvInt("STREAM_IDLE_TIMEOUT_SECONDS", 30)) * time.Second,
 		NonStreamIdleTimeout: time.Duration(getEnvInt("NONSTREAM_IDLE_TIMEOUT_SECONDS", 90)) * time.Second,
+		JevUnlockMaxOptions:  unlock,
+		JevTimeout:           time.Duration(jevTimeout) * time.Second,
+		JevMaxResponseBytes:  jevMaxResponse,
 		LogFormat:            getEnv("LOG_FORMAT", "json"),
 		LogLevel:             getEnv("LOG_LEVEL", "info"),
 		MetricsEnabled:       getEnvBool("METRICS_ENABLED", true),
@@ -165,6 +189,14 @@ func getEnv(key, fallback string) string {
 		return v
 	}
 	return fallback
+}
+
+func positiveInt64(key string, fallback int64) (int64, error) {
+	n, err := strconv.ParseInt(getEnv(key, strconv.FormatInt(fallback, 10)), 10, 64)
+	if err != nil || n <= 0 {
+		return 0, fmt.Errorf("config: %s must be a positive integer", key)
+	}
+	return n, nil
 }
 
 func getEnvInt(key string, fallback int) int {

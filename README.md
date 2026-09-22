@@ -44,6 +44,11 @@ curl -N http://localhost:3050/v1/chat/completions \
 
 Docker / k8s / full config reference: see [`proxy/README.md`](./proxy/README.md).
 
+Jev decisions are available at `POST /v1/systemone`, with native JSON and
+independent key breakers. Choice questions allow 20 options by default;
+`JEV_UNLOCK_MAX_OPTIONS=true` unlocks up to 255. See the
+[Jev interface and error handling](./proxy/README.md#jev--system-one).
+
 ## Design highlights
 
 - **Zero third-party dependencies** — Go standard library only.

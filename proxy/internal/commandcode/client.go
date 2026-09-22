@@ -9,7 +9,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
+	"time"
 )
 
 // Event type markers that can appear inside the NDJSON stream and signal
@@ -24,19 +26,28 @@ const (
 // APIError is an upstream non-2xx failure, shaped after the observed
 // {"success":false,"error":{"code","status","message","docs"}} envelope.
 type APIError struct {
-	Status  int
-	Code    string
-	Type    string
-	Message string
+	Status     int
+	Code       string
+	Type       string
+	Message    string
+	Param      string
+	RetryAfter time.Duration
+}
+
+// HasCode accepts both gateway error codes and provider error types.
+func (e *APIError) HasCode(code string) bool {
+	return strings.EqualFold(e.Code, code) || strings.EqualFold(e.Type, code)
 }
 
 func (e *APIError) Error() string {
 	return fmt.Sprintf("upstream %d %s: %s", e.Status, e.Code, e.Message)
 }
 
-// IsInsufficientCredits reports the 400 + "insufficient credits" signature.
+// IsInsufficientCredits recognizes both the CLI's 400 signature and the
+// Provider API's payment-required status or structured credit error.
 func (e *APIError) IsInsufficientCredits() bool {
-	return e.Status == 400 && strings.Contains(strings.ToLower(e.Message), MarkerInsufficientCredits)
+	return e.Status == 402 || e.HasCode("insufficient_credits") ||
+		(e.Status == 400 && strings.Contains(strings.ToLower(e.Message), MarkerInsufficientCredits))
 }
 
 // IsRateLimited reports 429.
@@ -44,7 +55,7 @@ func (e *APIError) IsRateLimited() bool { return e.Status == 429 }
 
 // IsSpendCapExceeded identifies the organization/model spend cap added in
 // CLI 1.49.1. It is a policy limit, not a rejected credential.
-func (e *APIError) IsSpendCapExceeded() bool { return e.Code == "USAGE_EXCEEDED" }
+func (e *APIError) IsSpendCapExceeded() bool { return e.HasCode("USAGE_EXCEEDED") }
 
 // IsZDRUnavailable identifies a routing-policy failure, not a rejected key.
 func (e *APIError) IsZDRUnavailable() bool {
@@ -56,7 +67,7 @@ func (e *APIError) IsZDRUnavailable() bool {
 // itself is valid, only the requested model is above the account's tier.
 // It must NOT be treated as an auth rejection (which would circuit the key).
 func (e *APIError) IsModelNotInPlan() bool {
-	return e.Status == http.StatusForbidden &&
+	return e.HasCode("upgrade_required") || e.HasCode("MODEL_NOT_IN_PLAN") || e.Status == http.StatusForbidden &&
 		strings.Contains(strings.ToLower(e.Message), MarkerModelNotInPlan)
 }
 
@@ -65,7 +76,7 @@ func (e *APIError) IsModelNotInPlan() bool {
 // default "anthropic:" provider prefix). A request-shape problem — no key
 // in the pool will serve it, so it must neither circuit nor rotate keys.
 func (e *APIError) IsModelNotRecognized() bool {
-	return e.Status == http.StatusForbidden &&
+	return e.HasCode("unsupported_model") || e.Status == http.StatusForbidden &&
 		strings.Contains(strings.ToLower(e.Message), "model/provider not recognized")
 }
 
@@ -315,7 +326,8 @@ func (c *Client) headers(creds Credentials) map[string]string {
 // parseAPIError decodes the upstream error envelope, tolerating plain text.
 func parseAPIError(resp *http.Response) error {
 	raw, _ := io.ReadAll(io.LimitReader(resp.Body, 1<<20))
-	ae := &APIError{Status: resp.StatusCode, Message: strings.TrimSpace(string(raw))}
+	ae := &APIError{Status: resp.StatusCode, Message: strings.TrimSpace(string(raw)),
+		RetryAfter: parseRetryAfter(resp.Header.Get("Retry-After"), time.Now())}
 
 	var envelope struct {
 		Error struct {
@@ -323,19 +335,40 @@ func parseAPIError(resp *http.Response) error {
 			Type    string `json:"type"`
 			Status  int    `json:"status"`
 			Message string `json:"message"`
+			Param   string `json:"param"`
 		} `json:"error"`
 	}
 	if json.Unmarshal(raw, &envelope) == nil {
 		ae.Code = envelope.Error.Code
 		ae.Type = envelope.Error.Type
+		ae.Param = envelope.Error.Param
 		if envelope.Error.Message != "" {
 			ae.Message = envelope.Error.Message
 		}
-		if envelope.Error.Status != 0 {
+		if envelope.Error.Status >= 400 && envelope.Error.Status <= 599 {
 			ae.Status = envelope.Error.Status
 		}
 	}
+	if ae.Message == "" {
+		ae.Message = http.StatusText(resp.StatusCode)
+		if ae.Message == "" {
+			ae.Message = fmt.Sprintf("Upstream HTTP %d", resp.StatusCode)
+		}
+	}
 	return ae
+}
+
+func parseRetryAfter(value string, now time.Time) time.Duration {
+	if seconds, err := strconv.ParseInt(strings.TrimSpace(value), 10, 64); err == nil {
+		if seconds > 0 && seconds <= int64((1<<63-1)/time.Second) {
+			return time.Duration(seconds) * time.Second
+		}
+		return 0
+	}
+	if when, err := http.ParseTime(value); err == nil && when.After(now) {
+		return when.Sub(now)
+	}
+	return 0
 }
 
 // NewTraceparent returns a W3C traceparent header value (version 00, sampled).

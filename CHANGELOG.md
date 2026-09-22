@@ -8,6 +8,17 @@ versioning follows [SemVer](https://semver.org/).
 
 ### Added
 
+- Add native `POST /v1/systemone` for Jev (`noul`, `choice`, `score`), using
+  existing managed/passthrough auth and ZDR headers. Preserve native JSON,
+  extensions and large integers; validate complete upstream responses.
+- Limit each Jev Choice to 20 options by default. The startup switch
+  `JEV_UNLOCK_MAX_OPTIONS=true` allows up to 255; local 422 errors distinguish
+  locked options from exceeding the upstream maximum, without sending a request.
+- Reuse fill-first key rotation for Jev with entirely independent breakers,
+  cooldowns and half-open probes. Honor `Retry-After`; keep policy/validation
+  failures and service/network errors from triggering inappropriate rotation.
+- Add Jev timeout/response-size configuration, native error status/code/param
+  handling (including 422 and 529), and cancellation/invalid-response protection.
 - Add the startup `CMD_ZDR` switch (off by default). Enabling it sends
   `x-cmd-zdr: 1` on chat and auxiliary upstream API requests in both auth modes.
   Invalid boolean values fail startup instead of silently disabling ZDR.

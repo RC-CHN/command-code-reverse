@@ -2,7 +2,7 @@
 
 检查日期：2026-09-22。基线为本地 `command-code@1.54.2`，本次 npm `latest` 为 **1.62.1**，发布时间为北京时间 2026-09-22 09:12:11。
 
-结论：新增 **Jev / System One 决策 API** 和 **BYOK Responses 协议支持**；现有 `/alpha/generate` 聊天请求及 NDJSON 消费逻辑未发现破坏性变化。经用户授权，用 `.env` 中第一个上游 key 实测 Jev，返回 **HTTP 200**。已跟进离线版本兜底和聊天模型目录，Jev 代理端点仍待接入。
+结论：新增 **Jev / System One 决策 API** 和 **BYOK Responses 协议支持**；现有 `/alpha/generate` 聊天请求及 NDJSON 消费逻辑未发现破坏性变化。已跟进离线版本兜底、聊天模型目录和 Jev 代理端点。经用户授权，用 `.env` 中第一个上游 key 完成 Jev 直连及实际代理调用，均返回 **HTTP 200**。
 
 ## 来源与复现
 
@@ -12,6 +12,8 @@
 - [provenance.json](./provenance.json)：发布信息、校验值、格式化工具版本。
 - [comparison.json](./comparison.json)：函数哈希、已核对的变量改名、模型目录和字面量路由差异。
 - [jev-live-results.json](./jev-live-results.json)：单次 Jev 请求的合成输入及脱敏结果，不含凭证和请求头。
+- [jev-choice-255-live-results.json](./jev-choice-255-live-results.json)：单个 Choice 问题包含 255 个选项的完整合成请求、脱敏响应和校验结果。
+- [jev-proxy-live-results.json](./jev-proxy-live-results.json)：实际 Go 代理的三种题型验证，分别关闭/开启 ZDR，共两个合成请求。
 - [zdr-live-results.json](./zdr-live-results.json)：3 次短请求的 ZDR 路由对照，只保留开关值、合成输入和脱敏结果。
 
 在仓库根目录复现静态对比（Prettier 使用与基线相同的 3.6.2）：
@@ -72,7 +74,47 @@ python3 analysis/v1.62.1/scripts/compare.py \
 python3 analysis/v1.62.1/scripts/probe-jev.py --live --output /tmp/jev-result.json
 ```
 
-**对代理的影响**：当前仅将 `/v1/chat/completions` 转为 `/alpha/generate`，无法直接服务此接口。支持 Jev 需要专门的请求/响应处理；只把 `typesafe/jev` 加到聊天模型列表并不成立。
+### Choice 的 255 个选项：已通过真实请求验证
+
+2026-09-22 对照 [TypeSafe 官方 API](https://docs.typesafe.ai/api#choice)：Choice 最多支持 255 个选项；[Command Code Provider 文档](https://commandcode.ai/docs/provider#decision-models-typesafe-jev)说明其 System One 接口沿用 TypeSafe 的请求和响应格式。
+
+经用户授权，使用同一个 `.env` 首个上游 key，再向 Command Code 的
+`POST /provider/v1/systemone` 发出 **1 次**合成请求。只有一个 `choice` 问题，
+其 `criteria` 包含 `option_000` 至 `option_254`，共 **255 个选项**；
+`state.target` 指向最后的 `option_254`。本次未开启 ZDR，没有重试或轮换 key。
+
+- 请求体 11,171 bytes；返回 **HTTP 200 / application/json**，耗时 **4.898 秒**。
+- 回答为 `choice: "option_254"`、`confidence: 1`，符合构造数据的预期。
+- 返回 **255 项**概率，选项键与请求完全一致，无缺失或额外项；概率均在 `[0,1]` 内，总和为 **1.0**。
+- 上游报告 `input_tokens: 6417`、`output_tokens: 2827`；未提供费用字段。
+
+证明 255 个选项可以通过当前 Command Code Jev 网关实际完成调用；不是 255 个问题，也未验证 256 个选项是否会被拒绝。此次未直接调用 TypeSafe 服务。
+
+```bash
+python3 analysis/v1.62.1/scripts/probe-jev.py --live --case choice-255 \
+  --output /tmp/jev-choice-255-result.json
+```
+
+探测脚本现在遵守环境中的 `CMD_ZDR` 配置，并在结果中记录实际开关值；不会因策略拒绝自动关闭 ZDR。
+
+### 代理端点已接入
+
+`POST /v1/systemone` 转发到 `/provider/v1/systemone`，采用原生请求/响应 JSON，复用两种鉴权模式与 ZDR。
+每个 Choice 默认最多 **20 项**（用户选择的代理限制）；启动配置 `JEV_UNLOCK_MAX_OPTIONS=true` 放宽至 **255 项**。
+本地 422 错误区分 `jev_choice_options_locked` / `jev_choice_options_exceeded`，附 `param`，不发送上游、不截断或拆分题目。
+Jev 与聊天共用选 key/轮换算法，但各自持有独立熔断器、冷却和半开探测。参数错误、ZDR、消费上限、5xx、网络故障不换 key。
+完整配置及错误表见 [代理文档](../../proxy/README.md#jev--system-one)。
+
+2026-09-22 使用实际构建的 Go 代理，绑定本机回环地址，以 managed 模式和单个上游 key 做了两个真实请求。
+每个请求只有 3 个合成问题（Noul、2 项 Choice、3 级 Score），不开启选项扩容；版本固定 1.62.1，关闭指纹上报及版本自动拉取。
+
+| `CMD_ZDR` | 下游状态 | Noul | Choice | Score | 输入 / 输出 tokens | 耗时 |
+|---|---|---:|---|---:|---:|---:|
+| `0` | 200 | 0.99 | `large` | 1.99 | 378 / 63 | 2.594s |
+| `1` | 200 | 0.99 | `large` | 2 | 378 / 63 | 5.648s |
+
+证明原生三种题型能够走通实际代理，启用 ZDR 的 Jev 请求也被上游接受；这仍不证明服务端的数据留存行为。
+实际 `.env` 未修改，无自动重试或 key 轮换，响应未给费用字段。后续对非 2xx 响应读取期间取消的处理另由本地回归测试验证。
 
 ## 2. Responses 与 BYOK 的变化
 
@@ -154,8 +196,8 @@ python3 analysis/v1.62.1/scripts/probe-zdr.py --live --output /tmp/zdr-result.js
 
 1. 已将离线 `fallbackVersion` 更新到 1.62.1，补充上述 8 个模型的静态目录，并移除退役 LongCat 免费条目。动态模型目录仍优先；显式模型 ID 原样转发，包括旧免费 ID，不会静默切换到付费模型。
 2. 保留当前 `/alpha/generate` 请求与流解析实现；此次未发现必须立即修复的聊天协议不兼容。
-3. Jev 与 `/v1/responses` 分别作为独立功能扩展评估。Jev 已完成一次真实访问验证；Responses 尚未做真实调用。
-4. ZDR 启动配置和错误映射已接入，并完成上述 3 次真实路由对照；未对 Jev 的 ZDR 行为做实测。
+3. Jev 原生端点、默认 20 项/显式解锁 255 项、独立熔断和错误映射已接入；两次直连及两次实际代理请求均通过。Responses 尚未接入或做真实调用。
+4. ZDR 启动配置和错误映射已接入，聊天完成上述 3 次真实路由对照；Jev 在实际代理的开启/关闭两种配置下均调用成功。
 
 其余变化主要是 `/loop` 调度、剪贴板图片、图片上下文压缩、终端权限交互及遥测。Node 要求仍为 `>=22`，package.json 除版本号外无差异，CLI 引导入口 `dist/index.mjs` 逐字一致。
 

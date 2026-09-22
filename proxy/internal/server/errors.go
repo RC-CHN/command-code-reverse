@@ -20,6 +20,7 @@ type openAIErrorBody struct {
 	Message string `json:"message"`
 	Type    string `json:"type"`
 	Code    string `json:"code,omitempty"`
+	Param   string `json:"param,omitempty"`
 }
 
 // writeError sends an OpenAI-shaped error response. When retryAfter > 0 a
@@ -29,12 +30,16 @@ func writeError(w http.ResponseWriter, status int, typ, msg string, retryAfter i
 }
 
 func writeCodedError(w http.ResponseWriter, status int, typ, code, msg string, retryAfter int) {
+	writeErrorBody(w, status, openAIErrorBody{Message: msg, Type: typ, Code: code}, retryAfter)
+}
+
+func writeErrorBody(w http.ResponseWriter, status int, body openAIErrorBody, retryAfter int) {
 	if retryAfter > 0 {
 		w.Header().Set("Retry-After", strconv.Itoa(retryAfter))
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(openAIError{Error: openAIErrorBody{Message: msg, Type: typ, Code: code}})
+	_ = json.NewEncoder(w).Encode(openAIError{Error: body})
 }
 
 // writeUpstreamError maps an upstream failure to an OpenAI error response.
@@ -86,7 +91,11 @@ func retryAfterSeconds(d time.Duration) int {
 	if d <= 0 {
 		return 1
 	}
-	return int((d + time.Second - 1) / time.Second)
+	seconds := d / time.Second
+	if d%time.Second != 0 {
+		seconds++
+	}
+	return int(seconds)
 }
 
 // terminalErrorStatus maps an in-band terminal marker to (status, type, message).

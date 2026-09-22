@@ -114,6 +114,8 @@ func testConfig() *config.Config {
 		MaxTokensClamp:       200000,
 		StreamIdleTimeout:    5_000_000_000, // 5s
 		NonStreamIdleTimeout: 5_000_000_000,
+		JevTimeout:           5_000_000_000,
+		JevMaxResponseBytes:  8 << 20,
 	}
 }
 

@@ -42,6 +42,7 @@ func New(cfg *config.Config, deps Deps, renderMetrics func() string) http.Handle
 	// Authenticated API surface.
 	api := http.NewServeMux()
 	api.HandleFunc("POST /v1/chat/completions", s.handleChatCompletions)
+	api.HandleFunc("POST /v1/systemone", s.handleSystemOne)
 	api.HandleFunc("GET /v1/models", s.handleModels)
 	api.HandleFunc("GET /v1/models/{id...}", s.handleModelGet) // IDs contain "/"
 	api.HandleFunc("GET /v1/credits", s.handleCredits)

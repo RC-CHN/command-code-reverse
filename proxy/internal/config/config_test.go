@@ -15,6 +15,7 @@ func isolate(t *testing.T) {
 		"COMMAND_CODE_API_KEY", "COMMAND_CODE_API_BASE", "COMMAND_CODE_VERSION",
 		"COMMAND_CODE_VERSION_PIN", "AUTH_MODE", "PROXY_API_KEY",
 		"CMD_ZDR",
+		"JEV_UNLOCK_MAX_OPTIONS", "JEV_TIMEOUT_SECONDS", "JEV_MAX_RESPONSE_BYTES",
 		"FINGERPRINT_ENABLED", "FINGERPRINT_SEED", "FINGERPRINT_STATE_FILE",
 		"HOST", "PORT", "LOG_FORMAT", "LOG_LEVEL", "MAX_BODY_BYTES",
 	} {
@@ -49,6 +50,73 @@ func TestLoadDefaults(t *testing.T) {
 	}
 	if c.ZDR {
 		t.Error("ZDR must be opt-in")
+	}
+	if c.JevUnlockMaxOptions || c.JevTimeout.Seconds() != 90 || c.JevMaxResponseBytes != 8<<20 {
+		t.Fatal("unexpected Jev defaults")
+	}
+}
+
+func TestJevConfiguration(t *testing.T) {
+	for _, tc := range []struct {
+		key, value string
+		invalid    bool
+	}{
+		{"JEV_UNLOCK_MAX_OPTIONS", "true", false}, {"JEV_UNLOCK_MAX_OPTIONS", "1", false},
+		{"JEV_UNLOCK_MAX_OPTIONS", "false", false}, {"JEV_UNLOCK_MAX_OPTIONS", "0", false},
+		{"JEV_UNLOCK_MAX_OPTIONS", "ture", true},
+		{"JEV_TIMEOUT_SECONDS", "12", false}, {"JEV_TIMEOUT_SECONDS", "0", true},
+		{"JEV_TIMEOUT_SECONDS", "bad", true}, {"JEV_TIMEOUT_SECONDS", "9223372036854775807", true},
+		{"JEV_MAX_RESPONSE_BYTES", "1024", false}, {"JEV_MAX_RESPONSE_BYTES", "-1", true},
+		{"JEV_MAX_RESPONSE_BYTES", "9223372036854775807", true},
+	} {
+		t.Run(tc.key+"/"+tc.value, func(t *testing.T) {
+			isolate(t)
+			t.Setenv("COMMAND_CODE_API_KEY", "k1")
+			t.Setenv("PROXY_API_KEY", "p")
+			t.Setenv(tc.key, tc.value)
+			cfg, err := Load()
+			if tc.invalid {
+				if err == nil {
+					t.Fatal("invalid config accepted")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			switch tc.key {
+			case "JEV_UNLOCK_MAX_OPTIONS":
+				if cfg.JevUnlockMaxOptions != (tc.value == "true" || tc.value == "1") {
+					t.Fatal("unlock mismatch")
+				}
+			case "JEV_TIMEOUT_SECONDS":
+				if cfg.JevTimeout.Seconds() != 12 {
+					t.Fatal("timeout mismatch")
+				}
+			case "JEV_MAX_RESPONSE_BYTES":
+				if cfg.JevMaxResponseBytes != 1024 {
+					t.Fatal("response limit mismatch")
+				}
+			}
+		})
+	}
+}
+
+func TestJevDotEnvOverride(t *testing.T) {
+	isolate(t)
+	t.Setenv("COMMAND_CODE_API_KEY", "k1")
+	t.Setenv("PROXY_API_KEY", "p")
+	if err := os.WriteFile(".env", []byte("JEV_UNLOCK_MAX_OPTIONS=true\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	cfg, err := Load()
+	if err != nil || !cfg.JevUnlockMaxOptions {
+		t.Fatalf("dotenv: cfg=%v err=%v", cfg != nil, err)
+	}
+	t.Setenv("JEV_UNLOCK_MAX_OPTIONS", "false")
+	cfg, err = Load()
+	if err != nil || cfg.JevUnlockMaxOptions {
+		t.Fatalf("override: cfg=%v err=%v", cfg != nil, err)
 	}
 }
 

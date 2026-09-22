@@ -45,7 +45,7 @@ type Registry struct {
 // New builds the registry with all families.
 func New() *Registry {
 	return &Registry{
-		Requests:     newCounter("commandcode_proxy_requests_total", "Chat completion requests by model/stream/result."),
+		Requests:     newCounter("commandcode_proxy_requests_total", "Inference requests by model/stream/result."),
 		Tokens:       newCounter("commandcode_proxy_tokens_total", "Tokens served, by kind (input/output/cached)."),
 		LatencyMs:    newSummary("commandcode_proxy_latency_ms", "End-to-end request latency (milliseconds)."),
 		UpstreamErr:  newCounter("commandcode_proxy_upstream_errors_total", "Upstream failures by class."),

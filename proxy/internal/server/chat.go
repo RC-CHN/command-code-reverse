@@ -50,6 +50,10 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "invalid_request_error", "model is required", 0)
 		return
 	}
+	if commandcode.ResolveSystemOneModel(req.Model) != "" {
+		writeCodedError(w, 400, "invalid_request_error", "unsupported_endpoint", "Jev uses POST /v1/systemone with state and questions", 0)
+		return
+	}
 
 	// Conversation-root-derived identity: stable within a conversation
 	// (prefix-chain growth keeps the root constant), fresh across them.

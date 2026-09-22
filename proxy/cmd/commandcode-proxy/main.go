@@ -69,6 +69,7 @@ func main() {
 	// conversation root, keyed by the fingerprint seed when configured.
 	sessions := session.NewStore(cfg.FingerprintSeed)
 	upstream := keypool.New(client, sessions, cfg.APIKeys, keypool.BreakerPolicy{})
+	systemOne := keypool.NewSystemOne(client, sessions, cfg.APIKeys, keypool.BreakerPolicy{}, cfg.JevMaxResponseBytes)
 
 	// Model catalog fetcher: managed uses the pool key, passthrough uses the
 	// downstream key from the request.
@@ -93,6 +94,7 @@ func main() {
 
 	deps := server.Deps{
 		Upstream:    upstream,
+		SystemOne:   systemOne,
 		Version:     buildVersion,
 		CCVersion:   versionTracker.String,
 		FetchModels: fetchModels,
@@ -123,6 +125,7 @@ func main() {
 			"apiBase", cfg.APIBase,
 			"ccVersion", versionTracker.String(),
 			"zdr", cfg.ZDR,
+			"jevUnlockMaxOptions", cfg.JevUnlockMaxOptions,
 		)
 		if err := httpServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			errCh <- err

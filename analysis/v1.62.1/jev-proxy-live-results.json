@@ -1,0 +1,123 @@
+{
+  "checked_at": "2026-09-22T08:39:30.979962+00:00",
+  "transport": "Actual Go proxy POST /v1/systemone to official /provider/v1/systemone; two synthetic requests; one key; no automatic retry",
+  "binary_sha256": "903d7d2b6ce3a071ddbb44aa6a7945400eac129c2b8a5f3f4a5fc9bcfa9949b5",
+  "key_index": 1,
+  "request": {
+    "model": "jev",
+    "state": {
+      "value": 2
+    },
+    "questions": {
+      "greater_than_one": {
+        "type": "noul",
+        "instructions": "Is value greater than 1?"
+      },
+      "category": {
+        "type": "choice",
+        "instructions": "Classify value.",
+        "criteria": {
+          "small": "Value is at most 1.",
+          "large": "Value is at least 2."
+        }
+      },
+      "size": {
+        "type": "score",
+        "instructions": "Rate the value on the levels.",
+        "criteria": [
+          "Zero or negative",
+          "One",
+          "Two or more"
+        ]
+      }
+    }
+  },
+  "cases": [
+    {
+      "zdr_enabled": false,
+      "http_status": 200,
+      "content_type": "application/json",
+      "response": {
+        "model": "typesafe/jev",
+        "answers": {
+          "greater_than_one": {
+            "type": "noul",
+            "noul": 0.99
+          },
+          "category": {
+            "type": "choice",
+            "choice": "large",
+            "confidence": 1,
+            "probabilities": {
+              "small": 0,
+              "large": 1
+            }
+          },
+          "size": {
+            "type": "score",
+            "score": 1.99,
+            "confidence": 0.99,
+            "legend": {
+              "0": "Zero or negative",
+              "1": "One",
+              "2": "Two or more"
+            },
+            "probabilities": {
+              "0": 0,
+              "1": 0.01,
+              "2": 0.99
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 378,
+          "output_tokens": 63
+        }
+      },
+      "elapsed_seconds": 2.594
+    },
+    {
+      "zdr_enabled": true,
+      "http_status": 200,
+      "content_type": "application/json",
+      "response": {
+        "model": "typesafe/jev",
+        "answers": {
+          "greater_than_one": {
+            "type": "noul",
+            "noul": 0.99
+          },
+          "category": {
+            "type": "choice",
+            "choice": "large",
+            "confidence": 1,
+            "probabilities": {
+              "large": 1,
+              "small": 0
+            }
+          },
+          "size": {
+            "type": "score",
+            "score": 2,
+            "confidence": 0.99,
+            "legend": {
+              "0": "Zero or negative",
+              "1": "One",
+              "2": "Two or more"
+            },
+            "probabilities": {
+              "0": 0,
+              "1": 0,
+              "2": 1
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 378,
+          "output_tokens": 63
+        }
+      },
+      "elapsed_seconds": 5.648
+    }
+  ]
+}

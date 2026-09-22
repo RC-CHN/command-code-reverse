@@ -5,13 +5,14 @@ Go 版 Command Code → OpenAI 兼容代理。把 `POST /alpha/generate`（NDJSO
 
 协议依据：`analysis/v1.32.2/README.md`（command-code@1.32.2 静态逆向 + 实测）。
 最新核对：[command-code@1.62.1](../analysis/v1.62.1/README.md)（聊天主协议未变；已更新离线版本兜底、8 个新增聊天模型，并从静态目录移除退役的 LongCat 免费版）。
-分析中的 Jev 实测为直连上游；当前代理尚未提供 Jev 或 Responses 端点。
+现已提供原生 Jev 决策端点 `/v1/systemone`；Responses 端点仍待接入。
 此前的 [1.51.3 协议分析](../analysis/v1.51.3/README.md) 和 [真实上游验证](../analysis/v1.51.3/LIVE.md) 保留作为历史记录。
 零第三方依赖（标准库 only）。
 
 ## 功能
 
 - `POST /v1/chat/completions` — 流式（SSE）+ 非流式，工具调用、思考链（reasoning_content）、缓存命中透传
+- `POST /v1/systemone` — Jev 原生 JSON 决策接口，支持 noul / choice / score；独立熔断
 - `GET /v1/models` — 动态拉取 `/provider/v1/models`（5min 缓存 + 静态兜底）
 - `GET /v1/credits` — 透传 billing/credits + subscriptions（5h/weekly 窗口可见）
 - `GET /healthz` / `GET /readyz` — liveness / readiness（readiness 带 30s 缓存的上游 whoami 探针）
@@ -39,6 +40,64 @@ curl -N http://localhost:3050/v1/chat/completions \
   -d '{"model":"deepseek/deepseek-v4-flash","stream":true,
        "messages":[{"role":"user","content":"hi"}]}'
 ```
+
+## Jev / System One
+
+`POST /v1/systemone` 使用与聊天相同的鉴权，转发到上游 `/provider/v1/systemone`。
+接受 `typesafe/jev`、`jev`、`jev-latest`、`typesafe-ai/jev`，统一发送 `typesafe/jev`。
+返回原生 JSON（`model/answers/usage` 及扩展字段）；Jev 请求应使用本端点。
+聊天端点收到这些模型名会返回 400 `unsupported_endpoint`。
+
+```bash
+curl http://localhost:3050/v1/systemone \
+  -H "Authorization: Bearer $PROXY_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"jev","state":{"value":2},"questions":{
+    "greater_than_one":{"type":"noul","instructions":"Is value greater than 1?"}
+  }}'
+```
+
+沿用 CLI 的 1–20 个具名问题限制。`state`、`instructions` 接受字符串、对象、数组或 null；
+原始 JSON 数字和扩展字段保留。`noul.criteria` 可省略，提供时只接受 `true/false`；
+`choice.criteria` 为选项对象；`score.criteria` 为 2–10 个有序等级。接口不支持 `stream` 参数。
+
+每个 Choice **默认最多 20 项**，这是代理的保守限制，不是 CLI 已确认的限制。
+启动时设置 `JEV_UNLOCK_MAX_OPTIONS=true`，重启后允许最多 **255 项**。
+开关关闭且请求有 21–255 项时返回：
+
+```json
+{"error":{"type":"invalid_request_error","code":"jev_choice_options_locked","param":"questions.pick.criteria","message":"Choice has 21 options; the proxy limit is 20. Set JEV_UNLOCK_MAX_OPTIONS=true and restart the proxy to allow up to 255"}}
+```
+
+无论是否解锁，超过 255 项均返回 422 `jev_choice_options_exceeded`。
+这两种错误均在本地拦截，不调用上游、不截断选项、不切换 key。下游参数或请求头不能解锁。
+
+managed 模式按配置顺序选择 key，策略与聊天一致，但 **所有熔断、冷却和半开探测状态独立**。
+凭证失效、欠费、429 限流会尝试下一个未尝试的 key；每个 key 在单次请求中最多调用一次。
+欠费/凭证失效冷却 1h，限流采用有效 `Retry-After`（秒数或 HTTP 日期），缺失时 1m。
+套餐错误（`upgrade_required` / `MODEL_NOT_IN_PLAN`）可换 key，但不熔断。
+passthrough 只使用调用者的 key，不轮换到配置池。
+
+| 错误 | 下游返回 | 轮换 / 熔断 |
+|---|---|---|
+| 本地 JSON 损坏 / 请求体超限 | 400 `invalid_json` / 413 `request_body_too_large` | 不请求上游 |
+| 题目结构、选项限制错误 | 422，带 `code` 和 `param` | 不请求上游 |
+| 上游 400/404/408/413/415/422 等参数错误 | 保留状态、错误码、消息和字段位置 | 不轮换、不熔断 |
+| 上游 401 / 明确鉴权失败的 403 | key 用尽后 502 `upstream_auth_error` | 轮换，独立熔断 |
+| 上游 402 / `insufficient_credits` | 402 `billing_error` | 轮换，独立熔断 |
+| 套餐不支持 | 403 `plan_error` | 轮换，不熔断 |
+| 其他 403 权限错误 | 403 `permission_error` | 不轮换、不熔断 |
+| ZDR 无可用路由 / `USAGE_EXCEEDED` | 403 `zdr_error` / `spend_limit_error` | 不轮换、不熔断、不降级 |
+| 上游 429 | 429 `rate_limit_error`，保留有效 `Retry-After` | 轮换，独立冷却 |
+| 当前没有可选 key | 503 `keypool_unavailable`，带最短等待时间 | 不请求上游 |
+| 上游 5xx（含 529 过载） | 保留状态和错误码；503/529 保留有效 `Retry-After` | 不轮换、不熔断 |
+| 本地超时 / 网络故障 | 504 `upstream_timeout` / 502 `upstream_connection_error` | 不轮换、不熔断 |
+| 上游 JSON 非法、缺少答案 / 响应超限 | 502 `upstream_invalid_response` / `upstream_response_too_large` | 不轮换、不熔断 |
+
+默认总超时 90s，覆盖所有 key 尝试及响应读取；客户端断开会取消上游。
+响应完整读取、校验后才返回 200；0 概率或 0 分是合法结果。
+`CMD_ZDR` 同样生效。日志仅记录模型、状态、耗时、错误码，不记录 state/questions/answers。
+用量进入现有指标；没有费用字段时不推算费用。不会缓存决策结果。
 
 ## System 缓存扩展
 
@@ -125,7 +184,7 @@ docker run --env-file ../.env -p 3050:3050 commandcode-proxy
 
 | 变量 | 必填 | 默认 | 说明 |
 |---|---|---|---|
-| `FINGERPRINT_ENABLED` | | `false` | 开启后启动时上报一次设备指纹 + 8h±2h 心搏 |
+| `FINGERPRINT_ENABLED` | | `false` | 开启后启动时上报一次设备指纹，之后每 8–10h 心搏；当前只为池中第一个 key 上报 |
 | `FINGERPRINT_SEED` | | 空 | 确定性派生种子（放 k8s Secret）。所有组件由 `HMAC-SHA256(seed, component)` 派生，pod 重调度指纹不变，无需 PVC。**优先级最高** |
 | `FINGERPRINT_STATE_FILE` | | `./data/fingerprint.json` | 采集一次→持久化→永久重放模式（挂 PVC）。仅 seed 为空时生效 |
 
@@ -141,6 +200,9 @@ docker run --env-file ../.env -p 3050:3050 commandcode-proxy
 | 变量 | 必填 | 默认 | 说明 |
 |---|---|---|---|
 | `MAX_BODY_BYTES` | | `67108864` (64 MiB) | 启动时读取的请求体字节上限，包含 base64 图片和 JSON；超限返回 413 |
+| `JEV_UNLOCK_MAX_OPTIONS` | | `false` | 每个 Choice 默认 20 项；`true`/`1` 放宽至 255 项；非法布尔值启动失败 |
+| `JEV_TIMEOUT_SECONDS` | | `90` | Jev 请求总超时（含轮换和读取）；正整数 |
+| `JEV_MAX_RESPONSE_BYTES` | | `8388608` (8 MiB) | Jev 完整 JSON 响应上限；正整数，超限返回 502 |
 | `MAX_TOKENS_CLAMP` | | `200000` | max_tokens 钳制上限 |
 | `STREAM_IDLE_TIMEOUT_SECONDS` | | `30` | 流式事件空闲超时（超时取消上游请求；连续 3 次提示压缩上下文） |
 | `NONSTREAM_IDLE_TIMEOUT_SECONDS` | | `90` | 非流式空闲超时 |

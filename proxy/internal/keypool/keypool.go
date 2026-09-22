@@ -73,9 +73,10 @@ func (e *UnavailableError) Error() string {
 // Pool is a fill-first key selector with circuit breaking.
 // It satisfies server.Upstream.
 type Pool struct {
-	client   GenerateClient
-	sessions *session.Store
-	policy   BreakerPolicy
+	client    GenerateClient
+	sessions  *session.Store
+	policy    BreakerPolicy
+	systemOne bool
 
 	mu   sync.Mutex
 	keys []*keyState
@@ -99,27 +100,36 @@ func New(client GenerateClient, sessions *session.Store, keys []string, policy B
 // meta carries conversation + trace identity so session IDs stay stable
 // within a conversation and retries share one trace ID.
 func (p *Pool) Generate(ctx context.Context, hint string, meta commandcode.CallMeta, req *commandcode.GenerateRequest) (io.ReadCloser, error) {
+	return withKey(ctx, p, hint, func(key string) (io.ReadCloser, error) {
+		return p.generate(ctx, key, meta, req)
+	})
+}
+
+// withKey shares selection/rotation and generation-safe leases across APIs.
+// Each API owns its own Pool, so no breaker state is shared between them.
+func withKey[T any](ctx context.Context, p *Pool, hint string, call func(string) (T, error)) (T, error) {
+	var zero T
 	if hint != "" {
 		// Passthrough mode: downstream supplied its own key; no pooling.
-		return p.generate(ctx, hint, meta, req)
+		return call(hint)
 	}
 
 	attempted := make(map[*keyState]bool, len(p.keys))
 	var lastErr error
 	for {
 		if err := ctx.Err(); err != nil {
-			return nil, err
+			return zero, err
 		}
 		ks, unavailable := p.acquireCandidate(attempted)
 		if ks == nil {
 			if lastErr != nil {
-				return nil, lastErr
+				return zero, lastErr
 			}
-			return nil, unavailable
+			return zero, unavailable
 		}
 		attempted[ks.state] = true
 
-		body, err := p.generate(ctx, ks.state.key, meta, req)
+		body, err := call(ks.state.key)
 		if err == nil {
 			p.reportSuccess(ks)
 			return body, nil
@@ -127,10 +137,10 @@ func (p *Pool) Generate(ctx context.Context, hint string, meta commandcode.CallM
 		lastErr = err
 		if !p.reportFailure(ks, err) {
 			// Non-key-specific failure (network, cancel): no point rotating.
-			return nil, lastErr
+			return zero, lastErr
 		}
 		slog.Warn("keypool: key failed, spilling to next",
-			"keyPrefix", prefix(ks.state.key), "error", err)
+			"keyPrefix", prefix(ks.state.key), "systemOne", p.systemOne)
 	}
 }
 
@@ -193,7 +203,11 @@ func (p *Pool) reportFailure(ks *keyLease, err error) (rotate bool) {
 	case errors.As(err, &ae) && ae.IsInsufficientCredits():
 		p.open(ks, p.policy.CreditsTTL, "insufficient_credits")
 	case errors.As(err, &ae) && ae.IsRateLimited():
-		p.open(ks, p.policy.RateLimitTTL, "rate_limited")
+		ttl := p.policy.RateLimitTTL
+		if ae.RetryAfter > 0 {
+			ttl = ae.RetryAfter
+		}
+		p.open(ks, ttl, "rate_limited")
 	case errors.As(err, &ae) && ae.IsModelNotInPlan():
 		// Tier mismatch, not a key problem: keep the key healthy, but a
 		// higher-tier pooled key may succeed, so rotating is worthwhile.
@@ -201,6 +215,10 @@ func (p *Pool) reportFailure(ks *keyLease, err error) (rotate bool) {
 		return true
 	case errors.As(err, &ae) && ae.IsModelNotRecognized():
 		// Unknown model ID: no pooled key will serve it either.
+		p.close(ks)
+		return false
+	case p.systemOne && errors.As(err, &ae) && ae.Status == 403 && !ae.HasCode("authentication_error") && !ae.HasCode("invalid_api_key"):
+		// An unexplained provider permission denial is not proof of a bad key.
 		p.close(ks)
 		return false
 	case errors.As(err, &ae) && (ae.Status == 401 || ae.Status == 403):
@@ -254,7 +272,7 @@ func (p *Pool) open(lease *keyLease, ttl time.Duration, reason string) {
 	p.mu.Unlock()
 
 	slog.Warn("keypool: circuit opened",
-		"keyPrefix", prefix(ks.key), "reason", reason, "openFor", ttl)
+		"keyPrefix", prefix(ks.key), "reason", reason, "openFor", ttl, "systemOne", p.systemOne)
 }
 
 // creds builds per-request upstream credentials for a key. Session identity

@@ -41,6 +41,10 @@ curl -N http://localhost:3050/v1/chat/completions \
 
 Docker / k8s 部署与完整配置说明见 [`proxy/README.md`](./proxy/README.md)。
 
+Jev 原生决策接口为 `POST /v1/systemone`，与聊天使用独立的 key 熔断状态。
+每个 Choice 默认最多 20 个选项，`JEV_UNLOCK_MAX_OPTIONS=true` 可解锁至 255 个。
+请求格式和错误处理见 [Jev 接口说明](./proxy/README.md#jev--system-one)。
+
 ## 设计要点
 
 - **零第三方依赖**——只用 Go 标准库。
