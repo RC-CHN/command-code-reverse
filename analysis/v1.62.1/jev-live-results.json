@@ -1,0 +1,41 @@
+{
+  "checked_at": "2026-09-22T07:30:18.359783+00:00",
+  "endpoint": "https://api.commandcode.ai/provider/v1/systemone",
+  "key_index": 1,
+  "cli_version": "1.62.1",
+  "request": {
+    "model": "typesafe/jev",
+    "state": {
+      "value": 2
+    },
+    "questions": {
+      "greater_than_one": {
+        "type": "noul",
+        "instructions": "Is the value greater than 1?"
+      }
+    }
+  },
+  "transport": "direct HTTPS; one synthetic request; no retry or key rotation",
+  "http_status": 200,
+  "content_type": "application/json",
+  "body_truncated": false,
+  "top_level_fields": [
+    "answers",
+    "model",
+    "usage"
+  ],
+  "response": {
+    "model": "typesafe/jev",
+    "answers": {
+      "greater_than_one": {
+        "type": "noul",
+        "noul": 0.99
+      }
+    },
+    "usage": {
+      "input_tokens": 279,
+      "output_tokens": 22
+    }
+  },
+  "elapsed_seconds": 4.053
+}

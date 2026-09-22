@@ -1,0 +1,68 @@
+{
+  "checked_at": "2026-09-22T07:30:47.481039+00:00",
+  "package": "command-code",
+  "version": "1.62.1",
+  "baseline_version": "1.54.2",
+  "registry": "https://registry.npmjs.org/command-code",
+  "version_metadata_url": "https://registry.npmjs.org/command-code/1.62.1",
+  "dist_tags_at_check": {
+    "alpha": "0.0.4-alpha.43",
+    "beta": "0.18.11-beta.0",
+    "rc": "1.32.2-rc.0",
+    "latest": "1.62.1"
+  },
+  "published_at": "2026-09-22T01:12:11.703Z",
+  "dist": {
+    "tarball": "https://registry.npmjs.org/command-code/-/command-code-1.62.1.tgz",
+    "integrity": "sha512-g3+uDRSzDaR3ySG4P60qrbm8Fbgg5VxRgBa28Evs3QKmpBGgj7q37NJt/UvqEYb6ke/ta02019epc049oeNQgQ==",
+    "shasum": "3a677c8b85128562af9bb560a33e2f5a146f3a14",
+    "fileCount": 72,
+    "unpackedSize": 7162888
+  },
+  "files": {
+    "tarball": {
+      "path": "references/command-code-npm/command-code-1.62.1.tgz",
+      "sha256": "cb8b8f37b3b4fa6d0278246b302609367c3ab65669eb9d9c29f892964e35d4bc"
+    },
+    "metadata": {
+      "path": "references/command-code-npm/command-code-1.62.1.metadata.json",
+      "sha256": "09252e268b8536b661b7402c212aba28b7ccd3a67f808d103992ba06ac3ff061"
+    },
+    "cli": {
+      "path": "references/command-code-npm/extracted-1.62.1/package/dist/cli.mjs",
+      "sha256": "80e04495dcc940bc990ba2ae4c30c6d24a4dcccf2d9c0b4cfe5411edcf6b5cfa"
+    },
+    "beautified_cli": {
+      "path": "references/command-code-npm/extracted-1.62.1/package/dist/cli.beautified.mjs",
+      "sha256": "c2bbdd26581675fe409bd82f23ccef926ef4f96be3ca9dc58323f2d524bf26b7"
+    },
+    "package_json": {
+      "path": "references/command-code-npm/extracted-1.62.1/package/package.json",
+      "sha256": "91429f3904befc527f4d4faee663a50ece0ccbd780d645da27be9ef9303c1534"
+    },
+    "comparison_script": {
+      "path": "analysis/v1.62.1/scripts/compare.py",
+      "sha256": "fb452fc66b84a5b51b8877ad9276156d0690541fea7789097f62c7644c070deb"
+    },
+    "base_comparison_script": {
+      "path": "analysis/v1.51.3/scripts/compare.py",
+      "sha256": "f182269b06cc228c15e37668463a29ddfa20290b40619389d035b19ad9e5de8f"
+    },
+    "jev_probe_script": {
+      "path": "analysis/v1.62.1/scripts/probe-jev.py",
+      "sha256": "982f9f932dc74cda07ebaea65f8a014b1b7736f8188bae0490a35f974473695c"
+    },
+    "jev_live_result": {
+      "path": "analysis/v1.62.1/jev-live-results.json",
+      "sha256": "71400a4739eeac5c8e2282f7a30f27d7e1ade1ff9abf729ace0a835c796c4ca4"
+    }
+  },
+  "prettier_version": "3.6.2",
+  "validation": "npm SHA-512 integrity and SHA-1 verified; CLI statically inspected and never executed; separate user-authorized Jev HTTPS probe is recorded in jev-live-results.json",
+  "core_functions_compared": 14,
+  "core_functions_byte_identical": 8,
+  "core_functions_verified_binding_renames_only": 5,
+  "core_functions_telemetry_only": 1,
+  "additional_helpers_compared": 11,
+  "verified_renamed_bindings": 14
+}

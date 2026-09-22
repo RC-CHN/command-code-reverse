@@ -1,0 +1,597 @@
+{
+  "old": {
+    "path": "references/command-code-npm/extracted-1.54.2/package/dist/cli.beautified.mjs",
+    "sha256": "89d968be39b94b2dee27b7e0af75d85241aece775854c6d6eef38b760f39e3d1"
+  },
+  "new": {
+    "path": "references/command-code-npm/extracted-1.62.1/package/dist/cli.beautified.mjs",
+    "sha256": "c2bbdd26581675fe409bd82f23ccef926ef4f96be3ca9dc58323f2d524bf26b7"
+  },
+  "functions": {
+    "buildCommandAuthHeaders": {
+      "old": {
+        "line": 28211,
+        "sha256": "f0bb2505a93e9ea122524b27d886a8a47c8e9ad8b7c5f7707e3f61c3984330dd"
+      },
+      "new": {
+        "line": 29007,
+        "sha256": "bdad7aca6b327a48c921200683bdff395cbe76d7b3650f99157f5b0f9f298c41"
+      }
+    },
+    "buildCommandApiHeaders": {
+      "old": {
+        "line": 28414,
+        "sha256": "0e42feff5cfc8d0d86ee3f3e11b753c0bd53694a53ac812680a1f9a50824256e"
+      },
+      "new": {
+        "line": 29210,
+        "sha256": "0e42feff5cfc8d0d86ee3f3e11b753c0bd53694a53ac812680a1f9a50824256e"
+      }
+    },
+    "buildMachineFingerprint": {
+      "old": {
+        "line": 43790,
+        "sha256": "d209369e2301b84375d4c8cdca0fbf9fe33c1b4b1421882e080b7f898d19abe0"
+      },
+      "new": {
+        "line": 44849,
+        "sha256": "340948cac4a6641bd981f15a7eda81b04c2a22644d8ca83f0b299ab2b88f3714"
+      }
+    },
+    "createModelClient": {
+      "old": {
+        "line": 37069,
+        "sha256": "13e6ae528fe7d2c5ecd4124561d6fa6a7739a17f1614fdd055a4a326a7e84b4d"
+      },
+      "new": {
+        "line": 37968,
+        "sha256": "566164b677ed5e92e574d8c92eaeb0dec48d8fbca6c8374a89dce0746d9c60d4"
+      }
+    },
+    "createSystemPromptBuilder": {
+      "old": {
+        "line": 35496,
+        "sha256": "e938ff0370e6fbac64af2c4bf25976709b0216ecebdf0d5445c319b5b468952c"
+      },
+      "new": {
+        "line": 36314,
+        "sha256": "f04fc924c44f3ed4290a4da7b6c6dd72b9c2f88375823c4c6e0f492066a0e0f2"
+      }
+    },
+    "toWireSystem": {
+      "old": {
+        "line": 36780,
+        "sha256": "81544772646e5ead3554422f35e823d7836704466d33484b87860443ae01d5fe"
+      },
+      "new": {
+        "line": 37679,
+        "sha256": "81544772646e5ead3554422f35e823d7836704466d33484b87860443ae01d5fe"
+      }
+    },
+    "toWireMessages": {
+      "old": {
+        "line": 36732,
+        "sha256": "dd74fb4e04a3428c34ddc5ec09d1e4a91c7c51c3b01f710d1a2d869f3cc4a6b9"
+      },
+      "new": {
+        "line": 37631,
+        "sha256": "dd74fb4e04a3428c34ddc5ec09d1e4a91c7c51c3b01f710d1a2d869f3cc4a6b9"
+      }
+    },
+    "toWireTools": {
+      "old": {
+        "line": 36713,
+        "sha256": "de73d50b44a23d80221e2b7fe032eeb74dd71d3a027e379d1bccabbfb773332e"
+      },
+      "new": {
+        "line": 37612,
+        "sha256": "de73d50b44a23d80221e2b7fe032eeb74dd71d3a027e379d1bccabbfb773332e"
+      }
+    },
+    "toWirePermissionMode": {
+      "old": {
+        "line": 36836,
+        "sha256": "6a7f002b84bea463b2ed7f6cfd190bf74a4ef4ba52b3f7f03a8319e14cdde361"
+      },
+      "new": {
+        "line": 37735,
+        "sha256": "6a7f002b84bea463b2ed7f6cfd190bf74a4ef4ba52b3f7f03a8319e14cdde361"
+      }
+    },
+    "toWireThreadId": {
+      "old": {
+        "line": 36843,
+        "sha256": "fec353ee07d1b07ccb83b16a91f994a7e611ebce1dbdbc72bda5e82eb4fd612b"
+      },
+      "new": {
+        "line": 37742,
+        "sha256": "fec353ee07d1b07ccb83b16a91f994a7e611ebce1dbdbc72bda5e82eb4fd612b"
+      }
+    },
+    "readStreamErrorEvent": {
+      "old": {
+        "line": 36812,
+        "sha256": "8c247537365a4ad689fe7ba34bc67ea9b734c9254ac5bae0aa29c29f18deb702"
+      },
+      "new": {
+        "line": 37711,
+        "sha256": "8c247537365a4ad689fe7ba34bc67ea9b734c9254ac5bae0aa29c29f18deb702"
+      }
+    },
+    "consumeStream": {
+      "old": {
+        "line": 36891,
+        "sha256": "1a3f5892c02ebd9bbba6d0207284d6bc0a4aa32315ea82072aa6d8021f3efef8"
+      },
+      "new": {
+        "line": 37790,
+        "sha256": "b03b4d176368b27c66ed3616ff9709cc19e22c95f9b52482b88958ca535293a6"
+      }
+    },
+    "readCacheWriteTokens1h": {
+      "old": {
+        "line": 36788,
+        "sha256": "2a150c580785638f6668ef60e683f6472692922e35f093287a8e8b00b27342f2"
+      },
+      "new": {
+        "line": 37687,
+        "sha256": "2a150c580785638f6668ef60e683f6472692922e35f093287a8e8b00b27342f2"
+      }
+    },
+    "parseSpendCapError": {
+      "old": {
+        "line": 28530,
+        "sha256": "6f9233a7d6d1b78ca24c52476c97126365197e965d5cd792284107378d64a9db"
+      },
+      "new": {
+        "line": 29326,
+        "sha256": "b367368744351779b047f60560080dc14e0fca9d7001591e084d8695bb7d149c"
+      }
+    }
+  },
+  "catalog_counts": {
+    "old": 70,
+    "new": 78
+  },
+  "added_models": [
+    {
+      "id": "Qwen/Qwen3.8-Omni-Flash",
+      "name": "Qwen 3.8 Omni Flash",
+      "context_length": 1000000
+    },
+    {
+      "id": "meituan/LongCat-2.0",
+      "name": "LongCat 2.0",
+      "context_length": 1048576
+    },
+    {
+      "id": "stepfun/Step-5-Preview",
+      "name": "Step 5 Preview",
+      "context_length": 1000000
+    },
+    {
+      "id": "xai/grok-4.7",
+      "name": "Grok 4.7",
+      "context_length": 500000
+    },
+    {
+      "id": "xiaomi/mimo-v2.6-flash",
+      "name": "MiMo V2.6 Flash",
+      "context_length": 1048576
+    },
+    {
+      "id": "xiaomi/mimo-v2.6-pro",
+      "name": "MiMo V2.6 Pro",
+      "context_length": 1048576
+    },
+    {
+      "id": "xiaomi/mimo-v2.6-pro-ultraspeed",
+      "name": "MiMo V2.6 Pro UltraSpeed",
+      "context_length": 1048576
+    },
+    {
+      "id": "z-ai/glm-5.3-flashx",
+      "name": "GLM-5.3 FlashX",
+      "context_length": 1000000
+    }
+  ],
+  "removed_models": [],
+  "changed_models": [
+    {
+      "old": {
+        "id": "meituan/LongCat-2.0:free",
+        "name": "LongCat 2.0",
+        "context_length": 1048576
+      },
+      "new": {
+        "id": "meituan/LongCat-2.0:free",
+        "name": "LongCat 2.0 (Free)",
+        "context_length": 1048576
+      }
+    }
+  ],
+  "added_literal_routes": [
+    "/provider/v1/systemone"
+  ],
+  "removed_literal_routes": [],
+  "verified_renamed_bindings": [
+    {
+      "old": "Sy",
+      "new": "Gy",
+      "old_line": 70855,
+      "new_line": 72903,
+      "initializer_sha256": "8b57131df4bab74d309710bc9db03f5e98e853cf827df2f0bc377dbdbbb80ee1"
+    },
+    {
+      "old": "wy",
+      "new": "Vy",
+      "old_line": 70867,
+      "new_line": 72915,
+      "initializer_sha256": "a11227468aefe83968eedd6e1c9be2b8aaf601b84be32c39ba85bdeb41f8b373"
+    },
+    {
+      "old": "sb",
+      "new": "Ub",
+      "old_line": 72681,
+      "new_line": 74758,
+      "initializer_sha256": "6259e11db7e064189888a21ccf50b73bc844ac3c8e79dae7586b106462229599"
+    },
+    {
+      "old": "ob",
+      "new": "Fb",
+      "old_line": 72680,
+      "new_line": 74757,
+      "initializer_sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+    },
+    {
+      "old": "ok",
+      "new": "Dk",
+      "old_line": 72219,
+      "new_line": 74286,
+      "initializer_sha256": "c8c9d6e3f3b2a2a0b963ff52cb3e4935451282016a87550b55e20c03da124af0"
+    },
+    {
+      "old": "sk",
+      "new": "$k",
+      "old_line": 72220,
+      "new_line": 74287,
+      "initializer_sha256": "e4554787ee75f1190c031373e3290073ab2728dce4a85ea8a8a92bdb4529424a"
+    },
+    {
+      "old": "Ph",
+      "new": "Kh",
+      "old_line": 69996,
+      "new_line": 72033,
+      "initializer_sha256": "ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d"
+    },
+    {
+      "old": "nk",
+      "new": "Ok",
+      "old_line": 72216,
+      "new_line": 74283,
+      "initializer_sha256": "d68a99b9967f2771abe982bfc78f00334ec1435ca46788892c2fff9caa834037"
+    },
+    {
+      "old": "rk",
+      "new": "Lk",
+      "old_line": 72217,
+      "new_line": 74284,
+      "initializer_sha256": "235d1830ab90114ac900e3519c9958e93bf9884475187e84d11c46f1ec3e260c"
+    },
+    {
+      "old": "yv",
+      "new": "Wv",
+      "old_line": 71967,
+      "new_line": 74021,
+      "initializer_sha256": "f247bc919654990b5036da0e82b1eb2db5acba2311f2b7963c5338ce71ff16f5"
+    },
+    {
+      "old": "ky",
+      "new": "Ky",
+      "old_line": 70883,
+      "new_line": 72931,
+      "initializer_sha256": "459c5478a2c9f89508d36afad2d070b7707347f1b70f8738b0b835c19d2bf5e4"
+    },
+    {
+      "old": "ik",
+      "new": "Nk",
+      "old_line": 72229,
+      "new_line": 74296,
+      "initializer_sha256": "464760369e42d6dae50b3ebee6126eb46709f319eafbf6c74682e256295ef8e9"
+    },
+    {
+      "old": "rw",
+      "new": "Iw",
+      "old_line": 71357,
+      "new_line": 73411,
+      "initializer_sha256": "5551c68ac93e76775f2270644c6e37972910e952b5667f227383522a5235401b"
+    },
+    {
+      "old": "nw",
+      "new": "xw",
+      "old_line": 71356,
+      "new_line": 73410,
+      "initializer_sha256": "354434cddf7eb07ad5894ddcf94aed598c6a5d1bb7c410dba7bb98003334361f"
+    }
+  ],
+  "reviewed_functions": {
+    "buildCommandAuthHeaders": {
+      "classification": "verified_binding_renames_only",
+      "old_line": 28211,
+      "new_line": 29007,
+      "old_sha256": "f0bb2505a93e9ea122524b27d886a8a47c8e9ad8b7c5f7707e3f61c3984330dd",
+      "new_sha256": "bdad7aca6b327a48c921200683bdff395cbe76d7b3650f99157f5b0f9f298c41"
+    },
+    "buildCommandApiHeaders": {
+      "classification": "identical",
+      "old_line": 28414,
+      "new_line": 29210,
+      "old_sha256": "0e42feff5cfc8d0d86ee3f3e11b753c0bd53694a53ac812680a1f9a50824256e",
+      "new_sha256": "0e42feff5cfc8d0d86ee3f3e11b753c0bd53694a53ac812680a1f9a50824256e"
+    },
+    "buildMachineFingerprint": {
+      "classification": "verified_binding_renames_only",
+      "old_line": 43790,
+      "new_line": 44849,
+      "old_sha256": "d209369e2301b84375d4c8cdca0fbf9fe33c1b4b1421882e080b7f898d19abe0",
+      "new_sha256": "340948cac4a6641bd981f15a7eda81b04c2a22644d8ca83f0b299ab2b88f3714"
+    },
+    "createModelClient": {
+      "classification": "adds_conversation_id_to_telemetry_only",
+      "old_line": 37069,
+      "new_line": 37968,
+      "old_sha256": "13e6ae528fe7d2c5ecd4124561d6fa6a7739a17f1614fdd055a4a326a7e84b4d",
+      "new_sha256": "566164b677ed5e92e574d8c92eaeb0dec48d8fbca6c8374a89dce0746d9c60d4"
+    },
+    "createSystemPromptBuilder": {
+      "classification": "verified_binding_renames_only",
+      "old_line": 35496,
+      "new_line": 36314,
+      "old_sha256": "e938ff0370e6fbac64af2c4bf25976709b0216ecebdf0d5445c319b5b468952c",
+      "new_sha256": "f04fc924c44f3ed4290a4da7b6c6dd72b9c2f88375823c4c6e0f492066a0e0f2"
+    },
+    "toWireSystem": {
+      "classification": "identical",
+      "old_line": 36780,
+      "new_line": 37679,
+      "old_sha256": "81544772646e5ead3554422f35e823d7836704466d33484b87860443ae01d5fe",
+      "new_sha256": "81544772646e5ead3554422f35e823d7836704466d33484b87860443ae01d5fe"
+    },
+    "toWireMessages": {
+      "classification": "identical",
+      "old_line": 36732,
+      "new_line": 37631,
+      "old_sha256": "dd74fb4e04a3428c34ddc5ec09d1e4a91c7c51c3b01f710d1a2d869f3cc4a6b9",
+      "new_sha256": "dd74fb4e04a3428c34ddc5ec09d1e4a91c7c51c3b01f710d1a2d869f3cc4a6b9"
+    },
+    "toWireTools": {
+      "classification": "identical",
+      "old_line": 36713,
+      "new_line": 37612,
+      "old_sha256": "de73d50b44a23d80221e2b7fe032eeb74dd71d3a027e379d1bccabbfb773332e",
+      "new_sha256": "de73d50b44a23d80221e2b7fe032eeb74dd71d3a027e379d1bccabbfb773332e"
+    },
+    "toWirePermissionMode": {
+      "classification": "identical",
+      "old_line": 36836,
+      "new_line": 37735,
+      "old_sha256": "6a7f002b84bea463b2ed7f6cfd190bf74a4ef4ba52b3f7f03a8319e14cdde361",
+      "new_sha256": "6a7f002b84bea463b2ed7f6cfd190bf74a4ef4ba52b3f7f03a8319e14cdde361"
+    },
+    "toWireThreadId": {
+      "classification": "identical",
+      "old_line": 36843,
+      "new_line": 37742,
+      "old_sha256": "fec353ee07d1b07ccb83b16a91f994a7e611ebce1dbdbc72bda5e82eb4fd612b",
+      "new_sha256": "fec353ee07d1b07ccb83b16a91f994a7e611ebce1dbdbc72bda5e82eb4fd612b"
+    },
+    "readStreamErrorEvent": {
+      "classification": "identical",
+      "old_line": 36812,
+      "new_line": 37711,
+      "old_sha256": "8c247537365a4ad689fe7ba34bc67ea9b734c9254ac5bae0aa29c29f18deb702",
+      "new_sha256": "8c247537365a4ad689fe7ba34bc67ea9b734c9254ac5bae0aa29c29f18deb702"
+    },
+    "consumeStream": {
+      "classification": "verified_binding_renames_only",
+      "old_line": 36891,
+      "new_line": 37790,
+      "old_sha256": "1a3f5892c02ebd9bbba6d0207284d6bc0a4aa32315ea82072aa6d8021f3efef8",
+      "new_sha256": "b03b4d176368b27c66ed3616ff9709cc19e22c95f9b52482b88958ca535293a6"
+    },
+    "readCacheWriteTokens1h": {
+      "classification": "identical",
+      "old_line": 36788,
+      "new_line": 37687,
+      "old_sha256": "2a150c580785638f6668ef60e683f6472692922e35f093287a8e8b00b27342f2",
+      "new_sha256": "2a150c580785638f6668ef60e683f6472692922e35f093287a8e8b00b27342f2"
+    },
+    "parseSpendCapError": {
+      "classification": "verified_binding_renames_only",
+      "old_line": 28530,
+      "new_line": 29326,
+      "old_sha256": "6f9233a7d6d1b78ca24c52476c97126365197e965d5cd792284107378d64a9db",
+      "new_sha256": "b367368744351779b047f60560080dc14e0fca9d7001591e084d8695bb7d149c"
+    },
+    "createNodeTransport": {
+      "classification": "identical",
+      "old_line": 28278,
+      "new_line": 29074,
+      "old_sha256": "79e5e7ba479bec20a077eb591b51957d5d56b0f5de295600cb2f3ad570bc3111",
+      "new_sha256": "79e5e7ba479bec20a077eb591b51957d5d56b0f5de295600cb2f3ad570bc3111"
+    },
+    "createCommandApiClient": {
+      "classification": "identical",
+      "old_line": 28457,
+      "new_line": 29253,
+      "old_sha256": "b3cd6ece0ac1cd3ba11c378e3fba7e08c61a0f196b997277265d87373687a659",
+      "new_sha256": "b3cd6ece0ac1cd3ba11c378e3fba7e08c61a0f196b997277265d87373687a659"
+    },
+    "readLines": {
+      "classification": "identical",
+      "old_line": 36877,
+      "new_line": 37776,
+      "old_sha256": "7657b9db41bbf223ab0320c4c5f4933cef2345a2d7c7329373bf47701c377582",
+      "new_sha256": "7657b9db41bbf223ab0320c4c5f4933cef2345a2d7c7329373bf47701c377582"
+    },
+    "guardStreamFailures": {
+      "classification": "identical",
+      "old_line": 36862,
+      "new_line": 37761,
+      "old_sha256": "78ff221529fff09d703a8d60173d52e6aa17ee1b2e3458da5ae4da93998fd0c7",
+      "new_sha256": "78ff221529fff09d703a8d60173d52e6aa17ee1b2e3458da5ae4da93998fd0c7"
+    },
+    "isStreamErrorRetryable": {
+      "classification": "identical",
+      "old_line": 36828,
+      "new_line": 37727,
+      "old_sha256": "69021201c733f8c10e8f8f36c63dc4f79f3223b26b15d40108925ec3ac395a3c",
+      "new_sha256": "69021201c733f8c10e8f8f36c63dc4f79f3223b26b15d40108925ec3ac395a3c"
+    },
+    "hasTerminalMarker": {
+      "classification": "verified_binding_renames_only",
+      "old_line": 36824,
+      "new_line": 37723,
+      "old_sha256": "4e99fdbb73ee2aa15ee2bb31fc0b33c472f4b91548fa05b62ca025186cbd4a3e",
+      "new_sha256": "6325448c55df243ef938a054615cb5b1f21d28fd093e4464b3fd158cc7744bf9"
+    },
+    "toWireToolOutput": {
+      "classification": "identical",
+      "old_line": 36720,
+      "new_line": 37619,
+      "old_sha256": "d29fbef5bca356bc369f9bc4a9b3682075fca8182a9682cc4d2bf7e4c14fa9a9",
+      "new_sha256": "d29fbef5bca356bc369f9bc4a9b3682075fca8182a9682cc4d2bf7e4c14fa9a9"
+    },
+    "toWireToolName": {
+      "classification": "verified_binding_renames_only",
+      "old_line": 36729,
+      "new_line": 37628,
+      "old_sha256": "27cb5146c742f56ec650c26ab17cd4a663dd3a8f5513a370c5e1c9c690178bd7",
+      "new_sha256": "797b6fab024aadcd712d3b2a7737f128c890ab085544aa861412d07601ee3b3b"
+    },
+    "coerceToolInput": {
+      "classification": "identical",
+      "old_line": 36678,
+      "new_line": 37577,
+      "old_sha256": "0c5f3b6c882c63acfd03b77beb91fc817450a98a254659c298aedac655e07153",
+      "new_sha256": "0c5f3b6c882c63acfd03b77beb91fc817450a98a254659c298aedac655e07153"
+    },
+    "formatServerToolOutput": {
+      "classification": "identical",
+      "old_line": 36854,
+      "new_line": 37753,
+      "old_sha256": "44c95725c8e5e4c3da29db34ac5de20a607ab4605ab1c707912c57eb035e994c",
+      "new_sha256": "44c95725c8e5e4c3da29db34ac5de20a607ab4605ab1c707912c57eb035e994c"
+    },
+    "getApiBaseUrl": {
+      "classification": "identical",
+      "old_line": 2589,
+      "new_line": 2659,
+      "old_sha256": "2f28720480fd5c6db799aa3c7cfca293c705f0ee39b6ecf4c014acfb6d7293bb",
+      "new_sha256": "2f28720480fd5c6db799aa3c7cfca293c705f0ee39b6ecf4c014acfb6d7293bb"
+    }
+  },
+  "catalog_counts_scope": "entries with an explicit contextWindow (legacy comparator)",
+  "full_catalog_counts": {
+    "old": 74,
+    "new": 82
+  },
+  "hidden_catalog_counts": {
+    "old": 3,
+    "new": 4
+  },
+  "added_model_metadata": {
+    "Qwen/Qwen3.8-Omni-Flash": {
+      "reasoning": true,
+      "inputModalities": [
+        "text",
+        "image"
+      ],
+      "reasoningEfforts": [
+        "low",
+        "medium",
+        "xhigh"
+      ],
+      "maxOutputTokens": 131072
+    },
+    "meituan/LongCat-2.0": {
+      "reasoning": true,
+      "inputModalities": [
+        "text"
+      ]
+    },
+    "stepfun/Step-5-Preview": {
+      "reasoning": true,
+      "inputModalities": [
+        "text",
+        "image"
+      ],
+      "reasoningEfforts": [
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "xai/grok-4.7": {
+      "reasoning": true,
+      "inputModalities": [
+        "text",
+        "image"
+      ],
+      "reasoningEfforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh"
+      ]
+    },
+    "xiaomi/mimo-v2.6-flash": {
+      "inputModalities": [
+        "text",
+        "image"
+      ]
+    },
+    "xiaomi/mimo-v2.6-pro": {
+      "inputModalities": [
+        "text",
+        "image"
+      ]
+    },
+    "xiaomi/mimo-v2.6-pro-ultraspeed": {
+      "inputModalities": [
+        "text",
+        "image"
+      ]
+    },
+    "z-ai/glm-5.3-flashx": {
+      "reasoning": true,
+      "inputModalities": [
+        "text",
+        "image"
+      ],
+      "reasoningEfforts": [
+        "low",
+        "high",
+        "max"
+      ],
+      "maxOutputTokens": 131072
+    }
+  },
+  "changed_model_metadata": {
+    "meituan/LongCat-2.0:free": {
+      "old": {
+        "reasoning": true,
+        "inputModalities": [
+          "text"
+        ]
+      },
+      "new": {
+        "hidden": true,
+        "reasoning": true,
+        "inputModalities": [
+          "text"
+        ]
+      }
+    }
+  }
+}
