@@ -23,6 +23,11 @@ func collectLive() rawSignals {
 		cpuModel:  readCPUModel(),
 		cpuCount:  runtime.NumCPU(),
 		memGiB:    readMemGiB(),
+		platform:  cliPlatform(runtime.GOOS),
+		arch:      cliArch(runtime.GOARCH),
+		osRelease: osRelease(),
+		container: isContainer(),
+		timezone:  timezone(),
 	}
 }
 
@@ -103,7 +108,7 @@ func readMemGiB() int {
 		if rest, ok := strings.CutPrefix(line, "MemTotal:"); ok {
 			var kb int
 			if _, err := fmt.Sscanf(strings.TrimSpace(rest), "%d kB", &kb); err == nil {
-				return kb / 1024 / 1024
+				return (kb + 512*1024) / 1024 / 1024 // CLI uses Math.round(totalMem / GiB).
 			}
 		}
 	}

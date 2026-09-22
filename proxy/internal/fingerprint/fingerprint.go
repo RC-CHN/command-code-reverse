@@ -17,14 +17,13 @@
 package fingerprint
 
 import (
-	"crypto/hmac"
+	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
-	"runtime"
 	"sort"
 	"strings"
 )
@@ -70,6 +69,11 @@ type rawSignals struct {
 	cpuModel  string
 	cpuCount  int
 	memGiB    int
+	platform  string
+	arch      string
+	osRelease string
+	container bool
+	timezone  string
 }
 
 // build applies the real CLI algorithm to raw signals.
@@ -104,14 +108,14 @@ func build(s rawSignals) *Fingerprint {
 			OSUserHash:       hashSignal(s.osUser),
 			HostnameHash:     hashSignal(s.hostname),
 			GitEmailHash:     hashSignal(s.gitEmail),
-			Platform:         runtime.GOOS,
-			Arch:             runtime.GOARCH,
-			OSRelease:        osRelease(),
+			Platform:         s.platform,
+			Arch:             s.arch,
+			OSRelease:        s.osRelease,
 			CPUModel:         s.cpuModel,
 			CPUCount:         s.cpuCount,
 			MemGiB:           s.memGiB,
-			IsContainer:      isContainer(),
-			Timezone:         timezone(),
+			IsContainer:      s.container,
+			Timezone:         s.timezone,
 			Runtime:          "cli",
 			CollectorVersion: collectorVersion,
 		},
@@ -179,7 +183,11 @@ func Resolve(seed, stateFile string) (*Fingerprint, error) {
 			return fp, nil
 		}
 	}
-	fp := build(collectLive())
+	var entropy [32]byte
+	if _, err := rand.Read(entropy[:]); err != nil {
+		return nil, fmt.Errorf("fingerprint: fallback entropy: %w", err)
+	}
+	fp := build(completeHardware(collectLive(), hex.EncodeToString(entropy[:])))
 	if stateFile != "" {
 		if err := saveState(stateFile, fp); err != nil {
 			// Non-fatal: fingerprint still works, just won't survive restarts.
@@ -189,31 +197,23 @@ func Resolve(seed, stateFile string) (*Fingerprint, error) {
 	return fp, nil
 }
 
-// deriveFromSeed deterministically derives plausible raw signals from a
-// seed via HMAC-SHA256, then applies the real algorithm. Identical seed →
-// identical fingerprint, on any node.
-func deriveFromSeed(seed string) *Fingerprint {
-	derive := func(label string, n int) string {
-		h := hmac.New(sha256.New, []byte(seed))
-		h.Write([]byte(label))
-		return hex.EncodeToString(h.Sum(nil))[:n]
+// The CLI uses Node's os.platform()/os.arch() spellings, not Go's.
+func cliPlatform(platform string) string {
+	if platform == "windows" {
+		return "win32"
 	}
-	macs := make([]string, 3)
-	for i := range macs {
-		b := derive(fmt.Sprintf("mac:%d", i), 12)
-		// Locally administered, unicast OUI (02:xx:xx).
-		macs[i] = "02:" + b[0:2] + ":" + b[2:4] + ":" + b[4:6] + ":" + b[6:8] + ":" + b[8:10]
+	return platform
+}
+
+func cliArch(arch string) string {
+	switch arch {
+	case "amd64":
+		return "x64"
+	case "386":
+		return "ia32"
+	default:
+		return arch
 	}
-	return build(rawSignals{
-		machineID: derive("machineId", 32),
-		macs:      macs,
-		osUser:    "u" + derive("osUser", 8),
-		hostname:  "host-" + derive("hostname", 8),
-		gitEmail:  derive("gitEmail", 8) + "@users.noreply.local",
-		cpuModel:  "Virtual CPU",
-		cpuCount:  4,
-		memGiB:    16,
-	})
 }
 
 // state is the persisted shape (identical to the report payload).
@@ -229,6 +229,9 @@ func loadState(path string) (*Fingerprint, error) {
 	if fp.Thumbmark == "" {
 		return nil, fmt.Errorf("fingerprint: state file %s has no thumbmark", path)
 	}
+	// Normalize old Go spellings without changing the persisted device ID.
+	fp.Components.Platform = cliPlatform(fp.Components.Platform)
+	fp.Components.Arch = cliArch(fp.Components.Arch)
 	return &fp, nil
 }
 

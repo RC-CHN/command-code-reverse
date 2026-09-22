@@ -35,9 +35,10 @@ type Config struct {
 	ProxyAPIKey string
 
 	// Fingerprint
-	FingerprintEnabled   bool
-	FingerprintSeed      string
-	FingerprintStateFile string
+	FingerprintEnabled     bool
+	FingerprintSessionIdle time.Duration
+	FingerprintSeed        string
+	FingerprintStateFile   string
 
 	// Server
 	Host                 string
@@ -86,30 +87,38 @@ func Load() (*Config, error) {
 	if jevMaxResponse == 1<<63-1 {
 		return nil, fmt.Errorf("config: JEV_MAX_RESPONSE_BYTES is too large")
 	}
+	fingerprintIdle, err := positiveInt64("FINGERPRINT_SESSION_IDLE_SECONDS", 1800)
+	if err != nil {
+		return nil, err
+	}
+	if fingerprintIdle > int64((1<<63-1)/time.Second/2) {
+		return nil, fmt.Errorf("config: FINGERPRINT_SESSION_IDLE_SECONDS is too large")
+	}
 
 	c := &Config{
-		APIBase:              getEnv("COMMAND_CODE_API_BASE", "https://api.commandcode.ai"),
-		Version:              os.Getenv("COMMAND_CODE_VERSION"),
-		VersionPin:           os.Getenv("COMMAND_CODE_VERSION_PIN"),
-		ZDR:                  zdr,
-		AuthMode:             AuthMode(getEnv("AUTH_MODE", string(AuthManaged))),
-		ProxyAPIKey:          os.Getenv("PROXY_API_KEY"),
-		FingerprintEnabled:   getEnvBool("FINGERPRINT_ENABLED", false),
-		FingerprintSeed:      os.Getenv("FINGERPRINT_SEED"),
-		FingerprintStateFile: getEnv("FINGERPRINT_STATE_FILE", "./data/fingerprint.json"),
-		Host:                 getEnv("HOST", "0.0.0.0"),
-		ShutdownDrain:        time.Duration(getEnvInt("SHUTDOWN_DRAIN_SECONDS", 30)) * time.Second,
-		MaxBodyBytes:         int64(getEnvInt("MAX_BODY_BYTES", 64*1024*1024)),
-		MaxTokensClamp:       getEnvInt("MAX_TOKENS_CLAMP", 200000),
-		StreamIdleTimeout:    time.Duration(getEnvInt("STREAM_IDLE_TIMEOUT_SECONDS", 30)) * time.Second,
-		NonStreamIdleTimeout: time.Duration(getEnvInt("NONSTREAM_IDLE_TIMEOUT_SECONDS", 90)) * time.Second,
-		JevUnlockMaxOptions:  unlock,
-		JevTimeout:           time.Duration(jevTimeout) * time.Second,
-		JevMaxResponseBytes:  jevMaxResponse,
-		LogFormat:            getEnv("LOG_FORMAT", "json"),
-		LogLevel:             getEnv("LOG_LEVEL", "info"),
-		MetricsEnabled:       getEnvBool("METRICS_ENABLED", true),
-		CostHeaderEnabled:    getEnvBool("COST_HEADER_ENABLED", false),
+		APIBase:                getEnv("COMMAND_CODE_API_BASE", "https://api.commandcode.ai"),
+		Version:                os.Getenv("COMMAND_CODE_VERSION"),
+		VersionPin:             os.Getenv("COMMAND_CODE_VERSION_PIN"),
+		ZDR:                    zdr,
+		AuthMode:               AuthMode(getEnv("AUTH_MODE", string(AuthManaged))),
+		ProxyAPIKey:            os.Getenv("PROXY_API_KEY"),
+		FingerprintEnabled:     getEnvBool("FINGERPRINT_ENABLED", false),
+		FingerprintSessionIdle: time.Duration(fingerprintIdle) * time.Second,
+		FingerprintSeed:        os.Getenv("FINGERPRINT_SEED"),
+		FingerprintStateFile:   getEnv("FINGERPRINT_STATE_FILE", "./data/fingerprint.json"),
+		Host:                   getEnv("HOST", "0.0.0.0"),
+		ShutdownDrain:          time.Duration(getEnvInt("SHUTDOWN_DRAIN_SECONDS", 30)) * time.Second,
+		MaxBodyBytes:           int64(getEnvInt("MAX_BODY_BYTES", 64*1024*1024)),
+		MaxTokensClamp:         getEnvInt("MAX_TOKENS_CLAMP", 200000),
+		StreamIdleTimeout:      time.Duration(getEnvInt("STREAM_IDLE_TIMEOUT_SECONDS", 30)) * time.Second,
+		NonStreamIdleTimeout:   time.Duration(getEnvInt("NONSTREAM_IDLE_TIMEOUT_SECONDS", 90)) * time.Second,
+		JevUnlockMaxOptions:    unlock,
+		JevTimeout:             time.Duration(jevTimeout) * time.Second,
+		JevMaxResponseBytes:    jevMaxResponse,
+		LogFormat:              getEnv("LOG_FORMAT", "json"),
+		LogLevel:               getEnv("LOG_LEVEL", "info"),
+		MetricsEnabled:         getEnvBool("METRICS_ENABLED", true),
+		CostHeaderEnabled:      getEnvBool("COST_HEADER_ENABLED", false),
 	}
 	c.Port = getEnvInt("PORT", 3050)
 

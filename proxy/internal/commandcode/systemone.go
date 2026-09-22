@@ -178,7 +178,7 @@ func (c *Client) SystemOne(ctx context.Context, creds Credentials, wire *SystemO
 	for name, value := range c.headers(creds) {
 		req.Header.Set(name, value)
 	}
-	resp, err := c.httpClient.Do(req)
+	resp, err := c.doInference(req, creds.APIKey)
 	if err != nil {
 		return nil, fmt.Errorf("systemone request: %w", err)
 	}

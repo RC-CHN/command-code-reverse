@@ -6,6 +6,26 @@ versioning follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Report optional fingerprint telemetry once per logical CLI session across
+  managed rotation and passthrough, only after chat/Jev accepts an inference
+  request. Idle/rejected credentials and auxiliary API calls do not trigger it.
+  Use bounded asynchronous workers and deduplication, with no periodic
+  lifecycle heartbeats or interference with inference circuit breakers.
+- Send non-interactive CLI lifecycle metadata with a version snapshot shared
+  by the body and headers, and a distinct telemetry session per active account.
+  Preserve shared device identity and use Node-compatible platform/arch names.
+- Track active inference until response completion, then expire idle telemetry
+  sessions with configurable, account-specific windows. Only a real request
+  can renew a session; skip stale queued reports and pin metadata to the
+  inference's CLI version. Conversation identities remain unchanged.
+- Make the complete seed-based device profile deterministic across hosts,
+  without filesystem state or host probes. Replace the shared hardware template
+  with stable profile v1 choices; prefer real hardware in unseeded mode and
+  fill missing hardware once at startup. Existing seeded profiles may change
+  once on upgrade to v0.2.0, including their thumbmark.
+
 ### Added
 
 - Add native `POST /v1/systemone` for Jev (`noul`, `choice`, `score`), using

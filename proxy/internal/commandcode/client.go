@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -109,6 +110,7 @@ type Client struct {
 	httpClient *http.Client
 	version    func() string // returns x-command-code-version value
 	zdr        bool
+	onKeyUse   func(key, version string) (finish func())
 }
 
 // NewClient builds a client. version is consulted per request so a
@@ -123,6 +125,46 @@ func NewClient(baseURL string, version func() string, zdr bool, hc *http.Client)
 		version:    version,
 		zdr:        zdr,
 	}
+}
+
+// SetKeyObserver installs a nonblocking observer for accepted inference requests.
+// Configure it before sharing the client with request handlers.
+func (c *Client) SetKeyObserver(observer func(key, version string) func()) {
+	c.onKeyUse = observer
+}
+
+func (c *Client) doInference(req *http.Request, apiKey string) (*http.Response, error) {
+	if err := req.Context().Err(); err != nil {
+		return nil, err
+	}
+	resp, err := c.httpClient.Do(req)
+	if err == nil && resp.StatusCode >= 200 && resp.StatusCode < 300 && req.Context().Err() == nil && c.onKeyUse != nil && apiKey != "" {
+		if finish := c.onKeyUse(apiKey, req.Header.Get("x-command-code-version")); finish != nil {
+			resp.Body = &activityBody{ReadCloser: resp.Body, finish: finish}
+		}
+	}
+	return resp, err
+}
+
+// Keep the logical client active for the complete stream/JSON read. EOF,
+// transport errors, and early Close all release activity exactly once.
+type activityBody struct {
+	io.ReadCloser
+	once   sync.Once
+	finish func()
+}
+
+func (b *activityBody) Read(p []byte) (int, error) {
+	n, err := b.ReadCloser.Read(p)
+	if err != nil {
+		b.once.Do(b.finish)
+	}
+	return n, err
+}
+
+func (b *activityBody) Close() error {
+	defer b.once.Do(b.finish)
+	return b.ReadCloser.Close()
 }
 
 // Generate posts a GenerateRequest and returns the raw NDJSON response body.
@@ -141,7 +183,7 @@ func (c *Client) Generate(ctx context.Context, creds Credentials, req *GenerateR
 		httpReq.Header.Set(k, v)
 	}
 
-	resp, err := c.httpClient.Do(httpReq)
+	resp, err := c.doInference(httpReq, creds.APIKey)
 	if err != nil {
 		return nil, fmt.Errorf("upstream request: %w", err)
 	}
@@ -154,19 +196,27 @@ func (c *Client) Generate(ctx context.Context, creds Credentials, req *GenerateR
 
 // RecordFingerprint posts the machine fingerprint to /alpha/fingerprint/record.
 // The payload shape mirrors the real CLI exactly.
-func (c *Client) RecordFingerprint(ctx context.Context, apiKey string, payload any) error {
-	return c.postJSON(ctx, "/alpha/fingerprint/record", apiKey, payload)
+func (c *Client) RecordFingerprint(ctx context.Context, apiKey string, payload any, version string) error {
+	return c.postJSON(ctx, "/alpha/fingerprint/record", apiKey, payload, version)
 }
 
-// RecordLifecycleEvent posts a lifecycle event to /alpha/lifecycle-events.
-func (c *Client) RecordLifecycleEvent(ctx context.Context, apiKey string, payload any) error {
-	return c.postJSON(ctx, "/alpha/lifecycle-events", apiKey, payload)
+// RecordCLISession uses one version snapshot for both the event and headers.
+// Its telemetry session is independent of inference conversation identities.
+func (c *Client) RecordCLISession(ctx context.Context, apiKey, sessionID, platform, version string) error {
+	payload := map[string]any{
+		"eventType": "cli_session_exists",
+		"metadata": map[string]string{
+			"sessionId": sessionID, "cliVersion": version,
+			"mode": "non-interactive", "os": platform,
+		},
+	}
+	return c.postJSON(ctx, "/alpha/lifecycle-events", apiKey, payload, version)
 }
 
 // postJSON is the shared helper for fire-and-forget telemetry endpoints.
 // Failures are returned but callers are expected to log-and-continue,
 // matching the real CLI's silent-failure behavior.
-func (c *Client) postJSON(ctx context.Context, route, apiKey string, payload any) error {
+func (c *Client) postJSON(ctx context.Context, route, apiKey string, payload any, version string) error {
 	body, err := json.Marshal(payload)
 	if err != nil {
 		return fmt.Errorf("marshal %s payload: %w", route, err)
@@ -176,8 +226,11 @@ func (c *Client) postJSON(ctx context.Context, route, apiKey string, payload any
 		return fmt.Errorf("build %s request: %w", route, err)
 	}
 	req.Header.Set("Content-Type", "application/json")
-	c.setAuthHeaders(req, apiKey)
+	for name, value := range c.authHeadersAtVersion(apiKey, version) {
+		req.Header.Set(name, value)
+	}
 
+	// Do not observe telemetry traffic: doing so would recursively enqueue it.
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("%s request: %w", route, err)
@@ -197,10 +250,14 @@ func (c *Client) setAuthHeaders(req *http.Request, apiKey string) {
 }
 
 func (c *Client) authHeaders(apiKey string) map[string]string {
+	return c.authHeadersAtVersion(apiKey, c.version())
+}
+
+func (c *Client) authHeadersAtVersion(apiKey, version string) map[string]string {
 	headers := map[string]string{
 		"Authorization":          "Bearer " + apiKey,
 		"User-Agent":             "cli",
-		"x-command-code-version": c.version(),
+		"x-command-code-version": version,
 		"x-cli-environment":      "production",
 	}
 	if c.zdr {

@@ -49,7 +49,7 @@ func main() {
 
 	client := commandcode.NewClient(cfg.APIBase, versionTracker.String, cfg.ZDR, nil)
 
-	// Background lifecycle for version refresh + fingerprint reporting.
+	// Background lifecycle for version refresh and optional telemetry workers.
 	bgCtx, bgCancel := context.WithCancel(context.Background())
 	defer bgCancel()
 	go versionTracker.Start(bgCtx)
@@ -60,7 +60,9 @@ func main() {
 			slog.Warn("fingerprint resolve failed, continuing without it", "error", err)
 		} else {
 			slog.Info("fingerprint resolved", "thumbmark", fp.Thumbmark[:12])
-			go fingerprint.NewReporter(client, cfg.APIKeys[0], fp).Start(bgCtx)
+			reporter := fingerprint.NewReporter(bgCtx, client, fp, cfg.FingerprintSessionIdle, cfg.FingerprintSeed)
+			defer reporter.Close()
+			client.SetKeyObserver(reporter.Use)
 		}
 	}
 

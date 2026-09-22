@@ -2,82 +2,195 @@ package fingerprint
 
 import (
 	"context"
-	"crypto/rand"
+	"crypto/sha256"
 	"log/slog"
-	"math/big"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/ids"
 )
 
 const (
-	// heartbeatBase mirrors the old proxy's refresh cadence.
-	heartbeatBase = 8 * time.Hour
-	// heartbeatJitter bounds the additive random jitter.
-	heartbeatJitter = 2 * time.Hour
+	reportWorkers   = 2
+	reportQueueSize = 64
+	maxReportedKeys = 4096
+	reportTimeout   = 15 * time.Second
 )
 
-// Client is the telemetry slice of commandcode.Client.
+// Client reports telemetry with the version of the accepted inference request.
 type Client interface {
-	RecordFingerprint(ctx context.Context, apiKey string, payload any) error
-	RecordLifecycleEvent(ctx context.Context, apiKey string, payload any) error
+	RecordFingerprint(context.Context, string, any, string) error
+	RecordCLISession(context.Context, string, string, string, string) error
 }
 
-// Reporter posts the fingerprint at startup and heartbeats afterwards.
-// All failures are log-and-continue, matching the real CLI.
+type activity struct {
+	session, version  string
+	last              time.Time
+	idle              time.Duration
+	inflight          int
+	queued, attempted bool
+}
+
+type reportJob struct {
+	key      string
+	id       [sha256.Size]byte
+	activity *activity
+}
+
+// Reporter models logical CLI sessions driven only by accepted inference.
+// Idle expiration never sends traffic; a later real request starts a new
+// session on the same device. No periodic heartbeat is sent.
 type Reporter struct {
-	client Client
-	key    string
-	fp     *Fingerprint
+	client         Client
+	fp             *Fingerprint
+	ctx            context.Context
+	cancel         context.CancelFunc
+	queue          chan reportJob
+	wg             sync.WaitGroup
+	mu             sync.Mutex
+	active         map[[sha256.Size]byte]*activity
+	idle           time.Duration
+	seed           string
+	now            func() time.Time
+	capacityLogged bool
 }
 
-// NewReporter builds a reporter for one upstream key (pool key[0]).
-func NewReporter(client Client, apiKey string, fp *Fingerprint) *Reporter {
-	return &Reporter{client: client, key: apiKey, fp: fp}
+// NewReporter starts bounded workers. idle is the base idle window; each
+// account gets a stable +/-20% offset so there is no fixed renewal cadence.
+func NewReporter(ctx context.Context, client Client, fp *Fingerprint, idle time.Duration, seed string) *Reporter {
+	ctx, cancel := context.WithCancel(ctx)
+	if idle <= 0 {
+		idle = 30 * time.Minute
+	}
+	if seed == "" {
+		seed = ids.NewUUID()
+	}
+	r := &Reporter{
+		client: client, fp: fp, ctx: ctx, cancel: cancel,
+		queue:  make(chan reportJob, reportQueueSize),
+		active: make(map[[sha256.Size]byte]*activity),
+		idle:   idle, seed: seed, now: time.Now,
+	}
+	for range reportWorkers {
+		r.wg.Add(1)
+		go func() {
+			defer r.wg.Done()
+			for {
+				select {
+				case <-r.ctx.Done():
+					return
+				case job := <-r.queue:
+					if r.ctx.Err() != nil {
+						return
+					}
+					r.reportOnce(job)
+				}
+			}
+		}()
+	}
+	return r
 }
 
-// Start runs the report loop until ctx is cancelled. Call as a goroutine.
-func (r *Reporter) Start(ctx context.Context) {
-	r.reportOnce(ctx)
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		case <-time.After(heartbeatBase + randJitter()):
-			r.reportOnce(ctx)
+// Use marks a real, accepted inference response active until finish is called.
+// It never waits for network I/O. Only hashes are retained between reports.
+func (r *Reporter) Use(key, version string) (finish func()) {
+	if key == "" || r.ctx.Err() != nil {
+		return nil
+	}
+	id := sha256.Sum256([]byte(key))
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if r.ctx.Err() != nil {
+		return nil
+	}
+	now := r.now()
+	a := r.active[id]
+	if a == nil && len(r.active) >= maxReportedKeys {
+		for oldID, old := range r.active {
+			if old.inflight == 0 && now.Sub(old.last) >= old.idle {
+				delete(r.active, oldID)
+			}
 		}
+		if len(r.active) >= maxReportedKeys {
+			if !r.capacityLogged {
+				r.capacityLogged = true
+				slog.Warn("fingerprint active key capacity reached; skipping new keys")
+			}
+			return nil
+		}
+	}
+	if a == nil || a.version != version || a.inflight == 0 && now.Sub(a.last) >= a.idle {
+		// Stable per seed/account; this never schedules background traffic.
+		offset := profilePick(r.seed, "idle:"+key, 401) - 200
+		a = &activity{
+			session: "sess_" + strings.ReplaceAll(ids.NewUUID(), "-", "")[:16],
+			version: version, last: now,
+			idle: r.idle + r.idle/1000*time.Duration(offset),
+		}
+		r.active[id] = a
+	}
+	a.inflight++
+	a.last = now
+	if !a.queued && !a.attempted {
+		select {
+		case r.queue <- reportJob{key, id, a}:
+			a.queued = true
+		default: // A later real request can enqueue the same session.
+		}
+	}
+	var once sync.Once
+	return func() {
+		once.Do(func() {
+			r.mu.Lock()
+			defer r.mu.Unlock()
+			a.inflight--
+			a.last = r.now()
+		})
 	}
 }
 
-// reportOnce posts the fingerprint plus a lifecycle heartbeat.
-func (r *Reporter) reportOnce(ctx context.Context) {
-	callCtx, cancel := context.WithTimeout(ctx, 15*time.Second)
-	defer cancel()
+func (r *Reporter) eligible(job reportJob) bool {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	a := job.activity
+	return r.ctx.Err() == nil && r.active[job.id] == a &&
+		(a.inflight > 0 || r.now().Sub(a.last) < a.idle)
+}
 
-	if err := r.client.RecordFingerprint(callCtx, r.key, r.fp); err != nil {
-		slog.Warn("fingerprint report failed", "error", err)
+// Close cancels workers and releases queued passthrough credentials.
+func (r *Reporter) Close() {
+	r.cancel()
+	r.wg.Wait()
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	for len(r.queue) > 0 {
+		<-r.queue
+	}
+}
+
+func (r *Reporter) reportOnce(job reportJob) {
+	if !r.eligible(job) {
+		return
+	}
+	r.mu.Lock()
+	job.activity.attempted = true
+	r.mu.Unlock()
+	ctx, cancel := context.WithTimeout(r.ctx, reportTimeout)
+	err := r.client.RecordFingerprint(ctx, job.key, r.fp, job.activity.version)
+	cancel()
+	if err != nil {
+		// Error bodies can quote credentials or fingerprint data.
+		slog.Warn("fingerprint report failed")
 	} else {
 		slog.Info("fingerprint reported")
 	}
-
-	if err := r.client.RecordLifecycleEvent(callCtx, r.key, map[string]any{
-		"eventType": "cli_session_exists",
-		"metadata": map[string]any{
-			"sessionId":  "sess_" + ids.NewUUID()[:16],
-			"cliVersion": "",
-			"mode":       "interactive",
-			"os":         r.fp.Components.Platform + "-" + r.fp.Components.Arch,
-		},
-	}); err != nil {
-		slog.Warn("lifecycle event failed", "error", err)
+	if !r.eligible(job) {
+		return
 	}
-}
-
-// randJitter returns a uniform duration in [0, heartbeatJitter).
-func randJitter() time.Duration {
-	n, err := rand.Int(rand.Reader, big.NewInt(int64(heartbeatJitter)))
-	if err != nil {
-		return 0
+	ctx, cancel = context.WithTimeout(r.ctx, reportTimeout)
+	defer cancel()
+	if err := r.client.RecordCLISession(ctx, job.key, job.activity.session, r.fp.Components.Platform+"-"+r.fp.Components.Arch, job.activity.version); err != nil {
+		slog.Warn("lifecycle event failed")
 	}
-	return time.Duration(n.Int64())
 }

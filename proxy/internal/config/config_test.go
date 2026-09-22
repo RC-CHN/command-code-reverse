@@ -16,7 +16,7 @@ func isolate(t *testing.T) {
 		"COMMAND_CODE_VERSION_PIN", "AUTH_MODE", "PROXY_API_KEY",
 		"CMD_ZDR",
 		"JEV_UNLOCK_MAX_OPTIONS", "JEV_TIMEOUT_SECONDS", "JEV_MAX_RESPONSE_BYTES",
-		"FINGERPRINT_ENABLED", "FINGERPRINT_SEED", "FINGERPRINT_STATE_FILE",
+		"FINGERPRINT_ENABLED", "FINGERPRINT_SEED", "FINGERPRINT_STATE_FILE", "FINGERPRINT_SESSION_IDLE_SECONDS",
 		"HOST", "PORT", "LOG_FORMAT", "LOG_LEVEL", "MAX_BODY_BYTES",
 	} {
 		t.Setenv(k, "")
@@ -47,6 +47,9 @@ func TestLoadDefaults(t *testing.T) {
 	}
 	if c.MaxBodyBytes != 64*1024*1024 {
 		t.Errorf("MaxBodyBytes = %d, want 64 MiB", c.MaxBodyBytes)
+	}
+	if c.FingerprintSessionIdle.Seconds() != 1800 {
+		t.Fatal("unexpected fingerprint idle default")
 	}
 	if c.ZDR {
 		t.Error("ZDR must be opt-in")
@@ -266,5 +269,24 @@ func TestDotEnvPrecedence(t *testing.T) {
 	}
 	if c.ProxyAPIKey != "p" {
 		t.Errorf("ProxyAPIKey = %q, want p (from .env)", c.ProxyAPIKey)
+	}
+}
+
+func TestFingerprintIdleConfiguration(t *testing.T) {
+	for _, value := range []string{"2400", "0", "-1", "bad", "9223372036854775807"} {
+		t.Run(value, func(t *testing.T) {
+			isolate(t)
+			t.Setenv("COMMAND_CODE_API_KEY", "k1")
+			t.Setenv("PROXY_API_KEY", "p")
+			t.Setenv("FINGERPRINT_SESSION_IDLE_SECONDS", value)
+			cfg, err := Load()
+			if value == "2400" {
+				if err != nil || cfg.FingerprintSessionIdle.Seconds() != 2400 {
+					t.Fatalf("idle config: %v", err)
+				}
+			} else if err == nil {
+				t.Fatal("invalid idle duration accepted")
+			}
+		})
 	}
 }

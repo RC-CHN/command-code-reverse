@@ -4,6 +4,8 @@
 
 结论：新增 **Jev / System One 决策 API** 和 **BYOK Responses 协议支持**；现有 `/alpha/generate` 聊天请求及 NDJSON 消费逻辑未发现破坏性变化。已跟进离线版本兜底、聊天模型目录和 Jev 代理端点。经用户授权，用 `.env` 中第一个上游 key 完成 Jev 直连及实际代理调用，均返回 **HTTP 200**。
 
+客户端身份、设备档案和活动遥测的后续核对见 [client-identity.md](./client-identity.md)。
+
 ## 来源与复现
 
 - 固定版本元数据：[command-code@1.62.1](https://registry.npmjs.org/command-code/1.62.1)。下载时从 npm 官方 registry 确认 `dist-tags.latest`。

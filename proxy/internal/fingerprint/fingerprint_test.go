@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"os"
 	"path/filepath"
+	"reflect"
 	"testing"
 )
 
@@ -85,8 +86,35 @@ func TestSeedDeterministic(t *testing.T) {
 	if a1.Thumbmark == b.Thumbmark {
 		t.Error("different seeds produced identical thumbmarks")
 	}
-	if a1.Components.MachineIDHash == "" || len(a1.Components.MACHashes) != 3 {
+	if a1.Components.MachineIDHash == "" || (len(a1.Components.MACHashes) < 1 || len(a1.Components.MACHashes) > 3) {
 		t.Errorf("components = %+v", a1.Components)
+	}
+	if !reflect.DeepEqual(a1, a2) {
+		t.Error("same seed must reproduce the complete device profile")
+	}
+}
+
+func TestLegacyPlatformNormalizationPreservesIdentity(t *testing.T) {
+	for _, tc := range []struct{ platform, arch, wantPlatform, wantArch string }{
+		{"linux", "amd64", "linux", "x64"},
+		{"windows", "386", "win32", "ia32"},
+		{"darwin", "arm64", "darwin", "arm64"},
+	} {
+		path := filepath.Join(t.TempDir(), "fingerprint.json")
+		original := &Fingerprint{Thumbmark: "existing-device", Components: Components{
+			MachineIDHash: "existing-id", Platform: tc.platform, Arch: tc.arch,
+		}}
+		if err := saveState(path, original); err != nil {
+			t.Fatal(err)
+		}
+		fp, err := Resolve("", path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if fp.Thumbmark != original.Thumbmark || fp.Components.MachineIDHash != original.Components.MachineIDHash ||
+			fp.Components.Platform != tc.wantPlatform || fp.Components.Arch != tc.wantArch {
+			t.Fatalf("legacy normalization failed: %+v", fp)
+		}
 	}
 }
 

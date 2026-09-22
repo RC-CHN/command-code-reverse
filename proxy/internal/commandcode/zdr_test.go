@@ -1,7 +1,6 @@
 package commandcode
 
 import (
-	"context"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -47,10 +46,11 @@ func TestZDRHeadersOnAllUpstreamRoutes(t *testing.T) {
 			if _, _, err := client.Billing(ctx, "k1"); err != nil {
 				t.Fatal(err)
 			}
-			for _, call := range []func(context.Context, string, any) error{client.RecordFingerprint, client.RecordLifecycleEvent} {
-				if err := call(ctx, "k1", nil); err != nil {
-					t.Fatal(err)
-				}
+			if err := client.RecordFingerprint(ctx, "k1", nil, "test"); err != nil {
+				t.Fatal(err)
+			}
+			if err := client.RecordCLISession(ctx, "k1", "sess_test", "linux-x64", "test"); err != nil {
+				t.Fatal(err)
 			}
 			if got := calls.Load(); got != 7 {
 				t.Fatalf("upstream calls = %d, want 7", got)
