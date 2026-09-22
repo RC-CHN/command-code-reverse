@@ -47,7 +47,7 @@ func main() {
 
 	versionTracker := version.New(cfg.VersionPin, cfg.Version)
 
-	client := commandcode.NewClient(cfg.APIBase, versionTracker.String, nil)
+	client := commandcode.NewClient(cfg.APIBase, versionTracker.String, cfg.ZDR, nil)
 
 	// Background lifecycle for version refresh + fingerprint reporting.
 	bgCtx, bgCancel := context.WithCancel(context.Background())
@@ -122,6 +122,7 @@ func main() {
 			"apiKeys", len(cfg.APIKeys),
 			"apiBase", cfg.APIBase,
 			"ccVersion", versionTracker.String(),
+			"zdr", cfg.ZDR,
 		)
 		if err := httpServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			errCh <- err

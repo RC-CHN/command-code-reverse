@@ -28,6 +28,7 @@ type Config struct {
 	APIBase    string
 	Version    string // reported x-command-code-version; empty = auto-refresh
 	VersionPin string // forced version, overrides auto-refresh
+	ZDR        bool   // request zero-data-retention upstream routing
 
 	// Downstream auth
 	AuthMode    AuthMode
@@ -60,11 +61,16 @@ func Load() (*Config, error) {
 	if err := loadDotEnv(".env"); err != nil {
 		return nil, err
 	}
+	zdr, err := strconv.ParseBool(getEnv("CMD_ZDR", "0"))
+	if err != nil {
+		return nil, fmt.Errorf("config: CMD_ZDR must be a boolean (1/0 or true/false)")
+	}
 
 	c := &Config{
 		APIBase:              getEnv("COMMAND_CODE_API_BASE", "https://api.commandcode.ai"),
 		Version:              os.Getenv("COMMAND_CODE_VERSION"),
 		VersionPin:           os.Getenv("COMMAND_CODE_VERSION_PIN"),
+		ZDR:                  zdr,
 		AuthMode:             AuthMode(getEnv("AUTH_MODE", string(AuthManaged))),
 		ProxyAPIKey:          os.Getenv("PROXY_API_KEY"),
 		FingerprintEnabled:   getEnvBool("FINGERPRINT_ENABLED", false),

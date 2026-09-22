@@ -6,6 +6,15 @@ versioning follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Add the startup `CMD_ZDR` switch (off by default). Enabling it sends
+  `x-cmd-zdr: 1` on chat and auxiliary upstream API requests in both auth modes.
+  Invalid boolean values fail startup instead of silently disabling ZDR.
+- Surface `CMD_ZDR_NO_PROVIDERS` and `cmd_zdr_no_providers` as 403 `zdr_error`
+  responses (or in-band errors after SSE starts), preserving the policy error
+  without rotating keys, opening their breakers, or retrying without ZDR.
+
 ### Changed
 
 - Refresh the offline CLI version fallback to `1.62.1`; explicit version pins

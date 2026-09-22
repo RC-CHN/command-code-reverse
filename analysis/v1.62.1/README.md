@@ -12,6 +12,7 @@
 - [provenance.json](./provenance.json)：发布信息、校验值、格式化工具版本。
 - [comparison.json](./comparison.json)：函数哈希、已核对的变量改名、模型目录和字面量路由差异。
 - [jev-live-results.json](./jev-live-results.json)：单次 Jev 请求的合成输入及脱敏结果，不含凭证和请求头。
+- [zdr-live-results.json](./zdr-live-results.json)：3 次短请求的 ZDR 路由对照，只保留开关值、合成输入和脱敏结果。
 
 在仓库根目录复现静态对比（Prettier 使用与基线相同的 3.6.2）：
 
@@ -119,11 +120,42 @@ python3 analysis/v1.62.1/scripts/probe-jev.py --live --output /tmp/jev-result.js
 
 证据：模型表 81801、81924–81985、82088–82123、82450 行；隐藏过滤 84103、85725 行；不可选择集合 63359 行附近。这里描述客户端目录，并未逐一验证新模型访问权限。
 
+## 5. ZDR：代理已接入，路由策略已实测
+
+上游 `resolveCommandAuthHeaders` 从 `CMD_ZDR=1` 读取开关（53018 行），
+`buildCommandAuthHeaders` 添加 `x-cmd-zdr: 1`（29020 行）。
+`formatRunError` 同时识别 `error.code = CMD_ZDR_NO_PROVIDERS` 与
+`error.type = cmd_zdr_no_providers`（29593 行）。这与关闭 taste learning 是独立策略。
+
+经用户授权，2026-09-22 用 `.env` 中第一个上游 key 直连官方
+`POST /alpha/generate`，共发出 **3 个**合成短请求；每次设置 `max_tokens=96`、
+`reasoning_effort=low`，只要求回复 `OK`，没有重试或轮换 key：
+
+| 模型 | `x-cmd-zdr` | 实际上游结果 | 输入 / 输出 tokens |
+|---|---|---|---:|
+| `Qwen/Qwen3.8-Max-0902` | `1` | **422**，`CMD_ZDR_NO_PROVIDERS` | 无用量字段 |
+| 同一 Qwen 模型，独立对照请求 | 不发送 | **200**，`OK` | 52 / 21 |
+| `deepseek/deepseek-v4-flash` | `1` | **200**，`OK` | 15 / 14 |
+
+Qwen 的开关对照使用同一请求体。其拒绝消息为：
+`This model has no zero-data-retention upstream. Disable CMD_ZDR or choose a different model.`
+这证明该 key、模型和接口在测试时确实受 ZDR 路由限制；不能据此证明服务端的实际数据删除或留存行为，也不代表所有模型或 Jev 都已验证。
+DeepSeek 响应报告费用 `0.00001254 USD`；其余响应未提供费用字段，未做账单对账。
+
+代理新增启动配置 `CMD_ZDR`（默认关闭，`1`/`true` 开启），统一应用于聊天和辅助 API 请求，两种鉴权模式均生效。非法配置值启动失败。上游策略拒绝在代理侧统一为 **403 `zdr_error`**，保留 `CMD_ZDR_NO_PROVIDERS` 和消息；已开始 SSE 时返回流内错误。不熔断、不轮换 key，不移除 ZDR 头重试。真实的上游 422 响应已补入本地回归测试。实际 `.env` 没有修改。
+
+脚本按需手动运行，会消耗少量上游配额，其中包含一个明确关闭 ZDR 的合成对照请求：
+
+```bash
+python3 analysis/v1.62.1/scripts/probe-zdr.py --live --output /tmp/zdr-result.json
+```
+
 ## 已跟进与后续
 
 1. 已将离线 `fallbackVersion` 更新到 1.62.1，补充上述 8 个模型的静态目录，并移除退役 LongCat 免费条目。动态模型目录仍优先；显式模型 ID 原样转发，包括旧免费 ID，不会静默切换到付费模型。
 2. 保留当前 `/alpha/generate` 请求与流解析实现；此次未发现必须立即修复的聊天协议不兼容。
 3. Jev 与 `/v1/responses` 分别作为独立功能扩展评估。Jev 已完成一次真实访问验证；Responses 尚未做真实调用。
+4. ZDR 启动配置和错误映射已接入，并完成上述 3 次真实路由对照；未对 Jev 的 ZDR 行为做实测。
 
 其余变化主要是 `/loop` 调度、剪贴板图片、图片上下文压缩、终端权限交互及遥测。Node 要求仍为 `>=22`，package.json 除版本号外无差异，CLI 引导入口 `dist/index.mjs` 逐字一致。
 

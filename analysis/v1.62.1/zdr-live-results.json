@@ -1,0 +1,149 @@
+{
+  "checked_at": "2026-09-22T08:01:58.300106+00:00",
+  "endpoint": "https://api.commandcode.ai/alpha/generate",
+  "key_index": 1,
+  "cli_version": "1.62.1",
+  "transport": "direct HTTPS; synthetic prompts; no retries, redirects, or key rotation",
+  "scope": "Tests observable routing policy, not actual server-side data deletion or retention.",
+  "request_template": {
+    "config": {
+      "workingDir": "/tmp/zdr-probe",
+      "date": "2026-09-22",
+      "environment": "linux",
+      "structure": [],
+      "isGitRepo": false,
+      "currentBranch": "",
+      "mainBranch": "",
+      "gitStatus": "",
+      "recentCommits": []
+    },
+    "memory": null,
+    "taste": null,
+    "skills": null,
+    "permissionMode": "standard",
+    "mode": "agent",
+    "threadId": "944a42ca-2116-48ea-a8cb-b62783eed4a5",
+    "params": {
+      "model": "",
+      "messages": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "Reply OK."
+            }
+          ]
+        }
+      ],
+      "tools": [],
+      "system": "Reply with exactly OK. No explanation.",
+      "max_tokens": 96,
+      "reasoning_effort": "low",
+      "stream": true
+    }
+  },
+  "cases": [
+    {
+      "name": "unsupported_zdr_on",
+      "model": "Qwen/Qwen3.8-Max-0902",
+      "zdr_header": "1",
+      "http_status": 422,
+      "content_type": "application/json",
+      "body_truncated": false,
+      "event_types": [],
+      "errors": [
+        {
+          "code": "CMD_ZDR_NO_PROVIDERS",
+          "status": 422,
+          "message": "This model has no zero-data-retention upstream. Disable CMD_ZDR or choose a different model.",
+          "docs": "https://commandcode.ai/docs/reference/errors/cmd_zdr_no_providers"
+        }
+      ],
+      "text": "",
+      "usage": null,
+      "cost_usd": null,
+      "elapsed_seconds": 1.636
+    },
+    {
+      "name": "unsupported_zdr_off_control",
+      "model": "Qwen/Qwen3.8-Max-0902",
+      "zdr_header": null,
+      "http_status": 200,
+      "content_type": "text/event-stream",
+      "body_truncated": false,
+      "event_types": [
+        "finish",
+        "finish-step",
+        "provider-metadata",
+        "reasoning-delta",
+        "reasoning-end",
+        "reasoning-start",
+        "start",
+        "start-step",
+        "text-delta",
+        "text-end",
+        "text-start"
+      ],
+      "errors": [],
+      "text": "OK",
+      "usage": {
+        "inputTokens": 52,
+        "inputTokenDetails": {
+          "noCacheTokens": 52,
+          "cacheReadTokens": 0
+        },
+        "outputTokens": 21,
+        "outputTokenDetails": {
+          "textTokens": 4,
+          "reasoningTokens": 17
+        },
+        "totalTokens": 73,
+        "reasoningTokens": 17,
+        "cachedInputTokens": 0
+      },
+      "cost_usd": null,
+      "elapsed_seconds": 4.496
+    },
+    {
+      "name": "supported_zdr_on",
+      "model": "deepseek/deepseek-v4-flash",
+      "zdr_header": "1",
+      "http_status": 200,
+      "content_type": "text/event-stream",
+      "body_truncated": false,
+      "event_types": [
+        "finish",
+        "finish-step",
+        "provider-metadata",
+        "reasoning-delta",
+        "reasoning-end",
+        "reasoning-start",
+        "start",
+        "start-step",
+        "text-delta",
+        "text-end",
+        "text-start"
+      ],
+      "errors": [],
+      "text": "OK",
+      "usage": {
+        "inputTokens": 15,
+        "inputTokenDetails": {
+          "noCacheTokens": 15,
+          "cacheReadTokens": 0
+        },
+        "outputTokens": 14,
+        "outputTokenDetails": {
+          "textTokens": 3,
+          "reasoningTokens": 11
+        },
+        "totalTokens": 29,
+        "reasoningTokens": 11,
+        "cachedInputTokens": 0
+      },
+      "cost_usd": "0.00001254",
+      "elapsed_seconds": 4.465
+    }
+  ]
+}

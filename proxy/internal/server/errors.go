@@ -62,6 +62,8 @@ func writeUpstreamError(w http.ResponseWriter, err error) {
 func classifyUpstreamError(ae *commandcode.APIError) (int, openAIErrorBody, int) {
 	status, typ, msg, code, retry := http.StatusBadGateway, "upstream_error", "Upstream error: "+ae.Message, "", 0
 	switch {
+	case ae.IsZDRUnavailable():
+		status, typ, msg, code = http.StatusForbidden, "zdr_error", ae.Message, "CMD_ZDR_NO_PROVIDERS"
 	case ae.IsSpendCapExceeded():
 		status, typ, msg, code = http.StatusForbidden, "spend_limit_error", ae.Message, "USAGE_EXCEEDED"
 	case ae.IsInsufficientCredits():

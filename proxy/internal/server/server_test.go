@@ -24,6 +24,9 @@ func TestExplicitStreamFailures(t *testing.T) {
 		{"string", `{"type":"error","error":"service unavailable"}`, "server_error", 502},
 		{"object", `{"type":"error","error":{"message":"service unavailable","statusCode":503}}`, "server_error", 503},
 		{"spend cap", `{"type":"error","error":{"message":"Org cap reached","code":"USAGE_EXCEEDED","statusCode":403}}`, "spend_limit_error", 403},
+		{"ZDR code", `{"type":"error","error":{"message":"No ZDR route","code":"CMD_ZDR_NO_PROVIDERS","statusCode":403}}`, "zdr_error", 403},
+		{"ZDR type", `{"type":"error","error":{"message":"No ZDR route","type":"cmd_zdr_no_providers","statusCode":403}}`, "zdr_error", 403},
+		{"ZDR embedded", `{"type":"error","error":"403 {\"error\":{\"type\":\"cmd_zdr_no_providers\",\"message\":\"No ZDR route\"}}"}`, "zdr_error", 403},
 		{"billing", `{"type":"error","error":"premium_credits_exhausted"}`, "billing_error", 402},
 	} {
 		for _, streamed := range []bool{false, true} {
@@ -54,6 +57,9 @@ func TestExplicitStreamFailures(t *testing.T) {
 					}
 					if tc.name == "spend cap" && (!strings.Contains(body, `"code":"USAGE_EXCEEDED"`) || !strings.Contains(body, "Org cap reached")) {
 						t.Fatalf("spend cap detail lost: %s", body)
+					}
+					if tc.typ == "zdr_error" && (!strings.Contains(body, `"code":"CMD_ZDR_NO_PROVIDERS"`) || !strings.Contains(body, "No ZDR route")) {
+						t.Fatalf("ZDR policy detail lost: %s", body)
 					}
 				})
 			}

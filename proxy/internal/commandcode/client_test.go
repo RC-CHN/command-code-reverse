@@ -25,7 +25,7 @@ func TestGenerateHeadersAndBody(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	c := NewClient(srv.URL, func() string { return "1.32.2" }, srv.Client())
+	c := NewClient(srv.URL, func() string { return "1.32.2" }, false, srv.Client())
 	rc, err := c.Generate(context.Background(), Credentials{
 		APIKey:      "k1",
 		SessionID:   "sess-1",
@@ -73,7 +73,7 @@ func TestGenerateAPIError(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	c := NewClient(srv.URL, func() string { return "1.32.2" }, srv.Client())
+	c := NewClient(srv.URL, func() string { return "1.32.2" }, false, srv.Client())
 	_, err := c.Generate(context.Background(), Credentials{APIKey: "k1"}, &GenerateRequest{})
 	if err == nil {
 		t.Fatal("expected error")
@@ -94,7 +94,7 @@ func TestGenerateAPIError(t *testing.T) {
 }
 
 func TestTraceparentRetrySemantics(t *testing.T) {
-	c := NewClient("http://x", func() string { return "test" }, nil)
+	c := NewClient("http://x", func() string { return "test" }, false, nil)
 	creds := Credentials{APIKey: "k", SessionID: "s", ProjectSlug: "p", TraceID: "0123456789abcdef0123456789abcdef"}
 
 	re := regexp.MustCompile(`^00-([0-9a-f]{32})-([0-9a-f]{16})-01$`)

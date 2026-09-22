@@ -29,6 +29,7 @@ func TestLateResponseCannotClearNewBreaker(t *testing.T) {
 		{"server error", &commandcode.APIError{Status: 503}},
 		{"plan error", &commandcode.APIError{Status: 403, Message: "MODEL_NOT_IN_PLAN"}},
 		{"spend cap", &commandcode.APIError{Status: 403, Code: "USAGE_EXCEEDED"}},
+		{"ZDR policy", &commandcode.APIError{Status: 403, Code: "CMD_ZDR_NO_PROVIDERS"}},
 	} {
 		t.Run(outcome.name, func(t *testing.T) {
 			started, release := make(chan struct{}), make(chan struct{})

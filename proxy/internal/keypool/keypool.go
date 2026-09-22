@@ -182,6 +182,9 @@ func (p *Pool) reportFailure(ks *keyLease, err error) (rotate bool) {
 	case errors.Is(err, context.Canceled), errors.Is(err, context.DeadlineExceeded):
 		p.releaseProbe(ks)
 		return false
+	case errors.As(err, &ae) && ae.IsZDRUnavailable():
+		p.close(ks)
+		return false
 	case errors.As(err, &ae) && ae.IsSpendCapExceeded():
 		// Caps may be organization-wide or model-specific. Preserve the
 		// key and surface the policy limit without rotating accounts.

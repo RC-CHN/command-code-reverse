@@ -19,6 +19,7 @@ Go 版 Command Code → OpenAI 兼容代理。把 `POST /alpha/generate`（NDJSO
 - 多 key 池：fill-first + 熔断（欠费/凭据失效 1h、限流 1m；5xx/网络故障不熔断、不切换 key）
 - 指纹上报（可选）：seed 确定性派生 / 状态文件重放 / 现场采集 三模式
 - CLI 版本号：npm registry 24h 自动刷新，可 pin
+- `CMD_ZDR=1`：上游请求统一携带零数据留存路由要求；不支持时明确报错，不降级重试
 - 流内错误标记（premium_credits_exhausted / model_not_in_plan / insufficient credits）→ 明确 402/403
 - 组织消费上限 `USAGE_EXCEEDED` → 403 `spend_limit_error`，保留上游消息，不切换账户、不熔断 key
 - 字符串和对象形式的流错误均显式返回；兼容 flat/nested 缓存 token 统计
@@ -100,6 +101,18 @@ docker run --env-file ../.env -p 3050:3050 commandcode-proxy
 | `COMMAND_CODE_API_BASE` | | `https://api.commandcode.ai` | API base；staging 环境用 `https://staging-api.commandcode.ai` |
 | `COMMAND_CODE_VERSION` | | 空 | 上报的 CLI 版本号初始值；空 = 从 npm registry 每 24h 自动刷新 |
 | `COMMAND_CODE_VERSION_PIN` | | 空 | 固定版本号，设置后禁用自动刷新（服务端强制最低版本时的兜底） |
+| `CMD_ZDR` | | `0` | `1`/`true` 开启零数据留存路由要求，`0`/`false` 关闭；非法值启动失败 |
+
+设置 `CMD_ZDR=1` 后重启代理，聊天及其他上游 API 请求统一携带
+`x-cmd-zdr: 1`；managed 和 passthrough 两种鉴权模式均生效，下游不能关闭此要求。
+上游返回 `CMD_ZDR_NO_PROVIDERS`（或错误类型 `cmd_zdr_no_providers`）时，
+代理返回 403 `zdr_error`，保留错误码和消息，不切换 key、不熔断，也不会去掉 ZDR 头重试。
+若 SSE 已开始，则通过流内错误事件返回相同错误信息。
+模型目录可能仍包含不支持 ZDR 的条目，实际路由由上游判断。
+固定发送的 `x-taste-learning: false` 仅关闭 taste learning，不能代替 ZDR。
+本开关传达上游路由要求，不改变本地日志或可选指纹上报配置。
+已做少量真实请求对照：[ZDR 路由实测](../analysis/v1.62.1/README.md#5-zdr代理已接入路由策略已实测)；
+上游实测返回的 422 策略拒绝也统一映射为上述 403。
 
 ### 下游鉴权
 

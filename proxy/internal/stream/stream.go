@@ -85,6 +85,7 @@ type StreamError struct {
 	Message    string `json:"message"`
 	StatusCode int    `json:"statusCode,omitempty"`
 	Code       string `json:"code,omitempty"`
+	Type       string `json:"type,omitempty"`
 }
 
 // UnmarshalJSON mirrors readStreamErrorEvent: error can be a string or object.
@@ -107,6 +108,7 @@ func (e *Event) APIError() *commandcode.APIError {
 	out := &commandcode.APIError{Status: 502, Message: e.Message}
 	if e.Error != nil {
 		out.Code = e.Error.Code
+		out.Type = e.Error.Type
 		if e.Error.Message != "" {
 			out.Message = e.Error.Message
 		}
@@ -118,11 +120,12 @@ func (e *Event) APIError() *commandcode.APIError {
 		var envelope struct {
 			Error struct {
 				Code    string `json:"code"`
+				Type    string `json:"type"`
 				Message string `json:"message"`
 				Status  int    `json:"status"`
 			} `json:"error"`
 		}
-		if json.Unmarshal([]byte(out.Message[i:]), &envelope) == nil && envelope.Error.Message != "" {
+		if json.Unmarshal([]byte(out.Message[i:]), &envelope) == nil {
 			prefix := strings.Trim(strings.TrimSpace(out.Message[:i]), "<>")
 			status, _ := strconv.Atoi(prefix)
 			if envelope.Error.Status >= 400 && envelope.Error.Status <= 599 {
@@ -134,7 +137,12 @@ func (e *Event) APIError() *commandcode.APIError {
 			if envelope.Error.Code != "" {
 				out.Code = envelope.Error.Code
 			}
-			out.Message = envelope.Error.Message
+			if envelope.Error.Type != "" {
+				out.Type = envelope.Error.Type
+			}
+			if envelope.Error.Message != "" {
+				out.Message = envelope.Error.Message
+			}
 		}
 	}
 	if out.Message == "" {

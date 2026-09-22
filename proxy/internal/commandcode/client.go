@@ -26,6 +26,7 @@ const (
 type APIError struct {
 	Status  int
 	Code    string
+	Type    string
 	Message string
 }
 
@@ -44,6 +45,12 @@ func (e *APIError) IsRateLimited() bool { return e.Status == 429 }
 // IsSpendCapExceeded identifies the organization/model spend cap added in
 // CLI 1.49.1. It is a policy limit, not a rejected credential.
 func (e *APIError) IsSpendCapExceeded() bool { return e.Code == "USAGE_EXCEEDED" }
+
+// IsZDRUnavailable identifies a routing-policy failure, not a rejected key.
+func (e *APIError) IsZDRUnavailable() bool {
+	return strings.EqualFold(e.Code, "CMD_ZDR_NO_PROVIDERS") ||
+		strings.EqualFold(e.Type, "cmd_zdr_no_providers")
+}
 
 // IsModelNotInPlan reports the 403 + "MODEL_NOT_IN_PLAN" signature: the key
 // itself is valid, only the requested model is above the account's tier.
@@ -90,11 +97,12 @@ type Client struct {
 	baseURL    string
 	httpClient *http.Client
 	version    func() string // returns x-command-code-version value
+	zdr        bool
 }
 
 // NewClient builds a client. version is consulted per request so a
 // background refresher can keep it current.
-func NewClient(baseURL string, version func() string, hc *http.Client) *Client {
+func NewClient(baseURL string, version func() string, zdr bool, hc *http.Client) *Client {
 	if hc == nil {
 		hc = &http.Client{}
 	}
@@ -102,6 +110,7 @@ func NewClient(baseURL string, version func() string, hc *http.Client) *Client {
 		baseURL:    strings.TrimSuffix(baseURL, "/"),
 		httpClient: hc,
 		version:    version,
+		zdr:        zdr,
 	}
 }
 
@@ -171,10 +180,22 @@ func (c *Client) postJSON(ctx context.Context, route, apiKey string, payload any
 
 // setAuthHeaders applies the shared authenticated-CLI header set.
 func (c *Client) setAuthHeaders(req *http.Request, apiKey string) {
-	req.Header.Set("Authorization", "Bearer "+apiKey)
-	req.Header.Set("User-Agent", "cli")
-	req.Header.Set("x-command-code-version", c.version())
-	req.Header.Set("x-cli-environment", "production")
+	for name, value := range c.authHeaders(apiKey) {
+		req.Header.Set(name, value)
+	}
+}
+
+func (c *Client) authHeaders(apiKey string) map[string]string {
+	headers := map[string]string{
+		"Authorization":          "Bearer " + apiKey,
+		"User-Agent":             "cli",
+		"x-command-code-version": c.version(),
+		"x-cli-environment":      "production",
+	}
+	if c.zdr {
+		headers["x-cmd-zdr"] = "1"
+	}
+	return headers
 }
 
 // Whoami probes /alpha/whoami — a lightweight auth/upstream health check.
@@ -282,17 +303,13 @@ func (c *Client) headers(creds Credentials) map[string]string {
 	if creds.TraceID != "" {
 		traceparent = traceparentFromTraceID(creds.TraceID)
 	}
-	return map[string]string{
-		"Content-Type":           "application/json",
-		"Authorization":          "Bearer " + creds.APIKey,
-		"User-Agent":             "cli",
-		"x-command-code-version": c.version(),
-		"x-cli-environment":      "production",
-		"x-taste-learning":       "false",
-		"x-session-id":           creds.SessionID,
-		"x-project-slug":         creds.ProjectSlug,
-		"traceparent":            traceparent,
-	}
+	headers := c.authHeaders(creds.APIKey)
+	headers["Content-Type"] = "application/json"
+	headers["x-taste-learning"] = "false"
+	headers["x-session-id"] = creds.SessionID
+	headers["x-project-slug"] = creds.ProjectSlug
+	headers["traceparent"] = traceparent
+	return headers
 }
 
 // parseAPIError decodes the upstream error envelope, tolerating plain text.
@@ -303,13 +320,17 @@ func parseAPIError(resp *http.Response) error {
 	var envelope struct {
 		Error struct {
 			Code    string `json:"code"`
+			Type    string `json:"type"`
 			Status  int    `json:"status"`
 			Message string `json:"message"`
 		} `json:"error"`
 	}
-	if json.Unmarshal(raw, &envelope) == nil && envelope.Error.Message != "" {
+	if json.Unmarshal(raw, &envelope) == nil {
 		ae.Code = envelope.Error.Code
-		ae.Message = envelope.Error.Message
+		ae.Type = envelope.Error.Type
+		if envelope.Error.Message != "" {
+			ae.Message = envelope.Error.Message
+		}
 		if envelope.Error.Status != 0 {
 			ae.Status = envelope.Error.Status
 		}

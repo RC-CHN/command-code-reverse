@@ -14,6 +14,7 @@ func isolate(t *testing.T) {
 	for _, k := range []string{
 		"COMMAND_CODE_API_KEY", "COMMAND_CODE_API_BASE", "COMMAND_CODE_VERSION",
 		"COMMAND_CODE_VERSION_PIN", "AUTH_MODE", "PROXY_API_KEY",
+		"CMD_ZDR",
 		"FINGERPRINT_ENABLED", "FINGERPRINT_SEED", "FINGERPRINT_STATE_FILE",
 		"HOST", "PORT", "LOG_FORMAT", "LOG_LEVEL", "MAX_BODY_BYTES",
 	} {
@@ -45,6 +46,67 @@ func TestLoadDefaults(t *testing.T) {
 	}
 	if c.MaxBodyBytes != 64*1024*1024 {
 		t.Errorf("MaxBodyBytes = %d, want 64 MiB", c.MaxBodyBytes)
+	}
+	if c.ZDR {
+		t.Error("ZDR must be opt-in")
+	}
+}
+
+func TestZDRConfig(t *testing.T) {
+	for _, tc := range []struct {
+		value   string
+		enabled bool
+		invalid bool
+	}{
+		{value: "1", enabled: true},
+		{value: "true", enabled: true},
+		{value: "0"},
+		{value: "false"},
+		{value: "ture", invalid: true},
+		{value: "2", invalid: true},
+	} {
+		t.Run(tc.value, func(t *testing.T) {
+			isolate(t)
+			t.Setenv("COMMAND_CODE_API_KEY", "k1")
+			t.Setenv("PROXY_API_KEY", "p")
+			t.Setenv("CMD_ZDR", tc.value)
+			cfg, err := Load()
+			if tc.invalid {
+				if err == nil {
+					t.Fatal("invalid ZDR value silently accepted")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			if cfg.ZDR != tc.enabled {
+				t.Fatalf("ZDR = %v, want %v", cfg.ZDR, tc.enabled)
+			}
+		})
+	}
+}
+
+func TestZDRDotEnvPrecedence(t *testing.T) {
+	for _, override := range []bool{false, true} {
+		t.Run(fmt.Sprint(override), func(t *testing.T) {
+			isolate(t)
+			t.Setenv("COMMAND_CODE_API_KEY", "k1")
+			t.Setenv("PROXY_API_KEY", "p")
+			if err := os.WriteFile(".env", []byte("CMD_ZDR=1\n"), 0o600); err != nil {
+				t.Fatal(err)
+			}
+			if override {
+				t.Setenv("CMD_ZDR", "0")
+			}
+			cfg, err := Load()
+			if err != nil {
+				t.Fatal(err)
+			}
+			if cfg.ZDR == override {
+				t.Fatalf("ZDR = %v with environment override = %v", cfg.ZDR, override)
+			}
+		})
 	}
 }
 
