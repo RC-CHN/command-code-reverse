@@ -382,12 +382,19 @@ func TestFallbackModelsMatchCurrentCatalog(t *testing.T) {
 		"deepseek/deepseek-v4-flash-fast",
 		"moonshotai/Kimi-K3",
 		"z-ai/glm-5.3-flash",
+		"z-ai/glm-5.3-flashx",
 		"Qwen/Qwen3.8-Flash",
+		"Qwen/Qwen3.8-Omni-Flash",
 		"tencent/hy4-preview",
 		"Qwen/Qwen3.8-Max-0902",
 		"google/gemini-3.8-flash",
 		"gpt-6-astra",
-		"meituan/LongCat-2.0:free",
+		"meituan/LongCat-2.0",
+		"xai/grok-4.7",
+		"stepfun/Step-5-Preview",
+		"xiaomi/mimo-v2.6-pro",
+		"xiaomi/mimo-v2.6-pro-ultraspeed",
+		"xiaomi/mimo-v2.6-flash",
 		"meta/muse-spark-1.3",
 		"meta/muse-spark-1.3-contributor",
 	} {
@@ -404,6 +411,7 @@ func TestFallbackModelsMatchCurrentCatalog(t *testing.T) {
 		"minimax/minimax-m2.7-free",
 		"stealth/ox-alpha",
 		"deepseek/deepseek-v4.1-flash-beta",
+		"meituan/LongCat-2.0:free",
 	} {
 		if _, exists := byID[retired]; exists {
 			t.Errorf("retired model %q remains in fallback catalog", retired)

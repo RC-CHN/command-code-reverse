@@ -4,6 +4,19 @@ All notable changes to commandcode-proxy are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 versioning follows [SemVer](https://semver.org/).
 
+## [Unreleased]
+
+### Changed
+
+- Refresh the offline CLI version fallback to `1.62.1`; explicit version pins
+  and automatic registry refresh continue to take precedence.
+- Add Qwen 3.8 Omni Flash, GLM-5.3 FlashX, paid LongCat 2.0, Grok 4.7,
+  Step 5 Preview, and MiMo V2.6 Pro/Pro UltraSpeed/Flash to the fallback catalog.
+  Dynamic upstream model catalogs still take priority.
+- Remove the retired `meituan/LongCat-2.0:free` from the fallback catalog.
+  Explicit model IDs continue to be forwarded unchanged, without silently
+  converting requests for the free model into paid LongCat requests.
+
 ## [v0.1.7] - 2026-09-17
 
 ### Fixed

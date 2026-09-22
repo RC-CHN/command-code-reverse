@@ -20,14 +20,15 @@ const modelCatalogTTL = 5 * time.Minute
 // upstream fetch (or when the upstream is unreachable). Model IDs follow
 // the CLI gateway catalog, including canonical IDs without a vendor prefix.
 // Listing a model does not guarantee access under the caller's plan.
-// Refreshed against command-code@1.54.2; dynamic upstream data takes priority.
+// Refreshed against command-code@1.62.1; dynamic upstream data takes priority.
 var fallbackModels = []commandcode.ModelInfo{
 	{ID: "deepseek/deepseek-v4.1-flash", Name: "DeepSeek V4.1 Flash", ContextLength: 1_000_000},
 	{ID: "inclusionai/ling-3.0-flash-sante:free", Name: "Ling 3.0 Flash Sante", ContextLength: 262_144},
 	{ID: "Qwen/Qwen3.8-Max-0902", Name: "Qwen 3.8 Max 0902", ContextLength: 1_000_000},
 	{ID: "google/gemini-3.8-flash", Name: "Gemini 3.8 Flash", ContextLength: 1_000_000},
 	{ID: "gpt-6-astra", Name: "GPT-6 Astra", ContextLength: 1_050_000},
-	{ID: "meituan/LongCat-2.0:free", Name: "LongCat 2.0", ContextLength: 1_048_576},
+	{ID: "xai/grok-4.7", Name: "Grok 4.7", ContextLength: 500_000},
+	{ID: "meituan/LongCat-2.0", Name: "LongCat 2.0", ContextLength: 1_048_576},
 	{ID: "meta/muse-spark-1.3", Name: "Muse Spark 1.3", ContextLength: 1_048_576},
 	{ID: "meta/muse-spark-1.3-contributor", Name: "Muse Spark 1.3 Contributor", ContextLength: 1_048_576},
 	{ID: "deepseek/deepseek-v4-pro", Name: "DeepSeek V4 Pro (latest)", ContextLength: 1_000_000},
@@ -40,6 +41,7 @@ var fallbackModels = []commandcode.ModelInfo{
 	{ID: "moonshotai/Kimi-K2.6", Name: "Kimi K2.6", ContextLength: 256_000},
 	{ID: "moonshotai/Kimi-K2.5", Name: "Kimi K2.5", ContextLength: 256_000},
 	{ID: "z-ai/glm-5.3-flash", Name: "GLM-5.3 Flash", ContextLength: 1_048_576},
+	{ID: "z-ai/glm-5.3-flashx", Name: "GLM-5.3 FlashX", ContextLength: 1_000_000},
 	{ID: "zai-org/GLM-5.3", Name: "GLM-5.3", ContextLength: 1_000_000},
 	{ID: "zai-org/GLM-5.2", Name: "GLM-5.2", ContextLength: 1_000_000},
 	{ID: "zai-org/GLM-5.2-Fast", Name: "GLM-5.2 Fast", ContextLength: 1_000_000},
@@ -48,8 +50,12 @@ var fallbackModels = []commandcode.ModelInfo{
 	{ID: "MiniMaxAI/MiniMax-M3", Name: "MiniMax M3", ContextLength: 1_000_000},
 	{ID: "MiniMaxAI/MiniMax-M2.7", Name: "MiniMax M2.7", ContextLength: 200_000},
 	{ID: "MiniMaxAI/MiniMax-M2.5", Name: "MiniMax M2.5", ContextLength: 200_000},
+	{ID: "xiaomi/mimo-v2.6-pro", Name: "MiMo V2.6 Pro", ContextLength: 1_048_576},
+	{ID: "xiaomi/mimo-v2.6-pro-ultraspeed", Name: "MiMo V2.6 Pro UltraSpeed", ContextLength: 1_048_576},
+	{ID: "xiaomi/mimo-v2.6-flash", Name: "MiMo V2.6 Flash", ContextLength: 1_048_576},
 	{ID: "xiaomi/mimo-v2.5-pro", Name: "MiMo V2.5 Pro", ContextLength: 1_000_000},
 	{ID: "xiaomi/mimo-v2.5", Name: "MiMo V2.5", ContextLength: 1_000_000},
+	{ID: "Qwen/Qwen3.8-Omni-Flash", Name: "Qwen 3.8 Omni Flash", ContextLength: 1_000_000},
 	{ID: "Qwen/Qwen3.8-Max", Name: "Qwen 3.8 Max", ContextLength: 1_000_000},
 	{ID: "Qwen/Qwen3.8-27B", Name: "Qwen 3.8 27B", ContextLength: 262_144},
 	{ID: "Qwen/Qwen3.8-Flash", Name: "Qwen 3.8 Flash", ContextLength: 1_000_000},
@@ -58,6 +64,7 @@ var fallbackModels = []commandcode.ModelInfo{
 	{ID: "Qwen/Qwen3.7-Flash", Name: "Qwen 3.7 Flash", ContextLength: 1_000_000},
 	{ID: "Qwen/Qwen3.6-Max-Preview", Name: "Qwen 3.6 Max Preview", ContextLength: 200_000},
 	{ID: "Qwen/Qwen3.6-Plus", Name: "Qwen 3.6 Plus", ContextLength: 200_000},
+	{ID: "stepfun/Step-5-Preview", Name: "Step 5 Preview", ContextLength: 1_000_000},
 	{ID: "stepfun/Step-3.7-Flash", Name: "Step 3.7 Flash", ContextLength: 256_000},
 	{ID: "stepfun/Step-3.5-Flash", Name: "Step 3.5 Flash", ContextLength: 1_000_000},
 	{ID: "tencent/hy4-preview", Name: "Tencent Hy4 Preview", ContextLength: 1_048_576},
