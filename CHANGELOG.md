@@ -6,6 +6,15 @@ versioning follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+## [v0.2.1] - 2026-09-24
+
+### Fixed
+
+- Preserve assistant `reasoning_content` and ordered `content` reasoning parts
+  when replaying chat history to the Command Code gateway, including tool
+  continuations and reasoning-only messages. Avoid duplicating identical
+  field/part representations; follow the CLI's text-only gateway behavior.
+
 ## [v0.2.0] - 2026-09-22
 
 ### Fixed
