@@ -32,11 +32,12 @@ type ChatRequest struct {
 // Message is an OpenAI chat message. Content may be a string or an array
 // of content parts; use ContentText / ContentParts to access.
 type Message struct {
-	Role       string          `json:"role"`
-	Content    json.RawMessage `json:"content"`
-	ToolCalls  []ToolCall      `json:"tool_calls,omitempty"`
-	ToolCallID string          `json:"tool_call_id,omitempty"`
-	Name       string          `json:"name,omitempty"`
+	Role             string          `json:"role"`
+	Content          json.RawMessage `json:"content"`
+	ReasoningContent string          `json:"reasoning_content,omitempty"`
+	ToolCalls        []ToolCall      `json:"tool_calls,omitempty"`
+	ToolCallID       string          `json:"tool_call_id,omitempty"`
+	Name             string          `json:"name,omitempty"`
 }
 
 // ToolCall is an OpenAI assistant tool call.
@@ -97,6 +98,31 @@ func (m Message) ContentParts() []ContentPart {
 	var parts []ContentPart
 	if len(m.Content) == 0 || json.Unmarshal(m.Content, &parts) != nil {
 		return nil
+	}
+	return parts
+}
+
+// assistantContent preserves the CLI's ordered text/reasoning parts. The
+// OpenAI-style reasoning_content field precedes visible content; when it is
+// also supplied as array parts, prefer that ordering over a duplicate copy.
+// The gateway CLI only forwards reasoning text, not BYOK provider signatures.
+func (m Message) assistantContent() []commandcode.WireContentPart {
+	var parts []commandcode.WireContentPart
+	var reasoning strings.Builder
+	if raw := m.ContentParts(); raw != nil {
+		for _, p := range raw {
+			if (p.Type == "text" || p.Type == "reasoning") && p.Text != "" {
+				parts = append(parts, commandcode.WireContentPart{Type: p.Type, Text: p.Text})
+				if p.Type == "reasoning" {
+					reasoning.WriteString(p.Text)
+				}
+			}
+		}
+	} else if text := m.ContentText(); text != "" {
+		parts = append(parts, commandcode.WireContentPart{Type: "text", Text: text})
+	}
+	if m.ReasoningContent != "" && m.ReasoningContent != reasoning.String() {
+		parts = append([]commandcode.WireContentPart{{Type: "reasoning", Text: m.ReasoningContent}}, parts...)
 	}
 	return parts
 }
@@ -316,10 +342,7 @@ func convertMessages(msgs []Message) (string, []commandcode.WireMessage, error) 
 			}
 
 		case "assistant":
-			parts := []commandcode.WireContentPart{}
-			if t := m.ContentText(); t != "" {
-				parts = append(parts, commandcode.WireContentPart{Type: "text", Text: t})
-			}
+			parts := m.assistantContent()
 			for _, tc := range m.ToolCalls {
 				toolNames[tc.ID] = tc.Function.Name
 				parts = append(parts, commandcode.WireContentPart{
