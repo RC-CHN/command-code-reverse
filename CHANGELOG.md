@@ -6,6 +6,33 @@ versioning follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+## [v0.2.2] - 2026-10-08
+
+### Fixed
+
+- Report upstream streams that end without a `finish` or explicit `abort`
+  event as `upstream_truncated`: HTTP 502 before output, or an in-band error
+  after SSE starts. Do not turn partial responses into successful completions
+  or count them as successful requests. Preserve the CLI's explicit abort
+  handling and complete terminal events without trailing newlines.
+- Correct the fallback context length for Step 3.5 Flash to 262,144 tokens.
+
+### Added
+
+- Record cache-write tokens separately in completion logs and
+  `commandcode_proxy_tokens_total{kind="cache_write"}`. Read nested usage and
+  `cache-write-tokens` events, including events after `finish`; use the last
+  valid event only when the total is zero. Ignore invalid optional counts,
+  avoid double-counting, and preserve downstream OpenAI usage fields.
+
+### Changed
+
+- Refresh the offline CLI version fallback to `1.79.1` following static
+  protocol analysis. Explicit pins and automatic registry refresh still apply.
+- Add DeepSeek V4.1 Flash Fast, Ling 3.1 Flash, Mistral Large 4 and Glyph
+  Cluster to the fallback model catalog. Dynamic upstream catalogs retain
+  priority, and explicit model IDs continue to be forwarded unchanged.
+
 ## [v0.2.1] - 2026-09-24
 
 ### Fixed
