@@ -1,0 +1,64 @@
+{
+  "checked_at": "2026-10-08T06:23:09.050266+00:00",
+  "package": "command-code",
+  "version": "1.79.1",
+  "baseline_version": "1.62.1",
+  "dist_tags_at_check": {
+    "alpha": "0.0.4-alpha.43",
+    "beta": "0.18.11-beta.0",
+    "rc": "1.32.2-rc.0",
+    "latest": "1.79.1"
+  },
+  "published_at": "2026-10-07T22:09:28.916Z",
+  "registry": "https://registry.npmjs.org/command-code",
+  "version_metadata_url": "https://registry.npmjs.org/command-code/1.79.1",
+  "dist": {
+    "shasum": "bcf1f23e54f94dee0d285d3aa986b0ca4225896c",
+    "tarball": "https://registry.npmjs.org/command-code/-/command-code-1.79.1.tgz",
+    "fileCount": 72,
+    "integrity": "sha512-EO/15K8AEvu4K/2i6in+Oe83cFqQzvZ2qvcABtpH6A1F/eDCwtXErMolcxRtllAkiEEd0XM5LFxMvIIhIlYMzg==",
+    "signatures": [
+      {
+        "sig": "MEUCIAduB/LxlK8kIFZrJLAmdaW/H8jygFJl8t4ymKzvhZW8AiEAjaicjWLPpgPFXt2wtY1KqKKC2+j+yowwuoHcbog1pO4=",
+        "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+      },
+      {
+        "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+        "sig": "MEUCIQDE27teUp2IKqXtc5RKkIrw0enfKQn3BZG5P9w3doRfQQIge96aE5PtZP3YUh5tNuwmz5UsQcM/2jslfdu2g8R3wpU="
+      }
+    ],
+    "unpackedSize": 4357918
+  },
+  "tarball_sha256": "55ed3d986070d8b1b749dcb8b47e2daacc877616f284ae4dde47c0d9fa20490b",
+  "validation": "npm SHA512 and SHA1 verified; extracted for static analysis; CLI not installed or executed",
+  "formatter": "Prettier 3.6.2",
+  "analysis": "analysis/v1.79.1/README.md",
+  "source_hashes": {
+    "1.62.1": {
+      "raw_sha256": "80e04495dcc940bc990ba2ae4c30c6d24a4dcccf2d9c0b4cfe5411edcf6b5cfa",
+      "beautified_sha256": "c2bbdd26581675fe409bd82f23ccef926ef4f96be3ca9dc58323f2d524bf26b7"
+    },
+    "1.79.1": {
+      "raw_sha256": "3193c12205bc9c03ae33b7676e7b840dd9d4ae1af955558470d147da50e7705a",
+      "beautified_sha256": "f4a41eef9634c7eb7bc7b88166c169884e2f475a88e0adfcfc87cce75b535fa3"
+    }
+  },
+  "files": {
+    "metadata": {
+      "path": "references/command-code-npm/command-code-1.79.1.metadata.json",
+      "sha256": "ef7f86985295ebe20075837c8ba1a5b2faaa509e7ed9291796e87897c24b686c"
+    },
+    "package_json": {
+      "path": "references/command-code-npm/extracted-1.79.1/package/package.json",
+      "sha256": "d7aaa37c9e9da6bcb288971b0fcc708f174e9c82ef55af5d25380a074058554b"
+    },
+    "changelog": {
+      "path": "references/command-code-npm/extracted-1.79.1/package/CHANGELOG.md",
+      "sha256": "7918f47ef636682d20ba463aab42f5965b412c5a54ae26738b801b80ca597d62"
+    },
+    "comparison": {
+      "path": "analysis/v1.79.1/comparison.json",
+      "sha256": "470fb8c98b31d33d0d86d01f3817bc2388e966d3f5f651196e684c29641fc323"
+    }
+  }
+}

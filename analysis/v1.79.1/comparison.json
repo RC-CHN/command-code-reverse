@@ -1,0 +1,719 @@
+{
+  "baseline_version": "1.62.1",
+  "version": "1.79.1",
+  "analyzed_at": "2026-10-08T06:35:29.136560+00:00",
+  "proxy_revision": "8552aa22586c50973b50cdf182e4a8b2addb6e62",
+  "scope": "Static npm bundle comparison; full functions and model objects extracted through Acorn AST, relevant changes manually reviewed. No live inference requests or implementation changes.",
+  "sources": {
+    "1.62.1": {
+      "path": "references/command-code-npm/extracted-1.62.1/package/dist/cli.beautified.mjs",
+      "sha256": "c2bbdd26581675fe409bd82f23ccef926ef4f96be3ca9dc58323f2d524bf26b7"
+    },
+    "1.79.1": {
+      "path": "references/command-code-npm/extracted-1.79.1/package/dist/cli.beautified.mjs",
+      "sha256": "f4a41eef9634c7eb7bc7b88166c169884e2f475a88e0adfcfc87cce75b535fa3"
+    }
+  },
+  "function_evidence": {
+    "buildCommandAuthHeaders": {
+      "1.62.1": {
+        "line": 29007,
+        "sha256": "bdad7aca6b327a48c921200683bdff395cbe76d7b3650f99157f5b0f9f298c41"
+      },
+      "1.79.1": {
+        "line": 30752,
+        "sha256": "49e599f2b4760f3ef3e43ed0c3013c2a2466b0e87f0fe987c96674d257065b3d"
+      }
+    },
+    "buildCommandApiHeaders": {
+      "1.62.1": {
+        "line": 29210,
+        "sha256": "e452d1b515965973539914d08f552d2e82ceb216ee90db4bdc87ceb5917c40fb"
+      },
+      "1.79.1": {
+        "line": 30956,
+        "sha256": "9efdd9088740cae529df5aaf722dface67d25eb251dd008d0e629fe045a4b5b9"
+      }
+    },
+    "resolveCommandAuthHeaders": {
+      "1.62.1": {
+        "line": 52989,
+        "sha256": "2ca1edde9adca231ebccaa09afeaf110daa6c3c77ae929266927ef9d64e7c720"
+      },
+      "1.79.1": {
+        "line": 55903,
+        "sha256": "21d06b2aadc87bb08e27f95e3cc5862630176d03150b3e5c1fbe564d0436a356"
+      }
+    },
+    "createModelClient": {
+      "1.62.1": {
+        "line": 37968,
+        "sha256": "566164b677ed5e92e574d8c92eaeb0dec48d8fbca6c8374a89dce0746d9c60d4"
+      },
+      "1.79.1": {
+        "line": 39772,
+        "sha256": "ae5afa194c47c7aac83dfeb36be9c6925b5888e57bd8ab736e69e90e74f14f9d"
+      }
+    },
+    "toWireMessages": {
+      "1.62.1": {
+        "line": 37631,
+        "sha256": "dd74fb4e04a3428c34ddc5ec09d1e4a91c7c51c3b01f710d1a2d869f3cc4a6b9"
+      },
+      "1.79.1": {
+        "line": 39425,
+        "sha256": "536cb452b30293c3fbc510b49ae219499d2897ebce65c04e62452ffc6165bc52"
+      }
+    },
+    "toWireTools": {
+      "1.62.1": {
+        "line": 37612,
+        "sha256": "de73d50b44a23d80221e2b7fe032eeb74dd71d3a027e379d1bccabbfb773332e"
+      },
+      "1.79.1": {
+        "line": 39406,
+        "sha256": "de73d50b44a23d80221e2b7fe032eeb74dd71d3a027e379d1bccabbfb773332e"
+      }
+    },
+    "toWireSystem": {
+      "1.62.1": {
+        "line": 37679,
+        "sha256": "81544772646e5ead3554422f35e823d7836704466d33484b87860443ae01d5fe"
+      },
+      "1.79.1": {
+        "line": 39473,
+        "sha256": "8a6a92dfe765aba44071c3fc6c3d3b852f0cb0b04cc2d9e6284998ea92be78b1"
+      }
+    },
+    "consumeStream": {
+      "1.62.1": {
+        "line": 37790,
+        "sha256": "b03b4d176368b27c66ed3616ff9709cc19e22c95f9b52482b88958ca535293a6"
+      },
+      "1.79.1": {
+        "line": 39588,
+        "sha256": "ecde025d11aa0cc0416bd21fa1275efc5d26816b1a61b261f3cc8720093769bf"
+      }
+    },
+    "readCacheWriteTokens1h": {
+      "1.62.1": {
+        "line": 37687,
+        "sha256": "2a150c580785638f6668ef60e683f6472692922e35f093287a8e8b00b27342f2"
+      },
+      "1.79.1": {
+        "line": 39481,
+        "sha256": "0f9c74204d17a5c9a5954a1f57ca983051a5650509ae7fd1c2e1dfe5dcc4efb4"
+      }
+    },
+    "readCapturedCacheWriteTokens": {
+      "1.79.1": {
+        "line": 39492,
+        "sha256": "a2b0940c6dcaeef31ef5fedbb298e930a202f61fb1c2e3fb08c204fc4378c535"
+      }
+    },
+    "readReasoningMetadata": {
+      "1.62.1": {
+        "line": 38236,
+        "sha256": "d36782a36472aca8684fecad93a92160e864b2a950f5b962d53bcc6d39d75155"
+      },
+      "1.79.1": {
+        "line": 40040,
+        "sha256": "208b8b9cb565b3bfa9a5dcd12edfeccb0f9f99612619184c1ecfd590f65b3ab1"
+      }
+    },
+    "reasoningProviderOptions": {
+      "1.62.1": {
+        "line": 38073,
+        "sha256": "ab481f21eab0a9aaf4f3c39977c1e5ca4e061ae5920d1703974cd3ba0a79cd87"
+      },
+      "1.79.1": {
+        "line": 39877,
+        "sha256": "ab481f21eab0a9aaf4f3c39977c1e5ca4e061ae5920d1703974cd3ba0a79cd87"
+      }
+    },
+    "responsesProviderOptions": {
+      "1.62.1": {
+        "line": 37183,
+        "sha256": "389d5cefb0c7f3b5fa6c79b1e2c7c5ebfb4743a0711ced7fedd92e37b75a1d64"
+      },
+      "1.79.1": {
+        "line": 38977,
+        "sha256": "389d5cefb0c7f3b5fa6c79b1e2c7c5ebfb4743a0711ced7fedd92e37b75a1d64"
+      }
+    },
+    "buildMachineFingerprint": {
+      "1.62.1": {
+        "line": 44849,
+        "sha256": "340948cac4a6641bd981f15a7eda81b04c2a22644d8ca83f0b299ab2b88f3714"
+      },
+      "1.79.1": {
+        "line": 46847,
+        "sha256": "033b8864b809db5d9969b5a9961b3b297dc507de84cbbe8f3c0d274fa1976c07"
+      }
+    },
+    "trackCliSessionExistsEvent": {
+      "1.62.1": {
+        "line": 112754,
+        "sha256": "400db8fb58b8d3fe97e24f4b8c74802d44f292c305da8bc980fffa3ed907d08b"
+      },
+      "1.79.1": {
+        "line": 130051,
+        "sha256": "c680dab6d1b52ed5e597660191448645d69f84c80f15e16405820d0c176c8b47"
+      }
+    },
+    "parseSpendCapError": {
+      "1.62.1": {
+        "line": 29326,
+        "sha256": "b367368744351779b047f60560080dc14e0fca9d7001591e084d8695bb7d149c"
+      },
+      "1.79.1": {
+        "line": 31074,
+        "sha256": "5903fc7a490525d5ee46fb0e743f3c5066d7d2c86d291e8d867b0144b17f5997"
+      }
+    },
+    "formatRunError": {
+      "1.62.1": {
+        "line": 29570,
+        "sha256": "500c347c40d5b81c8a786a8553aae05d4f246985c589eda1ca1e339622e91831"
+      },
+      "1.79.1": {
+        "line": 31322,
+        "sha256": "4c17833363ad02719b5adf25282697e09b62243891f041de150a53f7dab30294"
+      }
+    },
+    "parseWindowLimitError": {
+      "1.62.1": {
+        "line": 6671,
+        "sha256": "f2d0afc5f3cec18de91e18d6bd742e7c93d756d4a94846a840228a55ca6105da"
+      },
+      "1.79.1": {
+        "line": 7987,
+        "sha256": "f32117973b157a2643163c4ce701c510368d995b98e84dcab69bce5c50245310"
+      }
+    },
+    "readStreamErrorEvent": {
+      "1.62.1": {
+        "line": 37711,
+        "sha256": "8c247537365a4ad689fe7ba34bc67ea9b734c9254ac5bae0aa29c29f18deb702"
+      },
+      "1.79.1": {
+        "line": 39509,
+        "sha256": "7ac1b1abc1d838b61bf2e6280e8a6feedd12c12e9220ba525f8d7efc482aab0d"
+      }
+    },
+    "runSystemOne": {
+      "1.62.1": {
+        "line": 51371,
+        "sha256": "753b72aeed2c795749dc0e95b702edb081c6fa24a9aec2ef7fc0b8170fb14eca"
+      },
+      "1.79.1": {
+        "line": 54172,
+        "sha256": "015572eb2cb962e04906778d12ebdc92ca53fed50528dc18d044d971eca55604"
+      }
+    },
+    "parseSystemOneQuery": {
+      "1.62.1": {
+        "line": 51351,
+        "sha256": "689891929fd7ff8b840381125d6335339565ad0a3c2141cc167113ccb37e9719"
+      },
+      "1.79.1": {
+        "line": 54152,
+        "sha256": "03fe313997143f599f92e2fa04595aae77291c181fcec3df120e95927ed7bc8c"
+      }
+    },
+    "projectUsageView": {
+      "1.62.1": {
+        "line": 3914,
+        "sha256": "415ce788e92bf63e18678a67c5d1a6f495ca265fc4aa258f97f2b6b1d32a6f1f"
+      },
+      "1.79.1": {
+        "line": 5328,
+        "sha256": "f784094f665979ada9b10d103e4480420c765c1f78484d52312cace0c160354f"
+      }
+    },
+    "evaluateModelAccess": {
+      "1.62.1": {
+        "line": 4302,
+        "sha256": "0f68c93a34434e0a5095f90ffca99a3141fc58efee1ed2cc8a9be6b5d2bf1472"
+      },
+      "1.79.1": {
+        "line": 5616,
+        "sha256": "bac5cbd49ac817fef9dba17c35c1c52f6ef82a706c16b83da270795ba9073107"
+      }
+    },
+    "createNodeTransport": {
+      "1.62.1": {
+        "line": 29074,
+        "sha256": "79e5e7ba479bec20a077eb591b51957d5d56b0f5de295600cb2f3ad570bc3111"
+      },
+      "1.79.1": {
+        "line": 30820,
+        "sha256": "695e756e553d4d9bb1cced1752e0b1eabd06de8fe3f2662b8b6ecd04176da161"
+      }
+    },
+    "createCommandApiClient": {
+      "1.62.1": {
+        "line": 29253,
+        "sha256": "b3cd6ece0ac1cd3ba11c378e3fba7e08c61a0f196b997277265d87373687a659"
+      },
+      "1.79.1": {
+        "line": 31001,
+        "sha256": "43e13bf597e9fdc6b72a8496cf470623b6458a0ceda1b8015257dda005f380c1"
+      }
+    },
+    "readLines": {
+      "1.62.1": {
+        "line": 37776,
+        "sha256": "7657b9db41bbf223ab0320c4c5f4933cef2345a2d7c7329373bf47701c377582"
+      },
+      "1.79.1": {
+        "line": 39574,
+        "sha256": "8894d0feedf40a37c49381c7d4cbe68ccb34e0681457792a592a98e10ffaa846"
+      }
+    },
+    "guardStreamFailures": {
+      "1.62.1": {
+        "line": 37761,
+        "sha256": "78ff221529fff09d703a8d60173d52e6aa17ee1b2e3458da5ae4da93998fd0c7"
+      },
+      "1.79.1": {
+        "line": 39559,
+        "sha256": "ade54378e69bb5ae59b36cf6bc5456203824476760ca3fc3f9b6e104eccdddbc"
+      }
+    },
+    "isStreamErrorRetryable": {
+      "1.62.1": {
+        "line": 37727,
+        "sha256": "69021201c733f8c10e8f8f36c63dc4f79f3223b26b15d40108925ec3ac395a3c"
+      },
+      "1.79.1": {
+        "line": 39525,
+        "sha256": "69021201c733f8c10e8f8f36c63dc4f79f3223b26b15d40108925ec3ac395a3c"
+      }
+    }
+  },
+  "verified_equal_binding_initializers": [
+    {
+      "old": "Ok",
+      "new": "AC",
+      "old_line": 74283,
+      "new_line": 78772,
+      "initializer": "\"/alpha/generate\""
+    },
+    {
+      "old": "Lk",
+      "new": "xC",
+      "old_line": 74284,
+      "new_line": 78773,
+      "initializer": "64e3"
+    },
+    {
+      "old": "Dk",
+      "new": "RC",
+      "old_line": 74286,
+      "new_line": 78775,
+      "initializer": "\"x-cmd-zdr\""
+    },
+    {
+      "old": "$k",
+      "new": "LC",
+      "old_line": 74287,
+      "new_line": 78776,
+      "initializer": "{\n        inputTokens: 0,\n        outputTokens: 0,\n        cacheReadTokens: 0,\n        cacheWriteTokens: 0,\n      }"
+    },
+    {
+      "old": "Kh",
+      "new": "Wf",
+      "old_line": 72033,
+      "new_line": 76512,
+      "initializer": "5"
+    },
+    {
+      "old": "Ub",
+      "new": "_T",
+      "old_line": 74758,
+      "new_line": 79253,
+      "initializer": "\"command-code:device-fingerprint:v1\""
+    },
+    {
+      "old": "Fb",
+      "new": "FT",
+      "old_line": 74757,
+      "new_line": 79252,
+      "initializer": "1"
+    },
+    {
+      "old": "Ky",
+      "new": "Wv",
+      "old_line": 72931,
+      "new_line": 77417,
+      "initializer": "\"USAGE_EXCEEDED\""
+    },
+    {
+      "old": "UP",
+      "new": "jM",
+      "old_line": 76516,
+      "new_line": 81044,
+      "initializer": "\"/provider/v1/systemone\""
+    }
+  ],
+  "catalog_counts": {
+    "1.62.1": {
+      "entries": 83,
+      "explicit_context": 79,
+      "explicit_hidden": 5,
+      "dynamic_hidden": [
+        "inclusionai/ling-3.0-flash-free"
+      ]
+    },
+    "1.79.1": {
+      "entries": 95,
+      "explicit_context": 91,
+      "explicit_hidden": 7,
+      "dynamic_hidden": [
+        "inclusionai/ling-3.0-flash-free"
+      ]
+    }
+  },
+  "catalog_count_note": "旧分析使用只匹配字面量 ID 的正则，遗漏常量引用 ZL。已用 AST 解析对象与常量修正，不把 MiniMax 免费促销项误判为新增。",
+  "added_models": [
+    {
+      "key": "HAIKU_5_5",
+      "line": 83504,
+      "id": "claude-haiku-5-5",
+      "inputModalities": [
+        "text",
+        "image"
+      ],
+      "provider": "anthropic",
+      "spec": "chatComplete",
+      "name": "Claude Haiku 5.5",
+      "reasoning": true,
+      "reasoningEfforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "contextWindow": 1000000
+    },
+    {
+      "key": "OPUS_5_5",
+      "line": 83456,
+      "id": "claude-opus-5-5",
+      "inputModalities": [
+        "text",
+        "image"
+      ],
+      "provider": "anthropic",
+      "spec": "chatComplete",
+      "name": "Claude Opus 5.5",
+      "reasoning": true,
+      "reasoningEfforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "contextWindow": 1000000
+    },
+    {
+      "key": "SONNET_5_5",
+      "line": 83397,
+      "id": "claude-sonnet-5-5",
+      "inputModalities": [
+        "text",
+        "image"
+      ],
+      "provider": "anthropic",
+      "spec": "chatComplete",
+      "name": "Claude Sonnet 5.5",
+      "reasoning": true,
+      "reasoningEfforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "contextWindow": 1000000
+    },
+    {
+      "key": "DEEPSEEK_V4_1_FLASH_FAST",
+      "line": 83735,
+      "id": "deepseek/deepseek-v4.1-flash-fast",
+      "inputModalities": [
+        "text",
+        "image"
+      ],
+      "provider": "vercel-ai-gateway",
+      "spec": "chatComplete",
+      "name": "DeepSeek V4.1 Flash Fast",
+      "reasoning": true,
+      "reasoningEfforts": [
+        "off",
+        "low",
+        "high",
+        "max"
+      ],
+      "contextWindow": 1000000
+    },
+    {
+      "key": "GPT_6_LUNA",
+      "line": 83562,
+      "id": "gpt-6-luna",
+      "inputModalities": [
+        "text",
+        "image"
+      ],
+      "provider": "openai",
+      "spec": "responses",
+      "name": "GPT-6 Luna",
+      "reasoning": true,
+      "reasoningEfforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "contextWindow": 1050000
+    },
+    {
+      "key": "GPT_6_SOL",
+      "line": 83550,
+      "id": "gpt-6-sol",
+      "inputModalities": [
+        "text",
+        "image"
+      ],
+      "provider": "openai",
+      "spec": "responses",
+      "name": "GPT-6 Sol",
+      "reasoning": true,
+      "reasoningEfforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "contextWindow": 1050000
+    },
+    {
+      "key": "GPT_6_1_SOL",
+      "line": 83538,
+      "id": "gpt-6.1-sol",
+      "inputModalities": [
+        "text",
+        "image"
+      ],
+      "provider": "openai",
+      "spec": "responses",
+      "name": "GPT-6.1 Sol",
+      "reasoning": true,
+      "reasoningEfforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "contextWindow": 1050000
+    },
+    {
+      "key": "LING_3_1_FLASH_FREE",
+      "line": 84412,
+      "id": "inclusionai/ling-3.1-flash:free",
+      "inputModalities": [
+        "text"
+      ],
+      "provider": "vercel-ai-gateway",
+      "spec": "chatComplete",
+      "name": "Ling 3.1 Flash",
+      "badge": "free",
+      "reasoning": true,
+      "reasoningEfforts": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "contextWindow": 262144,
+      "maxOutputTokens": 32768
+    },
+    {
+      "key": "MISTRAL_LARGE_4",
+      "line": 84537,
+      "id": "mistral/mistral-large-4",
+      "inputModalities": [
+        "text",
+        "image"
+      ],
+      "provider": "vercel-ai-gateway",
+      "spec": "chatComplete",
+      "name": "Mistral Large 4",
+      "reasoning": true,
+      "reasoningEfforts": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "contextWindow": 524288,
+      "maxOutputTokens": 262144
+    },
+    {
+      "key": "GLYPH_CLUSTER_FREE",
+      "line": 84348,
+      "id": "stealth/glyph-cluster:free",
+      "inputModalities": [
+        "text"
+      ],
+      "provider": "vercel-ai-gateway",
+      "spec": "chatComplete",
+      "name": "Glyph Cluster",
+      "vendorLabel": "Stealth",
+      "badge": "free",
+      "reasoning": true,
+      "reasoningEfforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh"
+      ],
+      "contextWindow": 256000,
+      "maxOutputTokens": 256000
+    },
+    {
+      "key": "PIXEL_CANARY",
+      "line": 84334,
+      "id": "stealth/pixel-canary",
+      "inputModalities": [
+        "text",
+        "image"
+      ],
+      "provider": "vercel-ai-gateway",
+      "spec": "chatComplete",
+      "name": "Pixel Canary",
+      "vendorLabel": "Stealth",
+      "badge": "free",
+      "hidden": true,
+      "reasoning": true,
+      "contextWindow": 262144
+    },
+    {
+      "key": "SPACE_BUNNY_ALPHA",
+      "line": 84320,
+      "id": "stealth/space-bunny-alpha",
+      "inputModalities": [
+        "text",
+        "image"
+      ],
+      "provider": "openrouter",
+      "spec": "chatComplete",
+      "name": "Space Bunny Alpha",
+      "vendorLabel": "Stealth",
+      "badge": "free",
+      "hidden": true,
+      "reasoning": true,
+      "contextWindow": 1000000
+    }
+  ],
+  "removed_models": [],
+  "changed_model_metadata": [
+    {
+      "id": "deepseek/deepseek-v4-flash",
+      "changes": {
+        "reasoningEfforts": {
+          "old": [
+            "high",
+            "max"
+          ],
+          "new": [
+            "off",
+            "high",
+            "max"
+          ]
+        }
+      }
+    },
+    {
+      "id": "deepseek/deepseek-v4-flash-vision-exp",
+      "changes": {
+        "reasoningEfforts": {
+          "old": [
+            "high",
+            "max"
+          ],
+          "new": [
+            "off",
+            "high",
+            "max"
+          ]
+        }
+      }
+    },
+    {
+      "id": "deepseek/deepseek-v4-pro",
+      "changes": {
+        "reasoningEfforts": {
+          "old": [
+            "high",
+            "max"
+          ],
+          "new": [
+            "off",
+            "high",
+            "max"
+          ]
+        }
+      }
+    },
+    {
+      "id": "deepseek/deepseek-v4.1-flash",
+      "changes": {
+        "reasoningEfforts": {
+          "old": [
+            "low",
+            "high",
+            "max"
+          ],
+          "new": [
+            "off",
+            "low",
+            "high",
+            "max"
+          ]
+        }
+      }
+    },
+    {
+      "id": "stepfun/Step-3.5-Flash",
+      "changes": {
+        "contextWindow": {
+          "old": 1000000,
+          "new": 262144
+        }
+      }
+    }
+  ],
+  "added_literal_routes": [
+    "/alpha/sandbox/continue",
+    "/alpha/sandbox/history",
+    "/alpha/sandbox/input",
+    "/alpha/sandbox/sessions",
+    "/alpha/sandbox/status",
+    "/alpha/sandbox/stop",
+    "/alpha/sandbox/transcript"
+  ],
+  "removed_literal_routes": [
+    "/alpha/devrel-thread/create",
+    "/alpha/devrel-thread/delete",
+    "/alpha/devrel-thread/update",
+    "/alpha/learn",
+    "/alpha/taste/:projectSlug",
+    "/alpha/taste/:projectSlug/update"
+  ],
+  "route_comparison_scope": "Only string literals present in each bundle; absence of a literal does not prove a server endpoint was removed."
+}
