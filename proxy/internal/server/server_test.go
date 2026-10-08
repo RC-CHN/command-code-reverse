@@ -385,6 +385,10 @@ func TestFallbackModelsMatchCurrentCatalog(t *testing.T) {
 	}
 
 	for _, id := range []string{
+		"deepseek/deepseek-v4.1-flash-fast",
+		"inclusionai/ling-3.1-flash:free",
+		"mistral/mistral-large-4",
+		"stealth/glyph-cluster:free",
 		"deepseek/deepseek-v4.1-flash",
 		"inclusionai/ling-3.0-flash-sante:free",
 		"deepseek/deepseek-v4-flash-fast",
@@ -414,7 +418,13 @@ func TestFallbackModelsMatchCurrentCatalog(t *testing.T) {
 		}
 	}
 
+	if got := byID["stepfun/Step-3.5-Flash"].ContextLength; got != 262_144 {
+		t.Errorf("Step 3.5 Flash context length = %d, want 262144", got)
+	}
+
 	for _, retired := range []string{
+		"stealth/space-bunny-alpha",
+		"stealth/pixel-canary",
 		"minimax/minimax-m3-free",
 		"minimax/minimax-m2.7-free",
 		"stealth/ox-alpha",

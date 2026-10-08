@@ -20,8 +20,12 @@ const modelCatalogTTL = 5 * time.Minute
 // upstream fetch (or when the upstream is unreachable). Model IDs follow
 // the CLI gateway catalog, including canonical IDs without a vendor prefix.
 // Listing a model does not guarantee access under the caller's plan.
-// Refreshed against command-code@1.62.1; dynamic upstream data takes priority.
+// Refreshed against command-code@1.79.1; dynamic upstream data takes priority.
 var fallbackModels = []commandcode.ModelInfo{
+	{ID: "deepseek/deepseek-v4.1-flash-fast", Name: "DeepSeek V4.1 Flash Fast", ContextLength: 1_000_000},
+	{ID: "inclusionai/ling-3.1-flash:free", Name: "Ling 3.1 Flash", ContextLength: 262_144},
+	{ID: "mistral/mistral-large-4", Name: "Mistral Large 4", ContextLength: 524_288},
+	{ID: "stealth/glyph-cluster:free", Name: "Glyph Cluster", ContextLength: 256_000},
 	{ID: "deepseek/deepseek-v4.1-flash", Name: "DeepSeek V4.1 Flash", ContextLength: 1_000_000},
 	{ID: "inclusionai/ling-3.0-flash-sante:free", Name: "Ling 3.0 Flash Sante", ContextLength: 262_144},
 	{ID: "Qwen/Qwen3.8-Max-0902", Name: "Qwen 3.8 Max 0902", ContextLength: 1_000_000},
@@ -66,7 +70,7 @@ var fallbackModels = []commandcode.ModelInfo{
 	{ID: "Qwen/Qwen3.6-Plus", Name: "Qwen 3.6 Plus", ContextLength: 200_000},
 	{ID: "stepfun/Step-5-Preview", Name: "Step 5 Preview", ContextLength: 1_000_000},
 	{ID: "stepfun/Step-3.7-Flash", Name: "Step 3.7 Flash", ContextLength: 256_000},
-	{ID: "stepfun/Step-3.5-Flash", Name: "Step 3.5 Flash", ContextLength: 1_000_000},
+	{ID: "stepfun/Step-3.5-Flash", Name: "Step 3.5 Flash", ContextLength: 262_144},
 	{ID: "tencent/hy4-preview", Name: "Tencent Hy4 Preview", ContextLength: 1_048_576},
 	{ID: "tencent/hy3-paid", Name: "Tencent Hy3", ContextLength: 262_144},
 }
