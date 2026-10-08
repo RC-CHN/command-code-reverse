@@ -111,6 +111,7 @@ type streamState struct {
 	usage        *stream.Usage
 	costUSD      float64
 	chunkCount   int
+	terminalSeen bool // finish or explicit abort, as in the CLI's consumeStream
 }
 
 // absorb folds bookkeeping-only events (usage, finish reason, cost) into
@@ -126,6 +127,7 @@ func (st *streamState) absorb(ev *stream.Event) {
 		}
 		st.absorbCost(ev)
 	case "finish":
+		st.terminalSeen = true
 		if st.finishReason == "" {
 			st.finishReason = stream.MapFinishReason(ev.FinishReason)
 		}
@@ -134,6 +136,8 @@ func (st *streamState) absorb(ev *stream.Event) {
 		}
 	case "provider-metadata":
 		st.absorbCost(ev)
+	case "abort":
+		st.terminalSeen = true
 	}
 }
 
@@ -267,7 +271,7 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 				map[string]any{}, &st.finishReason, stream.UsageFromUpstream(st.usage)))
 			finishWritten = true
 
-		case "finish-step", "provider-metadata":
+		case "finish-step", "provider-metadata", "abort":
 			st.absorb(ev)
 		}
 		// start / start-step / reasoning-start / reasoning-end / text-start /
@@ -275,6 +279,10 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 		// provider-metadata leak upstream internals — never forwarded.
 	}
 
+	if !st.terminalSeen {
+		s.handleTruncatedStream(w, r, req, started)
+		return
+	}
 	if !started {
 		// Stream ended with nothing visible: treat as retryable (the old
 		// proxy's zero-output guard).
@@ -283,8 +291,7 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 			"Empty response from upstream (zero output tokens)", 10)
 		return
 	}
-	// Upstream ended without a finish event (truncated stream): still
-	// deliver a terminal chunk so clients never hang waiting for one.
+	// An explicit abort can end the CLI stream without a finish event.
 	if !finishWritten {
 		if st.finishReason == "" {
 			st.finishReason = "stop"
@@ -347,11 +354,15 @@ func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.
 					"arguments": toolCallArgs(ev.Input),
 				},
 			})
-		case "finish", "finish-step", "provider-metadata":
+		case "finish", "finish-step", "provider-metadata", "abort":
 			st.absorb(ev)
 		}
 	}
 
+	if !st.terminalSeen {
+		s.handleTruncatedStream(w, r, req, false)
+		return
+	}
 	if usageOut(st.usage) == 0 {
 		s.recordFailure(req, false, "empty_response")
 		writeError(w, http.StatusTooManyRequests, "rate_limit_error",
@@ -425,6 +436,30 @@ func (s *Server) recordFailure(req *convert.ChatRequest, streamed bool, result s
 func fmtCost(usd float64) string {
 	return strings.TrimRight(strings.TrimRight(
 		strconv.FormatFloat(usd, 'f', 8, 64), "0"), ".")
+}
+
+// handleTruncatedStream reports a clean EOF without a protocol terminal event.
+// Partial output must not become a successful completion or trigger a replay.
+func (s *Server) handleTruncatedStream(w http.ResponseWriter, r *http.Request, req *convert.ChatRequest, started bool) {
+	if r.Context().Err() != nil {
+		return
+	}
+	s.recordFailure(req, req.Stream, "truncated_response")
+	slog.Warn("upstream stream ended without finish or abort", "model", req.Model, "stream", req.Stream)
+	body := openAIErrorBody{
+		Message: "Upstream response was truncated before completion (no finish event)",
+		Type:    "server_error",
+		Code:    "upstream_truncated",
+	}
+	if !started {
+		writeErrorBody(w, http.StatusBadGateway, body, 0)
+		return
+	}
+	b, _ := json.Marshal(openAIError{Error: body})
+	_, _ = io.WriteString(w, "data: "+string(b)+"\n\n"+stream.DoneSSE)
+	if flusher, ok := w.(http.Flusher); ok {
+		flusher.Flush()
+	}
 }
 
 // handleStreamReadError reports a read failure (idle timeout or transport).
