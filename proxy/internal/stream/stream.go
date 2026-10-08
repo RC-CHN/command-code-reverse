@@ -32,6 +32,9 @@ type Event struct {
 	Usage        *Usage `json:"usage,omitempty"`
 	TotalUsage   *Usage `json:"totalUsage,omitempty"`
 
+	// cache-write-tokens: optional fallback for the final usage counter.
+	CacheWriteTokens TokenCount `json:"cacheWriteTokens"`
+
 	// finish-step / provider-metadata: upstream cost accounting.
 	ProviderMetadata *ProviderMetadata `json:"providerMetadata,omitempty"`
 
@@ -52,6 +55,7 @@ type Usage struct {
 	OutputTokens      int `json:"outputTokens"`
 	CachedInputTokens int `json:"cachedInputTokens"`
 	ReasoningTokens   int `json:"reasoningTokens"`
+	CacheWriteTokens  int `json:"-"` // internal accounting; distinct from cache reads
 }
 
 // UnmarshalJSON accepts both legacy flat counters and the nested AI SDK
@@ -61,7 +65,8 @@ func (u *Usage) UnmarshalJSON(data []byte) error {
 	var wire struct {
 		plain
 		InputTokenDetails *struct {
-			CacheReadTokens *int `json:"cacheReadTokens"`
+			CacheReadTokens  *int       `json:"cacheReadTokens"`
+			CacheWriteTokens TokenCount `json:"cacheWriteTokens"`
 		} `json:"inputTokenDetails"`
 		OutputTokenDetails *struct {
 			ReasoningTokens *int `json:"reasoningTokens"`
@@ -73,6 +78,9 @@ func (u *Usage) UnmarshalJSON(data []byte) error {
 	*u = Usage(wire.plain)
 	if wire.InputTokenDetails != nil && wire.InputTokenDetails.CacheReadTokens != nil {
 		u.CachedInputTokens = *wire.InputTokenDetails.CacheReadTokens
+	}
+	if wire.InputTokenDetails != nil {
+		u.CacheWriteTokens = wire.InputTokenDetails.CacheWriteTokens.Value
 	}
 	if wire.OutputTokenDetails != nil && wire.OutputTokenDetails.ReasoningTokens != nil {
 		u.ReasoningTokens = *wire.OutputTokenDetails.ReasoningTokens

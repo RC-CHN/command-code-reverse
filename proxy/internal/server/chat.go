@@ -103,15 +103,16 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 
 // streamState tracks an in-flight upstream stream for both handlers.
 type streamState struct {
-	fullText     strings.Builder
-	reasoning    strings.Builder
-	toolCalls    []map[string]any
-	toolCallIdx  int
-	finishReason string
-	usage        *stream.Usage
-	costUSD      float64
-	chunkCount   int
-	terminalSeen bool // finish or explicit abort, as in the CLI's consumeStream
+	fullText                 strings.Builder
+	reasoning                strings.Builder
+	toolCalls                []map[string]any
+	toolCallIdx              int
+	finishReason             string
+	usage                    *stream.Usage
+	costUSD                  float64
+	chunkCount               int
+	terminalSeen             bool // finish or explicit abort, as in the CLI's consumeStream
+	capturedCacheWriteTokens stream.TokenCount
 }
 
 // absorb folds bookkeeping-only events (usage, finish reason, cost) into
@@ -138,6 +139,24 @@ func (st *streamState) absorb(ev *stream.Event) {
 		st.absorbCost(ev)
 	case "abort":
 		st.terminalSeen = true
+	case "cache-write-tokens":
+		if ev.CacheWriteTokens.Valid {
+			st.capturedCacheWriteTokens = ev.CacheWriteTokens
+		}
+	}
+}
+
+// finalizeUsage follows the CLI: the last valid captured count only fills a
+// zero total after the entire stream, including events after finish, is read.
+func (st *streamState) finalizeUsage() {
+	if !st.capturedCacheWriteTokens.Valid {
+		return
+	}
+	if st.usage == nil {
+		st.usage = &stream.Usage{}
+	}
+	if st.usage.CacheWriteTokens == 0 {
+		st.usage.CacheWriteTokens = st.capturedCacheWriteTokens.Value
 	}
 }
 
@@ -271,7 +290,7 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 				map[string]any{}, &st.finishReason, stream.UsageFromUpstream(st.usage)))
 			finishWritten = true
 
-		case "finish-step", "provider-metadata", "abort":
+		case "finish-step", "provider-metadata", "abort", "cache-write-tokens":
 			st.absorb(ev)
 		}
 		// start / start-step / reasoning-start / reasoning-end / text-start /
@@ -283,6 +302,7 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 		s.handleTruncatedStream(w, r, req, started)
 		return
 	}
+	st.finalizeUsage()
 	if !started {
 		// Stream ended with nothing visible: treat as retryable (the old
 		// proxy's zero-output guard).
@@ -306,6 +326,7 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 		"model", req.Model, "stream", true,
 		"inputTokens", usageIn(st.usage), "outputTokens", usageOut(st.usage),
 		"cachedInputTokens", usageCached(st.usage), "costUSD", st.costUSD,
+		"cacheWriteTokens", usageCacheWrite(st.usage),
 		"elapsedMs", time.Since(start).Milliseconds(),
 	)
 }
@@ -354,7 +375,7 @@ func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.
 					"arguments": toolCallArgs(ev.Input),
 				},
 			})
-		case "finish", "finish-step", "provider-metadata", "abort":
+		case "finish", "finish-step", "provider-metadata", "abort", "cache-write-tokens":
 			st.absorb(ev)
 		}
 	}
@@ -363,6 +384,7 @@ func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.
 		s.handleTruncatedStream(w, r, req, false)
 		return
 	}
+	st.finalizeUsage()
 	if usageOut(st.usage) == 0 {
 		s.recordFailure(req, false, "empty_response")
 		writeError(w, http.StatusTooManyRequests, "rate_limit_error",
@@ -407,6 +429,7 @@ func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.
 		"model", req.Model, "stream", false,
 		"inputTokens", usageIn(st.usage), "outputTokens", usageOut(st.usage),
 		"cachedInputTokens", usageCached(st.usage), "costUSD", st.costUSD,
+		"cacheWriteTokens", usageCacheWrite(st.usage),
 		"elapsedMs", time.Since(start).Milliseconds(),
 	)
 }
@@ -420,6 +443,7 @@ func (s *Server) recordSuccess(req *convert.ChatRequest, streamed bool, st *stre
 	s.deps.Metrics.AddTokens("input", usageIn(st.usage))
 	s.deps.Metrics.AddTokens("output", usageOut(st.usage))
 	s.deps.Metrics.AddTokens("cached", usageCached(st.usage))
+	s.deps.Metrics.AddTokens("cache_write", usageCacheWrite(st.usage))
 	s.deps.Metrics.ObserveLatency(req.Model, streamed, time.Since(start).Milliseconds())
 	s.deps.Metrics.ObserveCost(req.Model, st.costUSD)
 }
@@ -510,4 +534,11 @@ func usageCached(u *stream.Usage) int {
 		return 0
 	}
 	return u.CachedInputTokens
+}
+
+func usageCacheWrite(u *stream.Usage) int {
+	if u == nil {
+		return 0
+	}
+	return u.CacheWriteTokens
 }

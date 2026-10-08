@@ -36,7 +36,7 @@ type summaryVal struct {
 // Registry groups all exported families.
 type Registry struct {
 	Requests     *Counter // labels: model,stream,result
-	Tokens       *Counter // label: kind (input|output|cached)
+	Tokens       *Counter // label: kind (input|output|cached|cache_write)
 	LatencyMs    *Summary // labels: model,stream
 	UpstreamErr  *Counter // label: class
 	CostMicroUSD *Counter // label: model; micro-dollars (1e-6 USD)
@@ -46,7 +46,7 @@ type Registry struct {
 func New() *Registry {
 	return &Registry{
 		Requests:     newCounter("commandcode_proxy_requests_total", "Inference requests by model/stream/result."),
-		Tokens:       newCounter("commandcode_proxy_tokens_total", "Tokens served, by kind (input/output/cached)."),
+		Tokens:       newCounter("commandcode_proxy_tokens_total", "Tokens served, by kind (input/output/cached/cache_write)."),
 		LatencyMs:    newSummary("commandcode_proxy_latency_ms", "End-to-end request latency (milliseconds)."),
 		UpstreamErr:  newCounter("commandcode_proxy_upstream_errors_total", "Upstream failures by class."),
 		CostMicroUSD: newCounter("commandcode_proxy_cost_microdollars_total", "Upstream cost in micro-dollars, by model."),
@@ -60,7 +60,7 @@ func (r *Registry) IncRequest(model string, streamed bool, result string) {
 	r.Requests.Inc(Labels("model", model, "stream", boolLabel(streamed), "result", result))
 }
 
-// AddTokens accumulates served tokens of one kind (input|output|cached).
+// AddTokens accumulates served tokens of one kind (input|output|cached|cache_write).
 func (r *Registry) AddTokens(kind string, n int) {
 	r.Tokens.AddN(Labels("kind", kind), int64(n))
 }
