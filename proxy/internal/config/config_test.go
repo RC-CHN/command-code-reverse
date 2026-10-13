@@ -18,9 +18,37 @@ func isolate(t *testing.T) {
 		"JEV_UNLOCK_MAX_OPTIONS", "JEV_TIMEOUT_SECONDS", "JEV_MAX_RESPONSE_BYTES",
 		"FINGERPRINT_ENABLED", "FINGERPRINT_SEED", "FINGERPRINT_STATE_FILE", "FINGERPRINT_SESSION_IDLE_SECONDS",
 		"HOST", "PORT", "LOG_FORMAT", "LOG_LEVEL", "MAX_BODY_BYTES",
+		"DASHBOARD_ENABLED", "DASHBOARD_API_KEY", "DASHBOARD_RECENT_REQUESTS",
 	} {
 		t.Setenv(k, "")
 		_ = os.Unsetenv(k)
+	}
+}
+
+func TestDashboardConfiguration(t *testing.T) {
+	for _, tc := range []struct {
+		enabled, key, capacity string
+		invalid                bool
+	}{
+		{"false", "", "", false}, {"true", "admin", "100", false},
+		{"true", "", "", true}, {"true", "  ", "", true}, {"ture", "admin", "", true},
+		{"true", "admin", "0", true}, {"true", "admin", "1001", true}, {"true", "admin", "many", true},
+	} {
+		t.Run(tc.enabled+"/"+tc.key+"/"+tc.capacity, func(t *testing.T) {
+			isolate(t)
+			t.Setenv("COMMAND_CODE_API_KEY", "k")
+			t.Setenv("PROXY_API_KEY", "p")
+			t.Setenv("DASHBOARD_ENABLED", tc.enabled)
+			t.Setenv("DASHBOARD_API_KEY", tc.key)
+			t.Setenv("DASHBOARD_RECENT_REQUESTS", tc.capacity)
+			cfg, err := Load()
+			if (err != nil) != tc.invalid {
+				t.Fatalf("config validity: %v", err)
+			}
+			if err == nil && cfg.DashboardRecent != 100 {
+				t.Fatalf("capacity: %d", cfg.DashboardRecent)
+			}
+		})
 	}
 }
 

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/commandcode"
+	"github.com/RC-CHN/command-code-reverse/proxy/internal/keypool"
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/session"
 )
 
@@ -33,6 +34,10 @@ type Deps struct {
 
 	// Metrics records request/token/cost accounting; nil disables it.
 	Metrics MetricsRecorder
+	// Dashboard callbacks never receive the administration credential.
+	FetchUsage func(context.Context, string) (*commandcode.AccountUsage, error)
+	Routing    func() keypool.RoutingSnapshot
+	JevRouting func() keypool.RoutingSnapshot
 }
 
 // MetricsRecorder is the instrumentation slice used by handlers.

@@ -6,8 +6,10 @@ import (
 	"net/http"
 	"sync/atomic"
 
+	"github.com/RC-CHN/command-code-reverse/proxy/internal/commandcode"
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/config"
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/session"
+	"github.com/RC-CHN/command-code-reverse/proxy/internal/stats"
 )
 
 // Server holds the dependencies shared by all handlers.
@@ -19,7 +21,10 @@ type Server struct {
 	// renderMetrics produces the /metrics payload; nil when disabled.
 	renderMetrics func() string
 	// readyz caches the upstream probe result.
-	readyz readyzCache
+	readyz       readyzCache
+	dashboard    *stats.Store
+	accountUsage []cachedFetch[*commandcode.AccountUsage]
+	usageSlots   chan struct{}
 
 	// consecutiveTimeouts backs the "reduce context" hint logic.
 	consecutiveTimeouts atomic.Int32
@@ -46,7 +51,13 @@ func New(cfg *config.Config, deps Deps, renderMetrics func() string) http.Handle
 	api.HandleFunc("GET /v1/models", s.handleModels)
 	api.HandleFunc("GET /v1/models/{id...}", s.handleModelGet) // IDs contain "/"
 	api.HandleFunc("GET /v1/credits", s.handleCredits)
-	mux.Handle("/v1/", s.authMiddleware(api))
+	mux.Handle("/v1/", s.observeInference(s.authMiddleware(api)))
+	if cfg.DashboardEnabled {
+		s.dashboard = stats.New(cfg.DashboardRecent, len(cfg.APIKeys), commandcode.NewTraceID())
+		s.accountUsage = make([]cachedFetch[*commandcode.AccountUsage], len(cfg.APIKeys))
+		s.usageSlots = make(chan struct{}, 2)
+		s.mountDashboard(mux)
+	}
 
 	return mux
 }

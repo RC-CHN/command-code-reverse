@@ -12,6 +12,7 @@ import (
 
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/commandcode"
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/keypool"
+	"github.com/RC-CHN/command-code-reverse/proxy/internal/stats"
 )
 
 type SystemOneUpstream interface {
@@ -40,6 +41,7 @@ func (s *Server) handleSystemOne(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+	stats.SetModel(r.Context(), req.Model, false)
 	if s.deps.SystemOne == nil {
 		writeCodedError(w, 501, "not_implemented", "systemone_unavailable", "System One is not configured", 0)
 		return
@@ -62,6 +64,12 @@ func (s *Server) handleSystemOne(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write(response.Body)
+	}
+	if observed := stats.FromContext(r.Context()); observed != nil {
+		observed.Result = result
+		if response != nil && response.Usage != nil && err == nil {
+			observed.Usage = &stats.Tokens{Input: int64(response.Usage.InputTokens), Output: int64(response.Usage.OutputTokens)}
+		}
 	}
 	if s.deps.Metrics != nil {
 		s.deps.Metrics.IncRequest(req.Model, false, result)

@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Command Code · 运行面板</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <div id="login" class="login-shell">
+      <form id="login-form" class="login-card">
+        <div class="brand-mark">C<span>↗</span></div>
+        <p class="eyebrow">COMMAND CODE / CONSOLE</p>
+        <h1>看见每一次调用。</h1>
+        <p class="muted">请求、消耗与账号状态，集中在一个视图。</p>
+        <label for="admin-key">面板访问密钥</label
+        ><input
+          id="admin-key"
+          type="password"
+          autocomplete="off"
+          required
+          placeholder="DASHBOARD_API_KEY"
+        />
+        <button type="submit" class="primary" id="login-button">
+          进入运行面板 <span>→</span>
+        </button>
+        <p id="login-error" class="error" role="alert"></p>
+        <p class="fine">密钥仅在当前页面内存中使用，刷新页面后需重新输入。</p>
+      </form>
+    </div>
+    <div id="app" hidden>
+      <aside class="sidebar">
+        <a href="#overview" class="brand"
+          ><div class="brand-mark small">C<span>↗</span></div>
+          <span>Command Code<small>PROXY CONSOLE</small></span></a
+        >
+        <p class="nav-label">工作空间</p>
+        <nav>
+          <a href="#overview" class="active">◈ <span>运行概览</span></a
+          ><a href="#keys">⌘ <span>Key 与路由</span></a
+          ><a href="#models">▥ <span>模型消耗</span></a
+          ><a href="#requests">≡ <span>最近请求</span></a>
+        </nav>
+        <div class="sidebar-bottom">
+          <span class="status-dot"></span> 仅内存 · 无请求体留存
+          <p id="version" class="fine"></p>
+          <button id="logout" class="quiet">退出面板 ↗</button>
+        </div>
+      </aside>
+      <main>
+        <header class="topbar">
+          <span>工作空间 <span class="slash">/</span> 实时统计</span>
+          <div class="live">
+            <span class="status-dot"></span><span id="connection">正在连接</span
+            ><button id="pause" class="quiet">暂停刷新</button>
+            <button id="logout-mobile" class="quiet mobile-only">退出</button>
+          </div>
+        </header>
+        <div id="banner" class="banner" role="status" hidden></div>
+        <section id="overview">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">LIVE OBSERVABILITY</p>
+              <h1>运行概览<span class="live-tag">LIVE</span></h1>
+              <p class="muted" id="scope">本实例启动以来的调用统计</p>
+            </div>
+            <div class="scope-switch" role="group" aria-label="推理接口">
+              <button id="scope-llm" class="selected" aria-pressed="true">
+                LLM</button
+              ><button id="scope-jev" aria-pressed="false">Jev</button>
+            </div>
+          </div>
+          <div class="metrics-grid">
+            <article class="metric">
+              <span class="metric-label">完成请求</span
+              ><strong id="metric-requests">—</strong
+              ><span id="metric-success" class="metric-note">等待数据</span>
+            </article>
+            <article class="metric">
+              <span class="metric-label">总 Token</span
+              ><strong id="metric-tokens">—</strong
+              ><span id="metric-token-detail" class="metric-note"
+                >输入 + 输出</span
+              >
+            </article>
+            <article class="metric accent">
+              <span class="metric-label">已报告费用 · USD</span
+              ><strong id="metric-cost">—</strong
+              ><span id="metric-cost-detail" class="metric-note"
+                >以上游实际返回为准</span
+              >
+            </article>
+            <article class="metric">
+              <span class="metric-label">平均耗时</span
+              ><strong id="metric-latency">—</strong
+              ><span id="metric-inflight" class="metric-note">等待数据</span>
+            </article>
+          </div>
+          <div class="overview-grid">
+            <article class="panel activity-panel">
+              <div class="panel-heading">
+                <h2>请求活动</h2>
+                <span class="muted">页面打开后 · 最近 5 分钟</span>
+              </div>
+              <div class="activity-number">
+                <strong id="activity-rate">0</strong
+                ><span class="muted">完成请求 / 分钟</span>
+              </div>
+              <svg
+                id="activity-chart"
+                viewBox="0 0 800 100"
+                preserveAspectRatio="none"
+                role="img"
+                aria-label="实时请求速率趋势"
+              >
+                <path class="chart-grid" d="M0 25H800 M0 65H800 M0 99H800" />
+                <polyline id="activity-line" points="0,99 800,99" />
+              </svg>
+              <div class="chart-footer">
+                <span>5 分钟前</span><span>现在</span>
+              </div>
+            </article>
+            <article class="panel route-panel">
+              <p class="eyebrow">NEXT ROUTE</p>
+              <h2>下一次请求预计路由</h2>
+              <strong id="next-key">—</strong>
+              <div id="route-description" class="muted"></div>
+              <p class="fine">
+                预览不占用 key。并发、上游拒绝或熔断变化时，以请求实际记录为准。
+              </p>
+            </article>
+          </div>
+          <p class="fine accounting-note">
+            Token
+            与费用累计来自成功完成响应的已报告用量；中断或失败请求可能仍有上游扣费。缓存与思考
+            Token 是明细，不重复加到总 Token。
+          </p>
+        </section>
+        <section id="keys">
+          <div class="panel-heading section-title">
+            <div>
+              <h2>Key 与路由</h2>
+              <p class="muted">本地可选状态与上游账号额度，分别呈现。</p>
+            </div>
+            <span id="key-count" class="pill"></span>
+          </div>
+          <div id="key-grid" class="key-grid"></div>
+          <p class="fine">
+            余额按需查询并缓存 60 秒。不同 key
+            可能属于同一账号，余额不能直接相加；查询不会激活推理遥测或改变熔断状态。
+          </p>
+        </section>
+        <section id="models" class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>模型消耗</h2>
+              <p class="muted">本轮启动后，按请求中的模型 ID 汇总。</p>
+            </div>
+            <span id="model-count" class="pill"></span>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>模型</th>
+                  <th>请求 / 成功</th>
+                  <th>输入 / 输出 Token</th>
+                  <th>缓存读 / 写</th>
+                  <th>思考 Token</th>
+                  <th>平均耗时</th>
+                  <th>已报告费用</th>
+                </tr>
+              </thead>
+              <tbody id="model-rows"></tbody>
+            </table>
+          </div>
+        </section>
+        <section id="requests" class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>最近请求</h2>
+              <p class="muted" id="recent-note">
+                仅记录统计字段，旧记录自动轮换。
+              </p>
+            </div>
+            <span class="pill">不存请求体</span>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>时间 / 请求</th>
+                  <th>模型</th>
+                  <th>实际 key / 尝试顺序</th>
+                  <th>结果</th>
+                  <th>耗时</th>
+                  <th>输入 / 输出</th>
+                  <th>费用</th>
+                </tr>
+              </thead>
+              <tbody id="request-rows"></tbody>
+            </table>
+          </div>
+        </section>
+        <footer>
+          <span>Command Code Proxy</span
+          ><span>仅当前实例 · 重启清零 · 不跨 Pod 聚合</span>
+        </footer>
+      </main>
+    </div>
+  </body>
+</html>

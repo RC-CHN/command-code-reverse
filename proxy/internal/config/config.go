@@ -57,6 +57,9 @@ type Config struct {
 	LogLevel          string
 	MetricsEnabled    bool
 	CostHeaderEnabled bool
+	DashboardEnabled  bool
+	DashboardAPIKey   string
+	DashboardRecent   int
 }
 
 // Load reads configuration from the environment. If a .env file exists in the
@@ -72,6 +75,14 @@ func Load() (*Config, error) {
 	unlock, err := strconv.ParseBool(getEnv("JEV_UNLOCK_MAX_OPTIONS", "false"))
 	if err != nil {
 		return nil, fmt.Errorf("config: JEV_UNLOCK_MAX_OPTIONS must be a boolean (1/0 or true/false)")
+	}
+	dashboard, err := strconv.ParseBool(getEnv("DASHBOARD_ENABLED", "false"))
+	if err != nil {
+		return nil, fmt.Errorf("config: DASHBOARD_ENABLED must be a boolean (1/0 or true/false)")
+	}
+	recent, err := positiveInt64("DASHBOARD_RECENT_REQUESTS", 100)
+	if err != nil || recent > 1000 {
+		return nil, fmt.Errorf("config: DASHBOARD_RECENT_REQUESTS must be between 1 and 1000")
 	}
 	jevTimeout, err := positiveInt64("JEV_TIMEOUT_SECONDS", 90)
 	if err != nil {
@@ -119,6 +130,9 @@ func Load() (*Config, error) {
 		LogLevel:               getEnv("LOG_LEVEL", "info"),
 		MetricsEnabled:         getEnvBool("METRICS_ENABLED", true),
 		CostHeaderEnabled:      getEnvBool("COST_HEADER_ENABLED", false),
+		DashboardEnabled:       dashboard,
+		DashboardAPIKey:        os.Getenv("DASHBOARD_API_KEY"),
+		DashboardRecent:        int(recent),
 	}
 	c.Port = getEnvInt("PORT", 3050)
 
@@ -153,6 +167,9 @@ func (c *Config) Validate() error {
 	}
 	if c.LogFormat != "json" && c.LogFormat != "text" {
 		return fmt.Errorf("config: LOG_FORMAT must be \"json\" or \"text\", got %q", c.LogFormat)
+	}
+	if c.DashboardEnabled && strings.TrimSpace(c.DashboardAPIKey) == "" {
+		return fmt.Errorf("config: DASHBOARD_API_KEY is required when DASHBOARD_ENABLED=true")
 	}
 	return nil
 }

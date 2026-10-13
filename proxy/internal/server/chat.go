@@ -15,6 +15,7 @@ import (
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/commandcode"
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/convert"
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/ids"
+	"github.com/RC-CHN/command-code-reverse/proxy/internal/stats"
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/stream"
 )
 
@@ -46,6 +47,7 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "invalid_request_error", "Invalid JSON body: "+err.Error(), 0)
 		return
 	}
+	stats.SetModel(r.Context(), req.Model, req.Stream)
 	if req.Model == "" {
 		writeError(w, http.StatusBadRequest, "invalid_request_error", "model is required", 0)
 		return
@@ -88,7 +90,7 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 			return // downstream hung up before the first byte
 		}
 		slog.Warn("upstream generate failed", "model", req.Model, "error", err)
-		s.recordFailure(&req, req.Stream, "upstream_error")
+		s.recordFailure(r, &req, req.Stream, "upstream_error")
 		writeUpstreamError(w, err)
 		return
 	}
@@ -110,6 +112,7 @@ type streamState struct {
 	finishReason             string
 	usage                    *stream.Usage
 	costUSD                  float64
+	costReported             bool
 	chunkCount               int
 	terminalSeen             bool // finish or explicit abort, as in the CLI's consumeStream
 	capturedCacheWriteTokens stream.TokenCount
@@ -162,8 +165,11 @@ func (st *streamState) finalizeUsage() {
 
 // absorbCost captures gateway cost from finish-step / provider-metadata.
 func (st *streamState) absorbCost(ev *stream.Event) {
-	if c := ev.ProviderMetadata.CostUSD(); c > 0 {
-		st.costUSD = c
+	if c, ok := ev.ProviderMetadata.ReportedCostUSD(); ok {
+		st.costReported = true
+		if c > 0 {
+			st.costUSD = c
+		}
 	}
 }
 
@@ -218,7 +224,7 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 		if te := stream.TerminalError(ev); te != nil {
 			status, typ, msg := terminalErrorStatus(te.Message)
 			slog.Warn("terminal marker in stream", "marker", te.Message, "model", req.Model)
-			s.recordFailure(req, true, "terminal_marker")
+			s.recordFailure(r, req, true, "terminal_marker")
 			if !started {
 				writeError(w, status, typ, msg, 0)
 			} else {
@@ -229,7 +235,7 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 		}
 
 		if ae := ev.APIError(); ae != nil {
-			s.recordFailure(req, req.Stream, "upstream_error")
+			s.recordFailure(r, req, req.Stream, "upstream_error")
 			if !started {
 				writeUpstreamError(w, ae)
 			} else {
@@ -306,7 +312,7 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 	if !started {
 		// Stream ended with nothing visible: treat as retryable (the old
 		// proxy's zero-output guard).
-		s.recordFailure(req, true, "empty_response")
+		s.recordFailure(r, req, true, "empty_response")
 		writeError(w, http.StatusTooManyRequests, "rate_limit_error",
 			"Empty response from upstream (zero output tokens)", 10)
 		return
@@ -321,7 +327,7 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 	}
 	_, _ = io.WriteString(w, stream.DoneSSE)
 	s.consecutiveTimeouts.Store(0)
-	s.recordSuccess(req, true, st, start)
+	s.recordSuccess(r, req, true, st, start)
 	slog.Info("chat completion served",
 		"model", req.Model, "stream", true,
 		"inputTokens", usageIn(st.usage), "outputTokens", usageOut(st.usage),
@@ -350,13 +356,13 @@ func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.
 		if te := stream.TerminalError(ev); te != nil {
 			status, typ, msg := terminalErrorStatus(te.Message)
 			slog.Warn("terminal marker in stream", "marker", te.Message, "model", req.Model)
-			s.recordFailure(req, false, "terminal_marker")
+			s.recordFailure(r, req, false, "terminal_marker")
 			writeError(w, status, typ, msg, 0)
 			return
 		}
 
 		if ae := ev.APIError(); ae != nil {
-			s.recordFailure(req, req.Stream, "upstream_error")
+			s.recordFailure(r, req, req.Stream, "upstream_error")
 			writeUpstreamError(w, ae)
 			return
 		}
@@ -386,7 +392,7 @@ func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.
 	}
 	st.finalizeUsage()
 	if usageOut(st.usage) == 0 {
-		s.recordFailure(req, false, "empty_response")
+		s.recordFailure(r, req, false, "empty_response")
 		writeError(w, http.StatusTooManyRequests, "rate_limit_error",
 			"Empty response from upstream (zero output tokens)", 10)
 		return
@@ -424,7 +430,7 @@ func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(resp)
 	s.consecutiveTimeouts.Store(0)
-	s.recordSuccess(req, false, st, start)
+	s.recordSuccess(r, req, false, st, start)
 	slog.Info("chat completion served",
 		"model", req.Model, "stream", false,
 		"inputTokens", usageIn(st.usage), "outputTokens", usageOut(st.usage),
@@ -435,7 +441,17 @@ func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.
 }
 
 // recordSuccess feeds the metrics recorder after a completed request.
-func (s *Server) recordSuccess(req *convert.ChatRequest, streamed bool, st *streamState, start time.Time) {
+func (s *Server) recordSuccess(r *http.Request, req *convert.ChatRequest, streamed bool, st *streamState, start time.Time) {
+	if observed := stats.FromContext(r.Context()); observed != nil {
+		observed.Result = "ok"
+		if u := st.usage; u != nil {
+			observed.Usage = &stats.Tokens{Input: int64(u.InputTokens), Output: int64(u.OutputTokens), Cached: int64(u.CachedInputTokens), CacheWrite: int64(u.CacheWriteTokens), Reasoning: int64(u.ReasoningTokens)}
+		}
+		if st.costReported {
+			cost := st.costUSD
+			observed.CostUSD = &cost
+		}
+	}
 	if s.deps.Metrics == nil {
 		return
 	}
@@ -449,7 +465,8 @@ func (s *Server) recordSuccess(req *convert.ChatRequest, streamed bool, st *stre
 }
 
 // recordFailure feeds the metrics recorder for a failed request.
-func (s *Server) recordFailure(req *convert.ChatRequest, streamed bool, result string) {
+func (s *Server) recordFailure(r *http.Request, req *convert.ChatRequest, streamed bool, result string) {
+	stats.SetResult(r.Context(), result)
 	if s.deps.Metrics == nil {
 		return
 	}
@@ -468,7 +485,7 @@ func (s *Server) handleTruncatedStream(w http.ResponseWriter, r *http.Request, r
 	if r.Context().Err() != nil {
 		return
 	}
-	s.recordFailure(req, req.Stream, "truncated_response")
+	s.recordFailure(r, req, req.Stream, "truncated_response")
 	slog.Warn("upstream stream ended without finish or abort", "model", req.Model, "stream", req.Stream)
 	body := openAIErrorBody{
 		Message: "Upstream response was truncated before completion (no finish event)",
@@ -501,7 +518,7 @@ func (s *Server) handleStreamReadError(w http.ResponseWriter, r *http.Request, r
 	if n >= timeoutReduceThreshold {
 		msg = "Response timeout - try reducing context length (summarize earlier messages)"
 	}
-	s.recordFailure(req, req.Stream, "timeout")
+	s.recordFailure(r, req, req.Stream, "timeout")
 	slog.Warn("stream read failed",
 		"model", req.Model, "stream", req.Stream,
 		"consecutiveTimeouts", n, "error", err,

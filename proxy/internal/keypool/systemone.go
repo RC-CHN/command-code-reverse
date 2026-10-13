@@ -19,6 +19,8 @@ type SystemOnePool struct {
 	maxResponseBytes int64
 }
 
+func (p *SystemOnePool) Routing() RoutingSnapshot { return p.pool.Routing() }
+
 func NewSystemOne(client SystemOneClient, sessions *session.Store, keys []string, policy BreakerPolicy, maxResponseBytes int64) *SystemOnePool {
 	pool := New(nil, sessions, keys, policy)
 	pool.systemOne = true

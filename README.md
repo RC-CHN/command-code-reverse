@@ -50,6 +50,12 @@ independent key breakers. Choice questions allow 20 options by default;
 `JEV_UNLOCK_MAX_OPTIONS=true` unlocks up to 255. See the
 [Jev interface and error handling](./proxy/README.md#jev--system-one).
 
+An optional Chinese-language live dashboard at `/dashboard/` shows per-key
+routing, request/token/cost statistics and on-demand account credits. Enable
+`DASHBOARD_ENABLED=true` and set a separate `DASHBOARD_API_KEY`. All statistics
+stay in bounded memory and reset on restart; prompts and responses are never
+stored in the dashboard. See [dashboard configuration](./proxy/README.md#实时面板).
+
 ## Design highlights
 
 - **Zero third-party dependencies** — Go standard library only.

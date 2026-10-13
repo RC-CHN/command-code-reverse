@@ -6,6 +6,17 @@ versioning follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Add an opt-in, authenticated live dashboard at `/dashboard/`, with embedded
+  responsive Chinese UI, process-local LLM/Jev and per-key accounting, actual
+  retry attribution, independent breaker previews, and on-demand account
+  balances, billing-period usage and quota windows following the upstream CLI.
+  Bound request retention, model dimensions and billing concurrency; keep
+  credentials, prompts, responses and reasoning out of dashboard records.
+  Configuration uses `DASHBOARD_ENABLED`, `DASHBOARD_API_KEY` and
+  `DASHBOARD_RECENT_REQUESTS`; no database or persistent history is required.
+
 ## [v0.2.2] - 2026-10-08
 
 ### Fixed

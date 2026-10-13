@@ -15,6 +15,7 @@ import (
 
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/commandcode"
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/session"
+	"github.com/RC-CHN/command-code-reverse/proxy/internal/stats"
 )
 
 // GenerateClient is the slice of commandcode.Client the pool needs
@@ -46,6 +47,7 @@ func (p *BreakerPolicy) withDefaults() BreakerPolicy {
 
 type keyState struct {
 	key        string
+	id         string
 	openUntil  time.Time // breaker open until this instant
 	probing    bool      // one half-open probe is already in flight
 	generation uint64    // invalidates results from requests admitted before a transition
@@ -89,8 +91,8 @@ func New(client GenerateClient, sessions *session.Store, keys []string, policy B
 		sessions: sessions,
 		policy:   policy.withDefaults(),
 	}
-	for _, k := range keys {
-		p.keys = append(p.keys, &keyState{key: k})
+	for i, k := range keys {
+		p.keys = append(p.keys, &keyState{key: k, id: stats.KeyID(i)})
 	}
 	return p
 }
@@ -111,7 +113,12 @@ func withKey[T any](ctx context.Context, p *Pool, hint string, call func(string)
 	var zero T
 	if hint != "" {
 		// Passthrough mode: downstream supplied its own key; no pooling.
-		return call(hint)
+		stats.SelectKey(ctx, "passthrough")
+		body, err := call(hint)
+		if err != nil {
+			stats.AttemptFailed(ctx)
+		}
+		return body, err
 	}
 
 	attempted := make(map[*keyState]bool, len(p.keys))
@@ -129,11 +136,13 @@ func withKey[T any](ctx context.Context, p *Pool, hint string, call func(string)
 		}
 		attempted[ks.state] = true
 
+		stats.SelectKey(ctx, ks.state.id)
 		body, err := call(ks.state.key)
 		if err == nil {
 			p.reportSuccess(ks)
 			return body, nil
 		}
+		stats.AttemptFailed(ctx)
 		lastErr = err
 		if !p.reportFailure(ks, err) {
 			// Non-key-specific failure (network, cancel): no point rotating.
@@ -142,6 +151,40 @@ func withKey[T any](ctx context.Context, p *Pool, hint string, call func(string)
 		slog.Warn("keypool: key failed, spilling to next",
 			"keyPrefix", prefix(ks.state.key), "systemOne", p.systemOne)
 	}
+}
+
+// RouteStatus describes local eligibility only, not verified upstream credit.
+// ID is a configuration slot; no credential bytes are exposed to the panel.
+type RouteStatus struct {
+	ID        string     `json:"id"`
+	Available bool       `json:"available"`
+	Probing   bool       `json:"probing"`
+	RetryAt   *time.Time `json:"retryAt,omitempty"`
+}
+
+type RoutingSnapshot struct {
+	Next string        `json:"next"`
+	Keys []RouteStatus `json:"keys"`
+}
+
+// Routing previews fill-first selection without reserving or probing a key.
+func (p *Pool) Routing() RoutingSnapshot {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	now := p.policy.Now()
+	out := RoutingSnapshot{Keys: make([]RouteStatus, 0, len(p.keys))}
+	for _, k := range p.keys {
+		state := RouteStatus{ID: k.id, Available: !k.probing && !now.Before(k.openUntil), Probing: k.probing}
+		if now.Before(k.openUntil) {
+			retry := k.openUntil
+			state.RetryAt = &retry
+		}
+		if out.Next == "" && state.Available {
+			out.Next = k.id
+		}
+		out.Keys = append(out.Keys, state)
+	}
+	return out
 }
 
 // generate aligns account-scoped project headers with the body without

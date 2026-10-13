@@ -35,6 +35,8 @@ type summaryVal struct {
 
 // Registry groups all exported families.
 type Registry struct {
+	modelMu      sync.Mutex
+	models       map[string]struct{}
 	Requests     *Counter // labels: model,stream,result
 	Tokens       *Counter // label: kind (input|output|cached|cache_write)
 	LatencyMs    *Summary // labels: model,stream
@@ -45,6 +47,7 @@ type Registry struct {
 // New builds the registry with all families.
 func New() *Registry {
 	return &Registry{
+		models:       make(map[string]struct{}),
 		Requests:     newCounter("commandcode_proxy_requests_total", "Inference requests by model/stream/result."),
 		Tokens:       newCounter("commandcode_proxy_tokens_total", "Tokens served, by kind (input/output/cached/cache_write)."),
 		LatencyMs:    newSummary("commandcode_proxy_latency_ms", "End-to-end request latency (milliseconds)."),
@@ -57,6 +60,7 @@ func New() *Registry {
 
 // IncRequest records one finished request.
 func (r *Registry) IncRequest(model string, streamed bool, result string) {
+	model = r.limitModel(model)
 	r.Requests.Inc(Labels("model", model, "stream", boolLabel(streamed), "result", result))
 }
 
@@ -67,6 +71,7 @@ func (r *Registry) AddTokens(kind string, n int) {
 
 // ObserveLatency records end-to-end latency.
 func (r *Registry) ObserveLatency(model string, streamed bool, ms int64) {
+	model = r.limitModel(model)
 	r.LatencyMs.Observe(Labels("model", model, "stream", boolLabel(streamed)), ms)
 }
 
@@ -75,7 +80,26 @@ func (r *Registry) ObserveCost(model string, usd float64) {
 	if usd <= 0 {
 		return
 	}
+	model = r.limitModel(model)
 	r.CostMicroUSD.AddN(Labels("model", model), int64(usd*1_000_000))
+}
+
+// Keep label cardinality bounded across long-running instances, including
+// clients submitting many different invalid model IDs. Overflow still counts.
+func (r *Registry) limitModel(model string) string {
+	if len(model) > 160 {
+		return "[other models]"
+	}
+	r.modelMu.Lock()
+	defer r.modelMu.Unlock()
+	if _, ok := r.models[model]; ok {
+		return model
+	}
+	if len(r.models) >= 256 {
+		return "[other models]"
+	}
+	r.models[strings.Clone(model)] = struct{}{}
+	return model
 }
 
 // IncUpstreamError records one upstream failure of the given class.

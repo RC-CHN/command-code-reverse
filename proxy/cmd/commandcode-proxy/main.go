@@ -106,8 +106,11 @@ func main() {
 		Probe: func(ctx context.Context) error {
 			return client.Whoami(ctx, cfg.APIKeys[0])
 		},
-		Sessions: sessions,
-		Metrics:  recorder,
+		Sessions:   sessions,
+		Metrics:    recorder,
+		FetchUsage: client.Usage,
+		Routing:    upstream.Routing,
+		JevRouting: systemOne.Routing,
 	}
 
 	handler := server.New(cfg, deps, renderMetrics)

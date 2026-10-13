@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
 	"strconv"
 	"strings"
 
@@ -170,14 +171,20 @@ type ProviderMetadata struct {
 
 // CostUSD parses the gateway cost string; empty/unparseable → 0.
 func (p *ProviderMetadata) CostUSD() float64 {
-	if p == nil || p.Gateway == nil || p.Gateway.Cost == "" {
-		return 0
-	}
-	var f float64
-	if _, err := fmt.Sscanf(p.Gateway.Cost, "%g", &f); err != nil {
-		return 0
-	}
+	f, _ := p.ReportedCostUSD()
 	return f
+}
+
+// ReportedCostUSD distinguishes an explicit zero from absent/invalid cost.
+func (p *ProviderMetadata) ReportedCostUSD() (float64, bool) {
+	if p == nil || p.Gateway == nil || p.Gateway.Cost == "" {
+		return 0, false
+	}
+	f, err := strconv.ParseFloat(p.Gateway.Cost, 64)
+	if err != nil || math.IsNaN(f) || math.IsInf(f, 0) || f < 0 {
+		return 0, false
+	}
+	return f, true
 }
 
 // Reader incrementally decodes an NDJSON event stream.
