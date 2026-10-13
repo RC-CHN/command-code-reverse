@@ -6,6 +6,8 @@ versioning follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+## [v0.3.0] - 2026-10-13
+
 ### Added
 
 - Add an opt-in, authenticated live dashboard at `/dashboard/`, with embedded
@@ -16,6 +18,13 @@ versioning follows [SemVer](https://semver.org/).
   credentials, prompts, responses and reasoning out of dashboard records.
   Configuration uses `DASHBOARD_ENABLED`, `DASHBOARD_API_KEY` and
   `DASHBOARD_RECENT_REQUESTS`; no database or persistent history is required.
+
+### Changed
+
+- Bound Prometheus model label cardinality to 256 ordinary model IDs plus an
+  overflow group, preserving aggregate counts without growing with uptime.
+- Distinguish explicit zero gateway cost from absent or invalid values in
+  dashboard accounting; reject non-finite and malformed optional costs.
 
 ## [v0.2.2] - 2026-10-08
 
