@@ -1,0 +1,833 @@
+{
+  "baseline": "1.79.1",
+  "version": "1.87.3",
+  "parser": "Prettier 3.6.2 Babel parser",
+  "functionEvidence": {
+    "buildCommandAuthHeaders": {
+      "1.79.1": {
+        "line": 30752,
+        "sha256": "49e599f2b4760f3ef3e43ed0c3013c2a2466b0e87f0fe987c96674d257065b3d"
+      },
+      "1.87.3": {
+        "line": 35850,
+        "sha256": "35f0f7fc402d06c69a91eacc166d1c81824bfeeed1e9e431f18fdad6acc06a6e"
+      },
+      "textIdentical": false
+    },
+    "buildCommandApiHeaders": {
+      "1.79.1": {
+        "line": 30956,
+        "sha256": "9efdd9088740cae529df5aaf722dface67d25eb251dd008d0e629fe045a4b5b9"
+      },
+      "1.87.3": {
+        "line": 36054,
+        "sha256": "3483c0dcab8aeadd67e2a923f92f4040ca2596311b3758655a7c93ffac908197"
+      },
+      "textIdentical": false
+    },
+    "resolveCommandAuthHeaders": {
+      "1.79.1": {
+        "line": 55903,
+        "sha256": "21d06b2aadc87bb08e27f95e3cc5862630176d03150b3e5c1fbe564d0436a356"
+      },
+      "1.87.3": {
+        "line": 62391,
+        "sha256": "c80177bfc3128310d1b100d0e05a85a8a45fc13d4d0d7a0e32ceb056ce5da7a1"
+      },
+      "textIdentical": false
+    },
+    "createModelClient": {
+      "1.79.1": {
+        "line": 39772,
+        "sha256": "ae5afa194c47c7aac83dfeb36be9c6925b5888e57bd8ab736e69e90e74f14f9d"
+      },
+      "1.87.3": {
+        "line": 44888,
+        "sha256": "640762b11ec821ed5f8868f30a9986986ca2cdff5d062a677b753e999d6ec706"
+      },
+      "textIdentical": false
+    },
+    "toWireMessages": {
+      "1.79.1": {
+        "line": 39425,
+        "sha256": "536cb452b30293c3fbc510b49ae219499d2897ebce65c04e62452ffc6165bc52"
+      },
+      "1.87.3": {
+        "line": 44529,
+        "sha256": "536cb452b30293c3fbc510b49ae219499d2897ebce65c04e62452ffc6165bc52"
+      },
+      "textIdentical": true
+    },
+    "toWireTools": {
+      "1.79.1": {
+        "line": 39406,
+        "sha256": "de73d50b44a23d80221e2b7fe032eeb74dd71d3a027e379d1bccabbfb773332e"
+      },
+      "1.87.3": {
+        "line": 44510,
+        "sha256": "de73d50b44a23d80221e2b7fe032eeb74dd71d3a027e379d1bccabbfb773332e"
+      },
+      "textIdentical": true
+    },
+    "toWireSystem": {
+      "1.79.1": {
+        "line": 39473,
+        "sha256": "8a6a92dfe765aba44071c3fc6c3d3b852f0cb0b04cc2d9e6284998ea92be78b1"
+      },
+      "1.87.3": {
+        "line": 44577,
+        "sha256": "8a6a92dfe765aba44071c3fc6c3d3b852f0cb0b04cc2d9e6284998ea92be78b1"
+      },
+      "textIdentical": true
+    },
+    "consumeStream": {
+      "1.79.1": {
+        "line": 39588,
+        "sha256": "ecde025d11aa0cc0416bd21fa1275efc5d26816b1a61b261f3cc8720093769bf"
+      },
+      "1.87.3": {
+        "line": 44703,
+        "sha256": "3ab0286d648cdfb984a78470aeac6d3ec1a82c57244e56b43e537378f75a0fd9"
+      },
+      "textIdentical": false
+    },
+    "readCacheWriteTokens1h": {
+      "1.79.1": {
+        "line": 39481,
+        "sha256": "0f9c74204d17a5c9a5954a1f57ca983051a5650509ae7fd1c2e1dfe5dcc4efb4"
+      },
+      "1.87.3": {
+        "line": 44585,
+        "sha256": "0f9c74204d17a5c9a5954a1f57ca983051a5650509ae7fd1c2e1dfe5dcc4efb4"
+      },
+      "textIdentical": true
+    },
+    "readCapturedCacheWriteTokens": {
+      "1.79.1": {
+        "line": 39492,
+        "sha256": "a2b0940c6dcaeef31ef5fedbb298e930a202f61fb1c2e3fb08c204fc4378c535"
+      },
+      "1.87.3": {
+        "line": 44596,
+        "sha256": "a2b0940c6dcaeef31ef5fedbb298e930a202f61fb1c2e3fb08c204fc4378c535"
+      },
+      "textIdentical": true
+    },
+    "readReasoningMetadata": {
+      "1.79.1": {
+        "line": 40040,
+        "sha256": "208b8b9cb565b3bfa9a5dcd12edfeccb0f9f99612619184c1ecfd590f65b3ab1"
+      },
+      "1.87.3": {
+        "line": 45163,
+        "sha256": "208b8b9cb565b3bfa9a5dcd12edfeccb0f9f99612619184c1ecfd590f65b3ab1"
+      },
+      "textIdentical": true
+    },
+    "reasoningProviderOptions": {
+      "1.79.1": {
+        "line": 39877,
+        "sha256": "ab481f21eab0a9aaf4f3c39977c1e5ca4e061ae5920d1703974cd3ba0a79cd87"
+      },
+      "1.87.3": {
+        "line": 44997,
+        "sha256": "ab481f21eab0a9aaf4f3c39977c1e5ca4e061ae5920d1703974cd3ba0a79cd87"
+      },
+      "textIdentical": true
+    },
+    "responsesProviderOptions": {
+      "1.79.1": {
+        "line": 38977,
+        "sha256": "389d5cefb0c7f3b5fa6c79b1e2c7c5ebfb4743a0711ced7fedd92e37b75a1d64"
+      },
+      "1.87.3": {
+        "line": 44041,
+        "sha256": "389d5cefb0c7f3b5fa6c79b1e2c7c5ebfb4743a0711ced7fedd92e37b75a1d64"
+      },
+      "textIdentical": true
+    },
+    "buildMachineFingerprint": {
+      "1.79.1": {
+        "line": 46847,
+        "sha256": "033b8864b809db5d9969b5a9961b3b297dc507de84cbbe8f3c0d274fa1976c07"
+      },
+      "1.87.3": {
+        "line": 52450,
+        "sha256": "f2aae942137c0086ca2f0ec62b358b0ff51152b5be03b8d3b31d37a755669e91"
+      },
+      "textIdentical": false
+    },
+    "trackCliSessionExistsEvent": {
+      "1.79.1": {
+        "line": 130051,
+        "sha256": "c680dab6d1b52ed5e597660191448645d69f84c80f15e16405820d0c176c8b47"
+      },
+      "1.87.3": {
+        "line": 144450,
+        "sha256": "03b9059aec406ab4fb9ce69df23838c45d3816535ff4387343cacd684fefdd99"
+      },
+      "textIdentical": false
+    },
+    "parseSpendCapError": {
+      "1.79.1": {
+        "line": 31074,
+        "sha256": "5903fc7a490525d5ee46fb0e743f3c5066d7d2c86d291e8d867b0144b17f5997"
+      },
+      "1.87.3": {
+        "line": 36172,
+        "sha256": "406beb1387b8bba54b599360ef614bccb90f33e6dbec8833acd3b61ee851f0c6"
+      },
+      "textIdentical": false
+    },
+    "formatRunError": {
+      "1.79.1": {
+        "line": 31322,
+        "sha256": "4c17833363ad02719b5adf25282697e09b62243891f041de150a53f7dab30294"
+      },
+      "1.87.3": {
+        "line": 36453,
+        "sha256": "1b0ad59b8500c83d4ea955cd748119f576e95d43f5e5d44401bf227b866f018f"
+      },
+      "textIdentical": false
+    },
+    "parseWindowLimitError": {
+      "1.79.1": {
+        "line": 7987,
+        "sha256": "f32117973b157a2643163c4ce701c510368d995b98e84dcab69bce5c50245310"
+      },
+      "1.87.3": {
+        "line": 9641,
+        "sha256": "f32117973b157a2643163c4ce701c510368d995b98e84dcab69bce5c50245310"
+      },
+      "textIdentical": true
+    },
+    "readStreamErrorEvent": {
+      "1.79.1": {
+        "line": 39509,
+        "sha256": "7ac1b1abc1d838b61bf2e6280e8a6feedd12c12e9220ba525f8d7efc482aab0d"
+      },
+      "1.87.3": {
+        "line": 44613,
+        "sha256": "7ac1b1abc1d838b61bf2e6280e8a6feedd12c12e9220ba525f8d7efc482aab0d"
+      },
+      "textIdentical": true
+    },
+    "runSystemOne": {
+      "1.79.1": {
+        "line": 54172,
+        "sha256": "015572eb2cb962e04906778d12ebdc92ca53fed50528dc18d044d971eca55604"
+      },
+      "1.87.3": {
+        "line": 60644,
+        "sha256": "fd18ee34dd5a6c4bf7adc46a00979c5ca66ef5e62beef89bc7e880e7169943e1"
+      },
+      "textIdentical": false
+    },
+    "parseSystemOneQuery": {
+      "1.79.1": {
+        "line": 54152,
+        "sha256": "03fe313997143f599f92e2fa04595aae77291c181fcec3df120e95927ed7bc8c"
+      },
+      "1.87.3": {
+        "line": 60624,
+        "sha256": "1ff2d2be2e5cebf5928a81a9c0e96fa597c55f49053244398414adc6db92213e"
+      },
+      "textIdentical": false
+    },
+    "projectUsageView": {
+      "1.79.1": {
+        "line": 5328,
+        "sha256": "f784094f665979ada9b10d103e4480420c765c1f78484d52312cace0c160354f"
+      },
+      "1.87.3": {
+        "line": 6818,
+        "sha256": "6e47cc0f41bd9f874ca83de6d24f61aaf8d1e40eee6f0d84841d55673d8b35b3"
+      },
+      "textIdentical": false
+    },
+    "evaluateModelAccess": {
+      "1.79.1": {
+        "line": 5616,
+        "sha256": "bac5cbd49ac817fef9dba17c35c1c52f6ef82a706c16b83da270795ba9073107"
+      },
+      "1.87.3": {
+        "line": 7207,
+        "sha256": "ab447e10c29f034ee3a1df24f1c80024843dd992760e6eab3fb5006ee13e25a4"
+      },
+      "textIdentical": false
+    },
+    "createNodeTransport": {
+      "1.79.1": {
+        "line": 30820,
+        "sha256": "695e756e553d4d9bb1cced1752e0b1eabd06de8fe3f2662b8b6ecd04176da161"
+      },
+      "1.87.3": {
+        "line": 35918,
+        "sha256": "695e756e553d4d9bb1cced1752e0b1eabd06de8fe3f2662b8b6ecd04176da161"
+      },
+      "textIdentical": true
+    },
+    "createCommandApiClient": {
+      "1.79.1": {
+        "line": 31001,
+        "sha256": "43e13bf597e9fdc6b72a8496cf470623b6458a0ceda1b8015257dda005f380c1"
+      },
+      "1.87.3": {
+        "line": 36099,
+        "sha256": "f94e08ac0ff035fe2899facbc8b06808373c007e045cb206ce04ddc50f71d1f2"
+      },
+      "textIdentical": false
+    },
+    "readLines": {
+      "1.79.1": {
+        "line": 39574,
+        "sha256": "8894d0feedf40a37c49381c7d4cbe68ccb34e0681457792a592a98e10ffaa846"
+      },
+      "1.87.3": {
+        "line": 44689,
+        "sha256": "8894d0feedf40a37c49381c7d4cbe68ccb34e0681457792a592a98e10ffaa846"
+      },
+      "textIdentical": true
+    },
+    "guardStreamFailures": {
+      "1.79.1": {
+        "line": 39559,
+        "sha256": "ade54378e69bb5ae59b36cf6bc5456203824476760ca3fc3f9b6e104eccdddbc"
+      },
+      "1.87.3": {
+        "line": 44674,
+        "sha256": "ade54378e69bb5ae59b36cf6bc5456203824476760ca3fc3f9b6e104eccdddbc"
+      },
+      "textIdentical": true
+    },
+    "isStreamErrorRetryable": {
+      "1.79.1": {
+        "line": 39525,
+        "sha256": "69021201c733f8c10e8f8f36c63dc4f79f3223b26b15d40108925ec3ac395a3c"
+      },
+      "1.87.3": {
+        "line": 44629,
+        "sha256": "69021201c733f8c10e8f8f36c63dc4f79f3223b26b15d40108925ec3ac395a3c"
+      },
+      "textIdentical": true
+    },
+    "getApiBaseUrl": {
+      "1.79.1": {
+        "line": 6350,
+        "sha256": "0247b5522ec215f3254f93ce5fedd7d821a2ea7c25aa096db2d444a01b505763"
+      },
+      "1.87.3": {
+        "line": 3964,
+        "sha256": "0247b5522ec215f3254f93ce5fedd7d821a2ea7c25aa096db2d444a01b505763"
+      },
+      "textIdentical": true
+    },
+    "coerceToolInput": {
+      "1.79.1": {
+        "line": 39371,
+        "sha256": "c02fd5b17dad08056303f6966ee4c63ffa7abfafe1b389fca087c25b7446dc1f"
+      },
+      "1.87.3": {
+        "line": 44475,
+        "sha256": "c02fd5b17dad08056303f6966ee4c63ffa7abfafe1b389fca087c25b7446dc1f"
+      },
+      "textIdentical": true
+    },
+    "formatServerToolOutput": {
+      "1.79.1": {
+        "line": 39551,
+        "sha256": "50ec723bce6d7e9313522c3bcf758a3bf7551a33b688b80d1a992759aa26b4a5"
+      },
+      "1.87.3": {
+        "line": 44666,
+        "sha256": "50ec723bce6d7e9313522c3bcf758a3bf7551a33b688b80d1a992759aa26b4a5"
+      },
+      "textIdentical": true
+    },
+    "isThinkingEffort": {
+      "1.79.1": {
+        "line": 50030,
+        "sha256": "ab209c4cbd0ab5e854bb70ddf591131bd62786991ea9e2265f5ec50497357c3f"
+      },
+      "1.87.3": {
+        "line": 3908,
+        "sha256": "bc1b15e5abd31aa1a012fc2f37568abe50ef3da779729a2d3cbb66eca7041f34"
+      },
+      "textIdentical": false
+    },
+    "consumedStopReason": {
+      "1.87.3": {
+        "line": 44656,
+        "sha256": "2fbb58d3d0da140fc911df8dd28ca3e11d2e7ebddd7465287e714468be285ec8"
+      }
+    },
+    "isRefusalFinishReason": {
+      "1.87.3": {
+        "line": 44463,
+        "sha256": "d829e7fc4c18922ed982b05dccc399c19b0ff0340d697d02c0b56464abce6fd4"
+      }
+    },
+    "parseUnavailableModel": {
+      "1.87.3": {
+        "line": 36436,
+        "sha256": "f1b794427b790f5316ca17b68b5e1a9e70510f3e08b632c73df7ed755f0b35be"
+      }
+    },
+    "isRenewalPendingMessage": {
+      "1.87.3": {
+        "line": 35835,
+        "sha256": "79d8fa3aca356f490802151b94c37a602d2d150f78004b1b0b703dcba11f95e3"
+      }
+    },
+    "parseModelCatalog": {
+      "1.87.3": {
+        "line": 4189,
+        "sha256": "bfa863a69ea475233586d8068daf71d464e742ed2ab25b3a55816f118740e473"
+      }
+    }
+  },
+  "catalogCounts": {
+    "old": 95,
+    "new": 104
+  },
+  "addedModels": {
+    "meta/muse-wonder-1.0": {
+      "line": 94846,
+      "name": "Muse Wonder",
+      "provider": "vercel-ai-gateway",
+      "contextWindow": 1048576,
+      "reasoning": true,
+      "reasoningEfforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh"
+      ],
+      "inputModalities": [
+        "text",
+        "image",
+        "file"
+      ]
+    },
+    "meta/muse-spark-open": {
+      "line": 94832,
+      "name": "Muse Spark Open",
+      "provider": "vercel-ai-gateway",
+      "contextWindow": 1048576,
+      "reasoning": true,
+      "reasoningEfforts": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "inputModalities": [
+        "text",
+        "image"
+      ]
+    },
+    "inclusionai/ling-3.1-flash": {
+      "line": 94743,
+      "name": "Ling 3.1 Flash",
+      "provider": "vercel-ai-gateway",
+      "contextWindow": 262144,
+      "reasoning": true,
+      "reasoningEfforts": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "inputModalities": [
+        "text"
+      ],
+      "maxOutputTokens": 32768
+    },
+    "reflection/beam:free": {
+      "line": 94696,
+      "name": "Beam 1.0",
+      "provider": "vercel-ai-gateway",
+      "contextWindow": 1048576,
+      "reasoning": true,
+      "reasoningEfforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "inputModalities": [
+        "text"
+      ],
+      "maxOutputTokens": 131072
+    },
+    "nvidia/nemotron-3.5-super-vl": {
+      "line": 94611,
+      "name": "Nemotron 3.5 Super VL",
+      "provider": "vercel-ai-gateway",
+      "contextWindow": 262144,
+      "reasoning": true,
+      "reasoningEfforts": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "inputModalities": [
+        "text",
+        "image"
+      ]
+    },
+    "google/gemini-4-argon": {
+      "line": 94487,
+      "name": "Gemini 4 Argon",
+      "provider": "vercel-ai-gateway",
+      "contextWindow": 1000000,
+      "reasoning": true,
+      "reasoningEfforts": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "inputModalities": [
+        "text",
+        "image"
+      ]
+    },
+    "Qwen/Qwen3.8-Max-Prime": {
+      "line": 94260,
+      "name": "Qwen 3.8 Max Prime",
+      "provider": "vercel-ai-gateway",
+      "contextWindow": 1000000,
+      "reasoning": true,
+      "reasoningEfforts": [
+        "low",
+        "medium",
+        "xhigh"
+      ],
+      "inputModalities": [
+        "text",
+        "image"
+      ],
+      "maxOutputTokens": 131072
+    },
+    "ornith/ornith-1.5-122b:free": {
+      "line": 94173,
+      "name": "Ornith 1.5 122B",
+      "provider": "vercel-ai-gateway",
+      "contextWindow": 262144,
+      "reasoning": true,
+      "inputModalities": [
+        "text",
+        "image"
+      ]
+    },
+    "ornith/ornith-1.5-122b": {
+      "line": 94161,
+      "name": "Ornith 1.5 122B",
+      "provider": "vercel-ai-gateway",
+      "contextWindow": 262144,
+      "reasoning": true,
+      "inputModalities": [
+        "text",
+        "image"
+      ]
+    },
+    "minimax/minimax-m3.1-flash:free": {
+      "line": 94080,
+      "name": "MiniMax M3.1 Flash",
+      "provider": "vercel-ai-gateway",
+      "contextWindow": 1000000,
+      "reasoning": true,
+      "reasoningEfforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "inputModalities": [
+        "text",
+        "image"
+      ]
+    },
+    "minimax/minimax-m3.1-flash": {
+      "line": 94064,
+      "name": "MiniMax M3.1 Flash",
+      "provider": "vercel-ai-gateway",
+      "contextWindow": 1000000,
+      "reasoning": true,
+      "reasoningEfforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "inputModalities": [
+        "text",
+        "image"
+      ]
+    }
+  },
+  "removedModels": {
+    "inclusionai/ling-3.0-flash-sante:free": {
+      "line": 84396,
+      "name": "Ling 3.0 Flash Sante",
+      "provider": "vercel-ai-gateway",
+      "contextWindow": 262144,
+      "reasoning": true,
+      "inputModalities": [
+        "text"
+      ],
+      "maxOutputTokens": 32768
+    },
+    "inclusionai/ling-3.0-flash-free": {
+      "line": 84380,
+      "name": "Ling 3.0 Flash",
+      "provider": "vercel-ai-gateway",
+      "contextWindow": 256000,
+      "reasoning": true,
+      "inputModalities": [
+        "text"
+      ],
+      "maxOutputTokens": 32768
+    }
+  },
+  "changedModels": {
+    "inclusionai/ling-3.1-flash:free": {
+      "old": {
+        "line": 84412,
+        "name": "Ling 3.1 Flash",
+        "provider": "vercel-ai-gateway",
+        "contextWindow": 262144,
+        "reasoning": true,
+        "reasoningEfforts": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "inputModalities": [
+          "text"
+        ],
+        "maxOutputTokens": 32768
+      },
+      "new": {
+        "line": 94729,
+        "name": "Ling 3.1 Flash (Free)",
+        "provider": "vercel-ai-gateway",
+        "contextWindow": 262144,
+        "hidden": true,
+        "reasoning": true,
+        "inputModalities": [
+          "text"
+        ]
+      }
+    },
+    "deepseek/deepseek-v4.1-flash-fast": {
+      "old": {
+        "line": 83735,
+        "name": "DeepSeek V4.1 Flash Fast",
+        "provider": "vercel-ai-gateway",
+        "contextWindow": 1000000,
+        "reasoning": true,
+        "reasoningEfforts": [
+          "off",
+          "low",
+          "high",
+          "max"
+        ],
+        "inputModalities": [
+          "text",
+          "image"
+        ]
+      },
+      "new": {
+        "line": 93906,
+        "name": "DeepSeek V4.1 Flash Fast (latest)",
+        "provider": "vercel-ai-gateway",
+        "contextWindow": 1000000,
+        "reasoning": true,
+        "reasoningEfforts": [
+          "off",
+          "low",
+          "high",
+          "max"
+        ],
+        "inputModalities": [
+          "text",
+          "image"
+        ]
+      }
+    },
+    "deepseek/deepseek-v4.1-flash": {
+      "old": {
+        "line": 83723,
+        "name": "DeepSeek V4.1 Flash",
+        "provider": "vercel-ai-gateway",
+        "contextWindow": 1000000,
+        "reasoning": true,
+        "reasoningEfforts": [
+          "off",
+          "low",
+          "high",
+          "max"
+        ],
+        "inputModalities": [
+          "text",
+          "image"
+        ]
+      },
+      "new": {
+        "line": 93893,
+        "name": "DeepSeek V4.1 Flash (latest)",
+        "provider": "vercel-ai-gateway",
+        "contextWindow": 1000000,
+        "reasoning": true,
+        "reasoningEfforts": [
+          "off",
+          "low",
+          "high",
+          "max"
+        ],
+        "inputModalities": [
+          "text",
+          "image"
+        ]
+      }
+    }
+  },
+  "addedLiteralRoutes": [
+    "/alpha/artifacts",
+    "/provider/v1/models?view=client"
+  ],
+  "removedLiteralRoutes": [],
+  "constants": {
+    "generate_route": [
+      {
+        "version": "1.79.1",
+        "line": 78772,
+        "identifier": "AC",
+        "value": "/alpha/generate"
+      },
+      {
+        "version": "1.87.3",
+        "line": 89308,
+        "identifier": "KT",
+        "value": "/alpha/generate"
+      }
+    ],
+    "cli_default_max_tokens": [
+      {
+        "version": "1.79.1",
+        "line": 78773,
+        "identifier": "xC",
+        "value": 64000
+      },
+      {
+        "version": "1.87.3",
+        "line": 89309,
+        "identifier": "zT",
+        "value": 64000
+      }
+    ],
+    "pause_continuation_attempts": [
+      {
+        "version": "1.79.1",
+        "line": 76512,
+        "identifier": "Wf",
+        "value": 5
+      },
+      {
+        "version": "1.87.3",
+        "line": 87038,
+        "identifier": "rS",
+        "value": 5
+      }
+    ],
+    "zdr_header": [
+      {
+        "version": "1.79.1",
+        "line": 78775,
+        "identifier": "RC",
+        "value": "x-cmd-zdr"
+      },
+      {
+        "version": "1.87.3",
+        "line": 89311,
+        "identifier": "qT",
+        "value": "x-cmd-zdr"
+      }
+    ],
+    "jev_max_questions": [
+      {
+        "version": "1.79.1",
+        "line": 81086,
+        "identifier": "qM",
+        "value": 20
+      },
+      {
+        "version": "1.87.3",
+        "line": 91592,
+        "identifier": "YA",
+        "value": 100
+      }
+    ],
+    "refusal_aliases": [
+      {
+        "version": "1.87.3",
+        "line": 89300,
+        "identifier": "VT",
+        "value": [
+          "refusal",
+          "content_filter",
+          "content-filter"
+        ]
+      }
+    ],
+    "client_model_catalog_route": [
+      {
+        "version": "1.87.3",
+        "line": 76681,
+        "identifier": "xo",
+        "value": "/provider/v1/models?view=client"
+      }
+    ]
+  },
+  "jev_schema_evidence": {
+    "1.79.1": {
+      "startLine": 81043,
+      "endLine": 81131,
+      "sha256": "553bf9f7532217dd2b52b8f8f765264fa0e017217661e5dd8b0990217952cadf"
+    },
+    "1.87.3": {
+      "startLine": 91548,
+      "endLine": 91636,
+      "sha256": "67a24c2b24860bbbd0457dfd6090e35a364b6733fb38d097c3f1d2bd6d1b1cfc"
+    }
+  },
+  "embedded_client_catalog": {
+    "line": 73388,
+    "schemaVersion": 1,
+    "catalogVersion": "501a4bf9de3baf9f3bffcf0ab6dc092370058460f7fe514e926e8371c5074f98",
+    "refreshAfterSeconds": 900,
+    "modelCount": 104,
+    "sameIDsAsLegacyTable": true,
+    "hiddenIDsInLegacyTable": [
+      "MiniMaxAI/MiniMax-M3-Free",
+      "inclusionai/ling-3.1-flash:free",
+      "meituan/LongCat-2.0:free",
+      "minimax/minimax-m2.7-free",
+      "minimax/minimax-m3-free",
+      "stealth/pixel-canary",
+      "stealth/space-bunny-alpha",
+      "tencent/Hy3"
+    ],
+    "sourceGeneratedAtMilliseconds": 1792605354959,
+    "sourceGeneratedAtLine": 73387
+  },
+  "proxy_changes": [
+    "Accept explicit length/max_tokens completions without requiring visible text or usage; preserve downstream budget and account reported tokens.",
+    "Map refusal aliases from finishReason or rawFinishReason to content_filter.",
+    "Allow 1-100 Jev questions; retain separate Choice option policy.",
+    "Refresh offline CLI fallback to 1.87.3 and align existing fallback model catalog scope.",
+    "Keep gateway CoT, downstream model IDs and reasoning_effort semantics unchanged."
+  ]
+}

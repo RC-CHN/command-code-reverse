@@ -1,0 +1,57 @@
+{
+  "checked_at": "2026-10-23T06:21:19.496782+00:00",
+  "package": "command-code",
+  "version": "1.87.3",
+  "baseline_version": "1.79.1",
+  "registry_rechecked_at": "2026-10-23T06:32:22.648927+00:00",
+  "dist_tags_at_check": {
+    "alpha": "0.0.4-alpha.43",
+    "beta": "0.18.11-beta.0",
+    "rc": "1.32.2-rc.0",
+    "latest": "1.87.3"
+  },
+  "published_at": "2026-10-22T21:30:33.920Z",
+  "registry": "https://registry.npmjs.org/command-code",
+  "version_metadata_url": "https://registry.npmjs.org/command-code/1.87.3",
+  "dist": {
+    "tarball": "https://registry.npmjs.org/command-code/-/command-code-1.87.3.tgz",
+    "integrity": "sha512-172l65tbKQ71MdQcYqh2CQ8Q0KpVxT6NZo4dK7ue365YwBQ8srbV4ePGdVu3bNInFFqyQCDWnC8cVVHs2uIAGQ==",
+    "shasum": "180142e15aceb116608647fe25aab05d4a907858",
+    "fileCount": 80,
+    "unpackedSize": 6522680
+  },
+  "tarball_bytes": 3533802,
+  "tarball_sha256": "6e57d7b0c7594dbf7cd56c7650d7fbdbc674800717bef523aa6af90e686f48c2",
+  "validation": "npm SHA512 integrity and SHA1 verified; extracted for static analysis; CLI not installed or executed",
+  "formatter": "Prettier 3.6.2",
+  "parser": "Prettier 3.6.2 Babel parser",
+  "analysis": "analysis/v1.87.3/README.md",
+  "source_hashes": {
+    "1.79.1": {
+      "raw_sha256": "3193c12205bc9c03ae33b7676e7b840dd9d4ae1af955558470d147da50e7705a",
+      "beautified_sha256": "f4a41eef9634c7eb7bc7b88166c169884e2f475a88e0adfcfc87cce75b535fa3"
+    },
+    "1.87.3": {
+      "raw_sha256": "512181e4090495e956743d00d65b34ddc986adc334f4968ab6b31c1845666f06",
+      "beautified_sha256": "748a9f70f548518b9eac0b30c4e83b4d89eea62234a835254cb0d154eae84a07"
+    }
+  },
+  "files": {
+    "metadata": {
+      "path": "references/command-code-npm/command-code-1.87.3.metadata.json",
+      "sha256": "199cd8d86a98fc18cb8dfe5c11bdecd148abaca25a48abdfac246e5a2f47db07"
+    },
+    "package_json": {
+      "path": "references/command-code-npm/extracted-1.87.3/package/package.json",
+      "sha256": "66cf16bce244713d6497b7be7a439a2b85b662dda5ddd0740469f3ed92ef2393"
+    },
+    "changelog": {
+      "path": "references/command-code-npm/extracted-1.87.3/package/CHANGELOG.md",
+      "sha256": "a495a7347cb1e044b62ab3ec734ea9f0a629fc203226988637af163fb0b1e17e"
+    },
+    "comparison": {
+      "path": "analysis/v1.87.3/comparison.json",
+      "sha256": "20c3fa2c501893af897f3d7ed781375d3d7ca01a935aba76b4dfd161a9432ac3"
+    }
+  }
+}
