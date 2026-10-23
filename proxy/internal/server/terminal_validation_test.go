@@ -293,12 +293,10 @@ func TestFinishIsNotPublishedUntilTailCompletes(t *testing.T) {
 			r := httptest.NewRequest("POST", "/v1/chat/completions", nil)
 			s := &Server{cfg: testConfig()}
 			req := &convert.ChatRequest{Model: "synthetic", Stream: streamed}
-			timer := time.NewTimer(time.Hour)
-			defer timer.Stop()
 			if streamed {
-				s.serveStream(rec, r, body, req, time.Now(), timer, time.Hour)
+				s.serveStream(rec, r, body, req, time.Now())
 			} else {
-				s.serveNonStream(rec, r, body, req, time.Now(), timer, time.Hour)
+				s.serveNonStream(rec, r, body, req, time.Now())
 			}
 			if !strings.Contains(rec.Body.String(), `"error":`) || strings.Contains(rec.Body.String(), `"finish_reason":"`) {
 				t.Fatalf("tail failure hidden: %s", rec.Body.String())

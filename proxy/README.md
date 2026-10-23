@@ -228,8 +228,15 @@ v0.2.0 改为完整的 v1 设备档案，首次升级的部分资料和 thumbmar
 | `JEV_TIMEOUT_SECONDS` | | `90` | Jev 请求总超时（含轮换和读取）；正整数 |
 | `JEV_MAX_RESPONSE_BYTES` | | `8388608` (8 MiB) | Jev 完整 JSON 响应上限；正整数，超限返回 502 |
 | `MAX_TOKENS_CLAMP` | | `200000` | max_tokens 钳制上限 |
-| `STREAM_IDLE_TIMEOUT_SECONDS` | | `30` | 流式事件空闲超时（超时取消上游请求；连续 3 次提示压缩上下文） |
-| `NONSTREAM_IDLE_TIMEOUT_SECONDS` | | `90` | 非流式空闲超时 |
+| `STREAM_IDLE_TIMEOUT_SECONDS` | | `30` | 流式上游 I/O 空闲超时；收到响应字节即续时，包括分片和心跳 |
+| `NONSTREAM_IDLE_TIMEOUT_SECONDS` | | `90` | 非流式上游 I/O 空闲超时，同样按响应字节续时 |
+
+LLM 没有固定请求总时长上限。超时窗口覆盖连接建立及等待响应头，之后仅在读取上游响应体时计时；
+下游写入和本地事件处理不消耗上游空闲窗口。只收到部分 JSON 或心跳也算有数据，`Read` 返回 `(0, nil)` 不续时。
+真正空闲超时返回 504 `upstream_idle_timeout`，其他网络超时为 504 `upstream_timeout`，
+连接重置、异常 EOF 等读取故障为 502 `upstream_connection_error`，不再误报限流 429 或提示缩短上下文。
+流式响应已开始时无法改变 HTTP 状态，改为发送带对应错误码的 SSE error 和一个 `[DONE]`，不会发送成功结束帧。
+这些本地 I/O 故障不触发 key 轮换、熔断或请求重放；下游断开记为 canceled。
 
 多图请求的大小按编码后的整个 JSON 计算，base64 数据通常比原图片大约三分之一。
 可在启动环境中设置 `MAX_BODY_BYTES=134217728`，将上限提高到 128 MiB。

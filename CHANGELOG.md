@@ -6,6 +6,19 @@ versioning follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Renew LLM idle timeouts on upstream response bytes, including partial NDJSON
+  events and heartbeat lines. Watch only upstream I/O so slow downstream writes
+  do not consume the upstream idle window; guard stale timer callbacks and stop
+  timers on completion. Streaming and non-streaming defaults remain 30s and 90s.
+- Distinguish local idle timeouts (504 `upstream_idle_timeout`), other network
+  timeouts (504 `upstream_timeout`), and interrupted connections (502
+  `upstream_connection_error`) instead of reporting all read failures as 429.
+  After SSE starts, emit the same structured error and one `[DONE]`; preserve
+  downstream cancellation, key availability, and failure accounting without
+  replaying requests or suggesting context reduction for network failures.
+
 ## [v0.3.2] - 2026-10-23
 
 ### Fixed

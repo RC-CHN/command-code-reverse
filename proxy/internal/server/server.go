@@ -4,7 +4,6 @@ package server
 
 import (
 	"net/http"
-	"sync/atomic"
 
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/commandcode"
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/config"
@@ -25,9 +24,6 @@ type Server struct {
 	dashboard    *stats.Store
 	accountUsage []cachedFetch[*commandcode.AccountUsage]
 	usageSlots   chan struct{}
-
-	// consecutiveTimeouts backs the "reduce context" hint logic.
-	consecutiveTimeouts atomic.Int32
 }
 
 // New builds the root handler with all routes mounted.

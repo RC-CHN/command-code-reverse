@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"net"
 	"net/http"
 	"strconv"
 	"strings"
@@ -15,6 +16,7 @@ import (
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/commandcode"
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/convert"
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/ids"
+	"github.com/RC-CHN/command-code-reverse/proxy/internal/keypool"
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/stats"
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/stream"
 )
@@ -27,10 +29,6 @@ type Upstream interface {
 	// conversation root and trace ID for disguise identity derivation.
 	Generate(ctx context.Context, hint string, meta commandcode.CallMeta, req *commandcode.GenerateRequest) (io.ReadCloser, error)
 }
-
-// timeoutReduceThreshold is how many consecutive idle timeouts trigger the
-// "reduce context" hint (inherited from the old proxy).
-const timeoutReduceThreshold = 3
 
 // handleChatCompletions serves POST /v1/chat/completions.
 func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
@@ -71,35 +69,35 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// The upstream context dies with the downstream connection.
-	ctx, cancel := context.WithCancel(r.Context())
-	defer cancel()
-
-	// Idle watchdog: cancel the upstream request when no event arrives
-	// within the configured window. Reset on every event.
 	idle := s.cfg.StreamIdleTimeout
 	if !req.Stream {
 		idle = s.cfg.NonStreamIdleTimeout
 	}
-	idleTimer := time.AfterFunc(idle, func() { cancel() })
-	defer idleTimer.Stop()
-
-	body, err := s.deps.Upstream.Generate(ctx, downstreamKey(r.Context()), meta, wire)
+	watch := newChatIdle(r.Context(), idle)
+	defer watch.close()
+	watch.begin()
+	body, err := s.deps.Upstream.Generate(watch.ctx, downstreamKey(r.Context()), meta, wire)
+	err = watch.end(err)
+	if body != nil {
+		defer func() { _ = body.Close() }()
+	}
 	if err != nil {
-		if errors.Is(err, context.Canceled) && r.Context().Err() != nil {
-			return // downstream hung up before the first byte
+		var ae *commandcode.APIError
+		var unavailable *keypool.UnavailableError
+		if r.Context().Err() != nil || (!errors.As(err, &ae) && !errors.As(err, &unavailable)) {
+			s.handleStreamReadError(w, r, &req, false, err, start)
+			return
 		}
 		slog.Warn("upstream generate failed", "model", req.Model, "error", err)
 		s.recordFailure(r, &req, req.Stream, "upstream_error")
 		writeUpstreamError(w, err)
 		return
 	}
-	defer func() { _ = body.Close() }()
-
+	reader := &chatIdleReader{reader: body, watch: watch}
 	if req.Stream {
-		s.serveStream(w, r, body, &req, start, idleTimer, idle)
+		s.serveStream(w, r, reader, &req, start)
 	} else {
-		s.serveNonStream(w, r, body, &req, start, idleTimer, idle)
+		s.serveNonStream(w, r, reader, &req, start)
 	}
 }
 
@@ -247,7 +245,7 @@ func toolCallArgs(input json.RawMessage) string {
 // serveStream relays the upstream NDJSON stream as OpenAI SSE. The 200
 // header is delayed until the first visible chunk so early failures can
 // still be reported as JSON errors.
-func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Reader, req *convert.ChatRequest, start time.Time, idleTimer *time.Timer, idle time.Duration) {
+func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Reader, req *convert.ChatRequest, start time.Time) {
 	reader := stream.NewReader(body)
 	st := &streamState{}
 	completionID := ids.NewCompletionID()
@@ -279,8 +277,6 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 			s.handleStreamReadError(w, r, req, started, err, start)
 			return
 		}
-		idleTimer.Reset(idle)
-
 		// In-band terminal markers (billing/plan) — the old proxy swallowed
 		// these; we surface them with explicit semantics.
 		if te := stream.TerminalError(ev); te != nil {
@@ -383,7 +379,6 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 	if flusher != nil {
 		flusher.Flush()
 	}
-	s.consecutiveTimeouts.Store(0)
 	s.recordSuccess(r, req, true, st, start)
 	slog.Info("chat completion served",
 		"model", req.Model, "stream", true,
@@ -395,7 +390,7 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 }
 
 // serveNonStream aggregates the upstream stream into a single JSON response.
-func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.Reader, req *convert.ChatRequest, start time.Time, idleTimer *time.Timer, idle time.Duration) {
+func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.Reader, req *convert.ChatRequest, start time.Time) {
 	reader := stream.NewReader(body)
 	st := &streamState{}
 
@@ -408,8 +403,6 @@ func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.
 			s.handleStreamReadError(w, r, req, false, err, start)
 			return
 		}
-		idleTimer.Reset(idle)
-
 		if te := stream.TerminalError(ev); te != nil {
 			status, typ, msg := terminalErrorStatus(te.Message)
 			slog.Warn("terminal marker in stream", "marker", te.Message, "model", req.Model)
@@ -496,7 +489,6 @@ func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.
 	}
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(resp)
-	s.consecutiveTimeouts.Store(0)
 	s.recordSuccess(r, req, false, st, start)
 	slog.Info("chat completion served",
 		"model", req.Model, "stream", false,
@@ -589,10 +581,11 @@ func (s *Server) handleTruncatedStream(w http.ResponseWriter, r *http.Request, r
 }
 
 // handleStreamReadError reports a read failure (idle timeout or transport).
-// The idle watchdog cancels the request context; a genuine downstream
-// disconnect surfaces through r.Context() instead.
+// The I/O watchdog preserves its cancellation cause; downstream cancellation
+// belongs to r.Context() and must not become an upstream failure.
 func (s *Server) handleStreamReadError(w http.ResponseWriter, r *http.Request, req *convert.ChatRequest, started bool, err error, start time.Time) {
 	if r.Context().Err() != nil {
+		s.recordFailure(r, req, req.Stream, "canceled")
 		slog.Warn("client disconnected mid-stream", "model", req.Model,
 			"elapsedMs", time.Since(start).Milliseconds())
 		return // nothing sensible left to write
@@ -607,23 +600,33 @@ func (s *Server) handleStreamReadError(w http.ResponseWriter, r *http.Request, r
 		return
 	}
 
-	n := s.consecutiveTimeouts.Add(1)
-	msg := "Response timeout - request timed out"
-	if n >= timeoutReduceThreshold {
-		msg = "Response timeout - try reducing context length (summarize earlier messages)"
+	status := http.StatusBadGateway
+	body := openAIErrorBody{Type: "server_error", Code: "upstream_connection_error", Message: "Upstream response connection interrupted"}
+	result := body.Code
+	var networkError net.Error
+	switch {
+	case errors.Is(err, errUpstreamIdle):
+		status, result = http.StatusGatewayTimeout, "timeout"
+		body.Code, body.Message = "upstream_idle_timeout", "Upstream response idle timeout while waiting for data"
+	case errors.Is(err, context.DeadlineExceeded), errors.As(err, &networkError) && networkError.Timeout():
+		status, result = http.StatusGatewayTimeout, "timeout"
+		body.Code, body.Message = "upstream_timeout", "Upstream request timed out"
 	}
-	s.recordFailure(r, req, req.Stream, "timeout")
+	s.recordFailure(r, req, req.Stream, result)
 	slog.Warn("stream read failed",
 		"model", req.Model, "stream", req.Stream,
-		"consecutiveTimeouts", n, "error", err,
+		"code", body.Code, "error", err,
 		"elapsedMs", time.Since(start).Milliseconds(),
 	)
 	if !started {
-		writeError(w, http.StatusTooManyRequests, "rate_limit_error", msg, 5)
+		writeErrorBody(w, status, body, 0)
 		return
 	}
-	_, _ = io.WriteString(w, streamErrorChunk(msg, "rate_limit_error"))
-	_, _ = io.WriteString(w, stream.DoneSSE)
+	b, _ := json.Marshal(openAIError{Error: body})
+	_, _ = io.WriteString(w, "data: "+string(b)+"\n\n"+stream.DoneSSE)
+	if flusher, ok := w.(http.Flusher); ok {
+		flusher.Flush()
+	}
 }
 
 func usageIn(u *stream.Usage) int {
