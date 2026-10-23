@@ -221,6 +221,11 @@ func (r *Reader) Next() (*Event, error) {
 		}
 		var ev Event
 		if json.Unmarshal([]byte(line), &ev) != nil {
+			if err != nil && !errors.Is(err, io.EOF) && !json.Valid([]byte(line)) {
+				// An interrupted read can leave any event half-written. Preserve
+				// its I/O cause instead of blaming incomplete JSON on the peer.
+				return nil, err
+			}
 			if malformedCriticalEvent(line) {
 				r.err = ErrMalformedEvent
 				return nil, r.err

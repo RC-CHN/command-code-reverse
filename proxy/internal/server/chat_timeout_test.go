@@ -112,7 +112,7 @@ func TestChatNetworkActivityKeepsAlive(t *testing.T) {
 }
 
 func TestChatIdleTimeoutClassification(t *testing.T) {
-	for _, phase := range []string{"headers", "first read", "midstream", "zero reads", "after finish"} {
+	for _, phase := range []string{"headers", "first read", "midstream", "partial tool", "zero reads", "after finish"} {
 		for _, streamed := range []bool{false, true} {
 			t.Run(fmt.Sprintf("%s/stream=%t", phase, streamed), func(t *testing.T) {
 				t.Parallel()
@@ -129,6 +129,9 @@ func TestChatIdleTimeoutClassification(t *testing.T) {
 					}
 					if phase == "after finish" {
 						steps = append(steps, readStep{data: terminalFinish("length")})
+					}
+					if phase == "partial tool" {
+						steps = append(steps, readStep{data: `{"type":"tool-call","input":`})
 					}
 					if phase == "zero reads" {
 						for range 20 {
@@ -182,7 +185,7 @@ func TestChatTransportErrorsAreNotIdleTimeouts(t *testing.T) {
 		{"deadline", context.DeadlineExceeded, 504, "upstream_timeout"},
 		{"network timeout", &net.DNSError{Err: "synthetic private timeout", IsTimeout: true}, 504, "upstream_timeout"},
 	} {
-		for _, phase := range []string{"headers", "first read", "midstream", "after finish"} {
+		for _, phase := range []string{"headers", "first read", "midstream", "partial tool", "after finish"} {
 			for _, streamed := range []bool{false, true} {
 				t.Run(fmt.Sprintf("%s/%s/stream=%t", tc.name, phase, streamed), func(t *testing.T) {
 					up := &stubUpstream{readErr: tc.err}
@@ -194,6 +197,9 @@ func TestChatTransportErrorsAreNotIdleTimeouts(t *testing.T) {
 					}
 					if phase == "after finish" {
 						up.ndjson += terminalFinish("length")
+					}
+					if phase == "partial tool" {
+						up.ndjson = `{"type":"tool-call","input":`
 					}
 					counters := metrics.New()
 					h := New(dashboardConfig(), Deps{Upstream: up, Metrics: counters}, nil)

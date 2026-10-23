@@ -166,10 +166,19 @@ func TestReaderFinalLineBeforeReadError(t *testing.T) {
 }
 
 func TestReaderMalformedTailPreservesReadError(t *testing.T) {
-	for _, tail := range []string{"", "\n[DONE]\n: keepalive\n", `{"type":"text-delta"`} {
+	for _, tail := range []string{"", "\n[DONE]\n: keepalive\n", `{"type":"text-delta"`, `{"type":"tool-call","input":`, `{"type":"finish","finishReason":`, `{"type":"error","error":`} {
 		r := NewReader(io.MultiReader(strings.NewReader(tail), iotest.ErrReader(io.ErrUnexpectedEOF)))
 		if _, err := r.Next(); !errors.Is(err, io.ErrUnexpectedEOF) {
 			t.Fatalf("tail %q: got %v, want unexpected EOF", tail, err)
+		}
+	}
+}
+
+func TestReaderCompleteMalformedEventWithReadError(t *testing.T) {
+	for _, line := range []string{`{"type":"finish","finishReason":123}`, `{"type":"tool-call","input":true,"toolCallId":123}`} {
+		r := NewReader(io.MultiReader(strings.NewReader(line), iotest.ErrReader(io.ErrUnexpectedEOF)))
+		if _, err := r.Next(); !errors.Is(err, ErrMalformedEvent) {
+			t.Fatalf("invalid complete event escaped validation: %v", err)
 		}
 	}
 }
