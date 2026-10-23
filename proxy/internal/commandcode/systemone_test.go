@@ -52,15 +52,17 @@ func TestSystemOneValidation(t *testing.T) {
 }
 
 func TestSystemOneQuestionCount(t *testing.T) {
-	for _, count := range []int{20, 21} {
+	for _, count := range []int{1, 20, 21, 100, 101} {
 		questions := map[string]any{}
 		for i := range count {
 			questions[strings.Repeat("q", i+1)] = map[string]string{"type": "noul", "instructions": "?"}
 		}
 		body, _ := json.Marshal(map[string]any{"model": "jev", "state": nil, "questions": questions})
-		_, err := ParseSystemOneRequest(body, true)
-		if (err == nil) != (count == 20) {
-			t.Fatalf("count=%d err=%v", count, err)
+		for _, unlock := range []bool{false, true} {
+			_, err := ParseSystemOneRequest(body, unlock)
+			if (err == nil) != (count <= 100) {
+				t.Fatalf("count=%d unlock=%t err=%v", count, unlock, err)
+			}
 		}
 	}
 }

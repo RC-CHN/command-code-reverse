@@ -141,6 +141,48 @@ func TestJevOptionLimitAndAuth(t *testing.T) {
 	}
 }
 
+func TestJevQuestionLimit(t *testing.T) {
+	for _, count := range []int{100, 101} {
+		t.Run(fmt.Sprint(count), func(t *testing.T) {
+			questions := map[string]any{}
+			answers := map[string]any{}
+			for i := range count {
+				name := fmt.Sprintf("q%d", i)
+				questions[name] = map[string]string{"type": "noul", "instructions": "Synthetic question"}
+				answers[name] = map[string]any{"type": "noul", "noul": 0.5}
+			}
+			request, _ := json.Marshal(map[string]any{"model": "jev", "state": nil, "questions": questions})
+			response, _ := json.Marshal(map[string]any{"answers": answers})
+			var calls atomic.Int32
+			h := systemOneHandler(t, testConfig(), func(w http.ResponseWriter, r *http.Request) {
+				calls.Add(1)
+				var wire struct {
+					Questions map[string]json.RawMessage `json:"questions"`
+				}
+				if err := json.NewDecoder(r.Body).Decode(&wire); err != nil || len(wire.Questions) != count {
+					t.Error("questions were lost in forwarding")
+				}
+				_, _ = w.Write(response)
+			})
+			rec := httptest.NewRecorder()
+			h.ServeHTTP(rec, authedReq(t, "POST", "/v1/systemone", string(request)))
+			if count == 100 {
+				if rec.Code != http.StatusOK || calls.Load() != 1 || rec.Body.String() != string(response) {
+					t.Fatalf("status=%d calls=%d body=%s", rec.Code, calls.Load(), rec.Body.String())
+				}
+			} else {
+				if rec.Code != http.StatusUnprocessableEntity || calls.Load() != 0 {
+					t.Fatalf("status=%d calls=%d body=%s", rec.Code, calls.Load(), rec.Body.String())
+				}
+				assertErrorBody(t, rec, "invalid_request_error", "invalid_request_error")
+				if !strings.Contains(rec.Body.String(), `"param":"questions"`) || !strings.Contains(rec.Body.String(), "1 to 100") {
+					t.Fatalf("missing question limit details: %s", rec.Body.String())
+				}
+			}
+		})
+	}
+}
+
 func TestJevLocalRejections(t *testing.T) {
 	for _, tc := range []struct {
 		name, body, path, key, code string

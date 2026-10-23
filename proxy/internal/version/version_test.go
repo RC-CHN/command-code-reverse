@@ -8,8 +8,8 @@ import (
 
 func TestFallbackWhenNothingConfigured(t *testing.T) {
 	tr := New("", "")
-	if tr.String() != "1.79.1" {
-		t.Errorf("String() = %q, want fallback 1.79.1", tr.String())
+	if tr.String() != "1.87.3" {
+		t.Errorf("String() = %q, want fallback 1.87.3", tr.String())
 	}
 }
 

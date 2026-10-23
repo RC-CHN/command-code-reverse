@@ -20,14 +20,23 @@ const modelCatalogTTL = 5 * time.Minute
 // upstream fetch (or when the upstream is unreachable). Model IDs follow
 // the CLI gateway catalog, including canonical IDs without a vendor prefix.
 // Listing a model does not guarantee access under the caller's plan.
-// Refreshed against command-code@1.79.1; dynamic upstream data takes priority.
+// Refreshed against command-code@1.87.3; dynamic upstream data takes priority.
 var fallbackModels = []commandcode.ModelInfo{
-	{ID: "deepseek/deepseek-v4.1-flash-fast", Name: "DeepSeek V4.1 Flash Fast", ContextLength: 1_000_000},
-	{ID: "inclusionai/ling-3.1-flash:free", Name: "Ling 3.1 Flash", ContextLength: 262_144},
+	{ID: "minimax/minimax-m3.1-flash", Name: "MiniMax M3.1 Flash", ContextLength: 1_000_000},
+	{ID: "minimax/minimax-m3.1-flash:free", Name: "MiniMax M3.1 Flash", ContextLength: 1_000_000},
+	{ID: "reflection/beam:free", Name: "Beam 1.0", ContextLength: 1_048_576},
+	{ID: "google/gemini-4-argon", Name: "Gemini 4 Argon", ContextLength: 1_000_000},
+	{ID: "meta/muse-wonder-1.0", Name: "Muse Wonder", ContextLength: 1_048_576},
+	{ID: "meta/muse-spark-open", Name: "Muse Spark Open", ContextLength: 1_048_576},
+	{ID: "Qwen/Qwen3.8-Max-Prime", Name: "Qwen 3.8 Max Prime", ContextLength: 1_000_000},
+	{ID: "nvidia/nemotron-3.5-super-vl", Name: "Nemotron 3.5 Super VL", ContextLength: 262_144},
+	{ID: "ornith/ornith-1.5-122b", Name: "Ornith 1.5 122B", ContextLength: 262_144},
+	{ID: "ornith/ornith-1.5-122b:free", Name: "Ornith 1.5 122B", ContextLength: 262_144},
+	{ID: "inclusionai/ling-3.1-flash", Name: "Ling 3.1 Flash", ContextLength: 262_144},
+	{ID: "deepseek/deepseek-v4.1-flash-fast", Name: "DeepSeek V4.1 Flash Fast (latest)", ContextLength: 1_000_000},
 	{ID: "mistral/mistral-large-4", Name: "Mistral Large 4", ContextLength: 524_288},
 	{ID: "stealth/glyph-cluster:free", Name: "Glyph Cluster", ContextLength: 256_000},
-	{ID: "deepseek/deepseek-v4.1-flash", Name: "DeepSeek V4.1 Flash", ContextLength: 1_000_000},
-	{ID: "inclusionai/ling-3.0-flash-sante:free", Name: "Ling 3.0 Flash Sante", ContextLength: 262_144},
+	{ID: "deepseek/deepseek-v4.1-flash", Name: "DeepSeek V4.1 Flash (latest)", ContextLength: 1_000_000},
 	{ID: "Qwen/Qwen3.8-Max-0902", Name: "Qwen 3.8 Max 0902", ContextLength: 1_000_000},
 	{ID: "google/gemini-3.8-flash", Name: "Gemini 3.8 Flash", ContextLength: 1_000_000},
 	{ID: "gpt-6-astra", Name: "GPT-6 Astra", ContextLength: 1_050_000},

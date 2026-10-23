@@ -13,7 +13,7 @@ import (
 const (
 	JevDefaultChoiceOptions = 20
 	JevMaxChoiceOptions     = 255
-	JevMaxQuestions         = 20
+	JevMaxQuestions         = 100
 )
 
 // SystemOneRequest keeps the wire JSON intact, including large integers and
@@ -86,7 +86,7 @@ func ParseSystemOneRequest(raw []byte, unlock bool) (*SystemOneRequest, error) {
 	}
 	var questions map[string]SystemOneQuestion
 	if json.Unmarshal(fields["questions"], &questions) != nil || len(questions) == 0 || len(questions) > JevMaxQuestions {
-		return nil, invalidSystemOne("questions", "questions must be an object containing 1 to 20 named questions")
+		return nil, invalidSystemOne("questions", fmt.Sprintf("questions must be an object containing 1 to %d named questions", JevMaxQuestions))
 	}
 	limit := JevDefaultChoiceOptions
 	if unlock {

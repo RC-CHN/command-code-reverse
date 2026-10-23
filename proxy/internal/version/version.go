@@ -20,7 +20,7 @@ const refreshInterval = 24 * time.Hour
 
 // fallbackVersion is used when the registry is unreachable and nothing
 // else is configured.
-const fallbackVersion = "1.79.1"
+const fallbackVersion = "1.87.3"
 
 // Tracker holds the current version value.
 type Tracker struct {

@@ -231,6 +231,8 @@ func TestMapFinishReason(t *testing.T) {
 		"error":          "",
 		"content_filter": "content_filter",
 		"content-filter": "content_filter",
+		"refusal":        "content_filter",
+		" REFUSAL ":      "content_filter",
 	} {
 		if got := MapFinishReason(in); got != want {
 			t.Errorf("MapFinishReason(%q) = %q, want %q", in, got, want)

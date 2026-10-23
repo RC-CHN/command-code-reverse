@@ -30,9 +30,10 @@ type Event struct {
 	Input      json.RawMessage `json:"input,omitempty"`
 
 	// finish / finish-step
-	FinishReason string `json:"finishReason,omitempty"`
-	Usage        *Usage `json:"usage,omitempty"`
-	TotalUsage   *Usage `json:"totalUsage,omitempty"`
+	FinishReason    string `json:"finishReason,omitempty"`
+	RawFinishReason string `json:"rawFinishReason,omitempty"`
+	Usage           *Usage `json:"usage,omitempty"`
+	TotalUsage      *Usage `json:"totalUsage,omitempty"`
 
 	// cache-write-tokens: optional fallback for the final usage counter.
 	CacheWriteTokens TokenCount `json:"cacheWriteTokens"`
@@ -303,15 +304,34 @@ func TerminalError(ev *Event) *StreamError {
 	return nil
 }
 
+// OpenAIFinishReason follows the CLI's consumedStopReason: either finish field
+// can identify a refusal, which maps to OpenAI's content_filter reason.
+func (e *Event) OpenAIFinishReason() string {
+	if isRefusalFinishReason(e.RawFinishReason) {
+		return "content_filter"
+	}
+	return MapFinishReason(e.FinishReason)
+}
+
+func isRefusalFinishReason(reason string) bool {
+	switch strings.ToLower(strings.TrimSpace(reason)) {
+	case "refusal", "content-filter", "content_filter":
+		return true
+	default:
+		return false
+	}
+}
+
 // MapFinishReason converts upstream finish reasons to OpenAI values.
 func MapFinishReason(reason string) string {
+	if isRefusalFinishReason(reason) {
+		return "content_filter"
+	}
 	switch reason {
 	case "tool-calls", "tool_use", "tool_calls":
 		return "tool_calls"
 	case "length", "max_tokens":
 		return "length"
-	case "content-filter", "content_filter":
-		return "content_filter"
 	case "stop", "end_turn", "":
 		return "stop"
 	default:

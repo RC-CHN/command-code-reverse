@@ -6,6 +6,25 @@ versioning follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Preserve explicit output-limit finishes (`length` / `max_tokens`) as successful
+  responses, including reasoning-only or empty output and absent usage. Forward
+  reasoning and reported usage in streaming and non-streaming responses without
+  changing the requested token budget. Aborts, missing terminal events and
+  incomplete tool calls still fail validation.
+- Recognize the upstream CLI's refusal aliases in both `finishReason` and
+  `rawFinishReason` as `content_filter`, including refusals with no visible output.
+
+### Changed
+
+- Raise the Jev per-request question limit from 20 to 100 to match the CLI.
+  The separate Choice option limit remains 20 by default, or 255 when unlocked.
+- Refresh the offline CLI version fallback to `1.87.3` and add 11 current models
+  to the fallback catalog, including MiniMax M3.1 Flash, Beam 1.0, Gemini 4 Argon
+  and Muse Wonder. Remove retired free Ling entries; explicit model IDs are still
+  forwarded unchanged, and the live upstream catalog continues to take priority.
+
 ## [v0.3.1] - 2026-10-23
 
 ### Fixed

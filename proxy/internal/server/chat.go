@@ -124,10 +124,11 @@ type streamState struct {
 // absorb folds bookkeeping-only events (usage, finish reason, cost) into
 // the state. Returns nothing; visible events are handled by the caller.
 func (st *streamState) absorb(ev *stream.Event) {
+	reason := ev.OpenAIFinishReason()
 	switch ev.Type {
 	case "finish-step":
-		if !st.terminalSeen && ev.FinishReason != "" {
-			st.finishReason = stream.MapFinishReason(ev.FinishReason)
+		if !st.terminalSeen && (ev.FinishReason != "" || reason == "content_filter") {
+			st.finishReason = reason
 		}
 		if ev.Usage != nil {
 			st.usage = ev.Usage
@@ -135,8 +136,8 @@ func (st *streamState) absorb(ev *stream.Event) {
 		st.absorbCost(ev)
 	case "finish":
 		st.terminalSeen = true
-		if ev.FinishReason != "" || st.finishReason == "" {
-			st.finishReason = stream.MapFinishReason(ev.FinishReason)
+		if ev.FinishReason != "" || reason == "content_filter" || st.finishReason == "" {
+			st.finishReason = reason
 		}
 		if ev.TotalUsage != nil {
 			st.usage = ev.TotalUsage
@@ -164,14 +165,15 @@ func (st *streamState) protocolFailure(ev *stream.Event) *openAIErrorBody {
 	case "abort":
 		return &openAIErrorBody{Message: "Upstream response was aborted before completion", Type: "server_error", Code: "upstream_aborted"}
 	case "finish", "finish-step":
-		if ev.FinishReason != "" && stream.MapFinishReason(ev.FinishReason) == "" {
+		reason := ev.OpenAIFinishReason()
+		if reason == "" {
 			return &openAIErrorBody{Message: "Upstream response has an invalid finish reason", Type: "server_error", Code: "upstream_invalid_finish"}
 		}
 		if ev.Type == "finish" {
 			if len(st.pendingTools) != 0 {
 				return &openAIErrorBody{Message: "Upstream response ended with an incomplete tool call", Type: "server_error", Code: "upstream_invalid_tool_call"}
 			}
-			if st.terminalSeen && ev.FinishReason != "" && stream.MapFinishReason(ev.FinishReason) != st.finishReason {
+			if st.terminalSeen && (ev.FinishReason != "" || reason == "content_filter") && reason != st.finishReason {
 				return &openAIErrorBody{Message: "Upstream response has conflicting finish events", Type: "server_error", Code: "upstream_invalid_finish"}
 			}
 		}
@@ -202,7 +204,9 @@ func (st *streamState) completionFailure() *openAIErrorBody {
 	if st.finishReason == "tool_calls" && !st.hasTool {
 		return &openAIErrorBody{Message: "Upstream response ended without a complete tool call", Type: "server_error", Code: "upstream_invalid_tool_call"}
 	}
-	if !st.hasText && !st.hasTool && st.finishReason != "content_filter" {
+	// The output budget may run out entirely during reasoning, even when the
+	// provider does not expose it. Preserve an explicit length-limited finish.
+	if !st.hasText && !st.hasTool && st.finishReason != "length" && st.finishReason != "content_filter" {
 		return &openAIErrorBody{Message: "Upstream response ended without text or a complete tool call", Type: "server_error", Code: "upstream_incomplete_response"}
 	}
 	return nil
@@ -454,7 +458,7 @@ func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.
 		s.handleProtocolFailure(w, r, req, false, *failure)
 		return
 	}
-	if usageOut(st.usage) == 0 && st.finishReason != "content_filter" {
+	if usageOut(st.usage) == 0 && st.finishReason != "length" && st.finishReason != "content_filter" {
 		s.recordFailure(r, req, false, "empty_response")
 		writeError(w, http.StatusTooManyRequests, "rate_limit_error",
 			"Empty response from upstream (zero output tokens)", 10)

@@ -57,7 +57,7 @@ curl http://localhost:3050/v1/systemone \
   }}'
 ```
 
-沿用 CLI 的 1–20 个具名问题限制。`state`、`instructions` 接受字符串、对象、数组或 null；
+沿用 CLI 的 1–100 个具名问题限制。`state`、`instructions` 接受字符串、对象、数组或 null；
 原始 JSON 数字和扩展字段保留。`noul.criteria` 可省略，提供时只接受 `true/false`；
 `choice.criteria` 为选项对象；`score.criteria` 为 2–10 个有序等级。接口不支持 `stream` 参数。
 
