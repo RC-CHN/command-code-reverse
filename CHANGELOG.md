@@ -6,6 +6,22 @@ versioning follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+## [v0.3.1] - 2026-10-23
+
+### Fixed
+
+- Report explicit aborts, unknown/error finish reasons and malformed identifiable
+  tool/terminal events as structured protocol errors instead of successful stops.
+  Keep new diagnostics generic, without exposing upstream fields or arguments.
+- Reject reasoning-only or empty completions and incomplete tool calls. Track
+  tool-input fragments by ID until the matching complete call is validated;
+  existing text or another completed call cannot hide unfinished tool input.
+  Preserve normal text/tool completions, length limits and content-filter refusals.
+- Delay the final SSE finish until the upstream tail completes, so a later abort,
+  error or read failure cannot follow a successful finish. Reject output after
+  finish and conflicting repeated finish reasons; preserve the final reason when
+  later step metadata arrives.
+
 ## [v0.3.0] - 2026-10-13
 
 ### Added
