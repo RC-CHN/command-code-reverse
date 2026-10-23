@@ -114,7 +114,10 @@ type streamState struct {
 	costUSD                  float64
 	costReported             bool
 	chunkCount               int
-	terminalSeen             bool // finish or explicit abort, as in the CLI's consumeStream
+	terminalSeen             bool // a finish event; abort is an explicit failure
+	hasText                  bool
+	hasTool                  bool
+	pendingTools             map[string]struct{}
 	capturedCacheWriteTokens stream.TokenCount
 }
 
@@ -123,7 +126,7 @@ type streamState struct {
 func (st *streamState) absorb(ev *stream.Event) {
 	switch ev.Type {
 	case "finish-step":
-		if ev.FinishReason != "" {
+		if !st.terminalSeen && ev.FinishReason != "" {
 			st.finishReason = stream.MapFinishReason(ev.FinishReason)
 		}
 		if ev.Usage != nil {
@@ -132,7 +135,7 @@ func (st *streamState) absorb(ev *stream.Event) {
 		st.absorbCost(ev)
 	case "finish":
 		st.terminalSeen = true
-		if st.finishReason == "" {
+		if ev.FinishReason != "" || st.finishReason == "" {
 			st.finishReason = stream.MapFinishReason(ev.FinishReason)
 		}
 		if ev.TotalUsage != nil {
@@ -140,13 +143,69 @@ func (st *streamState) absorb(ev *stream.Event) {
 		}
 	case "provider-metadata":
 		st.absorbCost(ev)
-	case "abort":
-		st.terminalSeen = true
 	case "cache-write-tokens":
 		if ev.CacheWriteTokens.Valid {
 			st.capturedCacheWriteTokens = ev.CacheWriteTokens
 		}
 	}
+}
+
+// protocolFailure rejects incomplete events before they can become a successful
+// finish or a downstream tool call. Omitted finish reasons retain compatibility
+// with upstream finish events that report only totalUsage.
+func (st *streamState) protocolFailure(ev *stream.Event) *openAIErrorBody {
+	if st.terminalSeen {
+		switch ev.Type {
+		case "text-delta", "reasoning-delta", "tool-call", "tool-input-start", "tool-input-delta", "tool-input-end":
+			return &openAIErrorBody{Message: "Upstream response continued after its finish event", Type: "server_error", Code: "upstream_invalid_sequence"}
+		}
+	}
+	switch ev.Type {
+	case "abort":
+		return &openAIErrorBody{Message: "Upstream response was aborted before completion", Type: "server_error", Code: "upstream_aborted"}
+	case "finish", "finish-step":
+		if ev.FinishReason != "" && stream.MapFinishReason(ev.FinishReason) == "" {
+			return &openAIErrorBody{Message: "Upstream response has an invalid finish reason", Type: "server_error", Code: "upstream_invalid_finish"}
+		}
+		if ev.Type == "finish" {
+			if len(st.pendingTools) != 0 {
+				return &openAIErrorBody{Message: "Upstream response ended with an incomplete tool call", Type: "server_error", Code: "upstream_invalid_tool_call"}
+			}
+			if st.terminalSeen && ev.FinishReason != "" && stream.MapFinishReason(ev.FinishReason) != st.finishReason {
+				return &openAIErrorBody{Message: "Upstream response has conflicting finish events", Type: "server_error", Code: "upstream_invalid_finish"}
+			}
+		}
+	case "tool-input-start", "tool-input-delta", "tool-input-end":
+		if strings.TrimSpace(ev.ID) == "" {
+			return &openAIErrorBody{Message: "Upstream response contains an incomplete tool call", Type: "server_error", Code: "upstream_invalid_tool_call"}
+		}
+		if st.pendingTools == nil {
+			st.pendingTools = make(map[string]struct{})
+		}
+		// Even tool-input-end only closes the raw input stream. A complete,
+		// validated tool-call with the same ID is required before success.
+		st.pendingTools[ev.ID] = struct{}{}
+	case "tool-call":
+		input := strings.TrimSpace(string(ev.Input))
+		if strings.TrimSpace(ev.ToolCallID) == "" || strings.TrimSpace(ev.ToolName) == "" || len(input) == 0 || input[0] != '{' || !json.Valid([]byte(input)) {
+			return &openAIErrorBody{Message: "Upstream response contains an incomplete tool call", Type: "server_error", Code: "upstream_invalid_tool_call"}
+		}
+		delete(st.pendingTools, ev.ToolCallID)
+	}
+	return nil
+}
+
+func (st *streamState) completionFailure() *openAIErrorBody {
+	if len(st.pendingTools) != 0 {
+		return &openAIErrorBody{Message: "Upstream response ended with an incomplete tool call", Type: "server_error", Code: "upstream_invalid_tool_call"}
+	}
+	if st.finishReason == "tool_calls" && !st.hasTool {
+		return &openAIErrorBody{Message: "Upstream response ended without a complete tool call", Type: "server_error", Code: "upstream_invalid_tool_call"}
+	}
+	if !st.hasText && !st.hasTool && st.finishReason != "content_filter" {
+		return &openAIErrorBody{Message: "Upstream response ended without text or a complete tool call", Type: "server_error", Code: "upstream_incomplete_response"}
+	}
+	return nil
 }
 
 // finalizeUsage follows the CLI: the last valid captured count only fills a
@@ -190,7 +249,6 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 	completionID := ids.NewCompletionID()
 	created := time.Now().Unix()
 	started := false
-	finishWritten := false
 	flusher, _ := w.(http.Flusher)
 
 	writeChunk := func(c *stream.Chunk) {
@@ -248,12 +306,17 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 			}
 			return
 		}
+		if failure := st.protocolFailure(ev); failure != nil {
+			s.handleProtocolFailure(w, r, req, started, *failure)
+			return
+		}
 
 		switch ev.Type {
 		case "text-delta":
 			if ev.Text == "" {
 				continue
 			}
+			st.hasText = st.hasText || strings.TrimSpace(ev.Text) != ""
 			delta := map[string]any{"content": ev.Text}
 			if st.chunkCount == 0 {
 				delta["role"] = "assistant"
@@ -273,6 +336,7 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 			writeChunk(stream.NewChunk(completionID, created, req.Model, delta, nil, nil))
 
 		case "tool-call":
+			st.hasTool = true
 			tc := map[string]any{
 				"index": st.toolCallIdx,
 				"id":    ev.ToolCallID,
@@ -290,13 +354,7 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 			st.chunkCount++
 			writeChunk(stream.NewChunk(completionID, created, req.Model, delta, nil, nil))
 
-		case "finish":
-			st.absorb(ev)
-			writeChunk(stream.NewChunk(completionID, created, req.Model,
-				map[string]any{}, &st.finishReason, stream.UsageFromUpstream(st.usage)))
-			finishWritten = true
-
-		case "finish-step", "provider-metadata", "abort", "cache-write-tokens":
+		case "finish", "finish-step", "provider-metadata", "cache-write-tokens":
 			st.absorb(ev)
 		}
 		// start / start-step / reasoning-start / reasoning-end / text-start /
@@ -309,23 +367,18 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 		return
 	}
 	st.finalizeUsage()
-	if !started {
-		// Stream ended with nothing visible: treat as retryable (the old
-		// proxy's zero-output guard).
-		s.recordFailure(r, req, true, "empty_response")
-		writeError(w, http.StatusTooManyRequests, "rate_limit_error",
-			"Empty response from upstream (zero output tokens)", 10)
+	if failure := st.completionFailure(); failure != nil {
+		s.handleProtocolFailure(w, r, req, started, *failure)
 		return
 	}
-	// An explicit abort can end the CLI stream without a finish event.
-	if !finishWritten {
-		if st.finishReason == "" {
-			st.finishReason = "stop"
-		}
-		writeChunk(stream.NewChunk(completionID, created, req.Model,
-			map[string]any{}, &st.finishReason, stream.UsageFromUpstream(st.usage)))
-	}
+	// Read the complete tail before declaring success: an abort/error may follow
+	// finish, and provider metadata can still update final accounting.
+	writeChunk(stream.NewChunk(completionID, created, req.Model,
+		map[string]any{}, &st.finishReason, stream.UsageFromUpstream(st.usage)))
 	_, _ = io.WriteString(w, stream.DoneSSE)
+	if flusher != nil {
+		flusher.Flush()
+	}
 	s.consecutiveTimeouts.Store(0)
 	s.recordSuccess(r, req, true, st, start)
 	slog.Info("chat completion served",
@@ -366,13 +419,19 @@ func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.
 			writeUpstreamError(w, ae)
 			return
 		}
+		if failure := st.protocolFailure(ev); failure != nil {
+			s.handleProtocolFailure(w, r, req, false, *failure)
+			return
+		}
 
 		switch ev.Type {
 		case "text-delta":
+			st.hasText = st.hasText || strings.TrimSpace(ev.Text) != ""
 			st.fullText.WriteString(ev.Text)
 		case "reasoning-delta":
 			st.reasoning.WriteString(ev.Text)
 		case "tool-call":
+			st.hasTool = true
 			st.toolCalls = append(st.toolCalls, map[string]any{
 				"id":   ev.ToolCallID,
 				"type": "function",
@@ -381,7 +440,7 @@ func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.
 					"arguments": toolCallArgs(ev.Input),
 				},
 			})
-		case "finish", "finish-step", "provider-metadata", "abort", "cache-write-tokens":
+		case "finish", "finish-step", "provider-metadata", "cache-write-tokens":
 			st.absorb(ev)
 		}
 	}
@@ -391,7 +450,11 @@ func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.
 		return
 	}
 	st.finalizeUsage()
-	if usageOut(st.usage) == 0 {
+	if failure := st.completionFailure(); failure != nil {
+		s.handleProtocolFailure(w, r, req, false, *failure)
+		return
+	}
+	if usageOut(st.usage) == 0 && st.finishReason != "content_filter" {
 		s.recordFailure(r, req, false, "empty_response")
 		writeError(w, http.StatusTooManyRequests, "rate_limit_error",
 			"Empty response from upstream (zero output tokens)", 10)
@@ -438,6 +501,24 @@ func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.
 		"cacheWriteTokens", usageCacheWrite(st.usage),
 		"elapsedMs", time.Since(start).Milliseconds(),
 	)
+}
+
+// Failure frames contain only fixed protocol diagnostics, never raw upstream
+// event fields. Once streaming has begun, keep the existing error + DONE shape.
+func (s *Server) handleProtocolFailure(w http.ResponseWriter, r *http.Request, req *convert.ChatRequest, started bool, body openAIErrorBody) {
+	if r.Context().Err() != nil {
+		return
+	}
+	s.recordFailure(r, req, req.Stream, body.Code)
+	if !started {
+		writeErrorBody(w, http.StatusBadGateway, body, 0)
+		return
+	}
+	b, _ := json.Marshal(openAIError{Error: body})
+	_, _ = io.WriteString(w, "data: "+string(b)+"\n\n"+stream.DoneSSE)
+	if flusher, ok := w.(http.Flusher); ok {
+		flusher.Flush()
+	}
 }
 
 // recordSuccess feeds the metrics recorder after a completed request.
@@ -511,6 +592,15 @@ func (s *Server) handleStreamReadError(w http.ResponseWriter, r *http.Request, r
 		slog.Warn("client disconnected mid-stream", "model", req.Model,
 			"elapsedMs", time.Since(start).Milliseconds())
 		return // nothing sensible left to write
+	}
+
+	if errors.Is(err, stream.ErrMalformedEvent) {
+		s.handleProtocolFailure(w, r, req, started, openAIErrorBody{
+			Message: "Upstream response contains a malformed protocol event",
+			Type:    "server_error",
+			Code:    "upstream_malformed_event",
+		})
+		return
 	}
 
 	n := s.consecutiveTimeouts.Add(1)

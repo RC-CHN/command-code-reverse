@@ -6,6 +6,7 @@ package stream
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -187,6 +188,9 @@ func (p *ProviderMetadata) ReportedCostUSD() (float64, bool) {
 	return f, true
 }
 
+// ErrMalformedEvent contains no upstream fields or decoder details.
+var ErrMalformedEvent = errors.New("malformed upstream protocol event")
+
 // Reader incrementally decodes an NDJSON event stream.
 type Reader struct {
 	br  *bufio.Reader
@@ -216,7 +220,11 @@ func (r *Reader) Next() (*Event, error) {
 		}
 		var ev Event
 		if json.Unmarshal([]byte(line), &ev) != nil {
-			continue // tolerate malformed lines
+			if malformedCriticalEvent(line) {
+				r.err = ErrMalformedEvent
+				return nil, r.err
+			}
+			continue // preserve tolerance for unrelated noise/unknown events
 		}
 		if ev.Type == "" {
 			continue
@@ -224,6 +232,39 @@ func (r *Reader) Next() (*Event, error) {
 		ev.Raw = json.RawMessage(line)
 		return &ev, nil
 	}
+}
+
+// malformedCriticalEvent reads only enough JSON to identify a tool/terminal
+// event. This also catches a readable type followed by a truncated payload;
+// arbitrary text and unrelated events keep the reader's previous tolerance.
+func malformedCriticalEvent(line string) bool {
+	d := json.NewDecoder(strings.NewReader(line))
+	first, err := d.Token()
+	if err != nil || first != json.Delim('{') {
+		return false
+	}
+	for d.More() {
+		key, err := d.Token()
+		if err != nil {
+			return false
+		}
+		if key == "type" {
+			var kind string
+			if d.Decode(&kind) != nil {
+				return false
+			}
+			switch kind {
+			case "tool-call", "tool-input-start", "tool-input-delta", "tool-input-end", "finish", "finish-step", "abort", "error":
+				return true
+			}
+		} else {
+			var value json.RawMessage
+			if d.Decode(&value) != nil {
+				return false
+			}
+		}
+	}
+	return false
 }
 
 // TerminalError inspects an event for the in-band terminal markers
@@ -269,10 +310,12 @@ func MapFinishReason(reason string) string {
 		return "tool_calls"
 	case "length", "max_tokens":
 		return "length"
+	case "content-filter", "content_filter":
+		return "content_filter"
 	case "stop", "end_turn", "":
 		return "stop"
 	default:
-		return "stop"
+		return "" // unknown/error reasons are not a successful stop
 	}
 }
 

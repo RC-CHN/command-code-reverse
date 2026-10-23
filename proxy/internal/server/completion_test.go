@@ -23,7 +23,6 @@ func TestChatRejectsTruncatedCompletion(t *testing.T) {
 		{"text and step", `{"type":"text-delta","text":"partial"}` + "\n" + step, true},
 		{"reasoning", `{"type":"reasoning-delta","text":"partial"}` + "\n" + step, true},
 		{"tool call", `{"type":"tool-call","toolCallId":"call_1","toolName":"read","input":{}}` + "\n" + step, true},
-		{"incomplete finish", step + `{"type":"finish"`, false},
 		{"done sentinel", step + "[DONE]\n", false},
 	} {
 		for _, streamed := range []bool{false, true} {
@@ -62,15 +61,13 @@ func TestChatRecognizesTerminalEvents(t *testing.T) {
 `
 	for _, terminal := range []string{
 		`{"type":"finish","finishReason":"stop","totalUsage":{"inputTokens":10,"outputTokens":2}}`,
-		`{"type":"abort"}`,
 	} {
 		for _, streamed := range []bool{false, true} {
 			h := New(testConfig(), Deps{Upstream: &stubUpstream{ndjson: prefix + terminal}}, nil)
 			rec := httptest.NewRecorder()
 			h.ServeHTTP(rec, authedReq(t, "POST", "/v1/chat/completions",
 				fmt.Sprintf(`{"model":"m","stream":%t,"messages":[{"role":"user","content":"hi"}]}`, streamed)))
-			// Like the CLI, an explicit abort is distinct from an unexpected EOF.
-			// Neither terminal event requires a trailing newline.
+			// A successful terminal event need not have a trailing newline.
 			assertChatContent(t, rec, streamed, "ok")
 		}
 	}

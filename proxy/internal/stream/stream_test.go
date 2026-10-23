@@ -88,6 +88,53 @@ func TestReaderSkipsNoise(t *testing.T) {
 	}
 }
 
+func TestReaderRejectsMalformedCriticalEvents(t *testing.T) {
+	for _, line := range []string{
+		`{"type":"tool-input-start","id":123}`,
+		`{"type":"tool-input-delta","id":{}}`,
+		`{"type":"tool-input-end","id":[]}`,
+		`{"type":"tool-call","toolCallId":123,"toolName":"private-name","input":{}}`,
+		`{"type":"tool-call","toolCallId":"private-id","toolName":{},"input":{}}`,
+		`{"id":123,"type":"tool-call","input":{}}`,
+		`{"type":"finish","finishReason":123}`,
+		`{"type":"finish-step","usage":{"outputTokens":"private-value"}}`,
+		`{"type":"error","error":true}`,
+		`{"type":"abort","id":123}`,
+		`{"type":"tool-call","input":{"private-argument":`,
+		`{"type":"tool-input-start","id":"private-id"`,
+		`{"type":"finish","finishReason":`,
+		`{"type":"finish"`,
+		`{"type":"error","error":`,
+		`{"type":"abort",`,
+	} {
+		for _, suffix := range []string{"", "\n" + `{"type":"finish","finishReason":"stop"}`} {
+			r := NewReader(strings.NewReader(line + suffix))
+			for range 2 {
+				ev, err := r.Next()
+				if ev != nil || !errors.Is(err, ErrMalformedEvent) || err.Error() != "malformed upstream protocol event" {
+					t.Fatalf("malformed critical event not stopped privately: event=%v error=%v", ev, err)
+				}
+			}
+		}
+	}
+}
+
+func TestReaderRetainsUnrelatedMalformedTolerance(t *testing.T) {
+	for _, line := range []string{
+		`{"type":"provider-metadata","id":123}`,
+		`{"type":"unknown-event","id":123}`,
+		`{"type":"unknown-event","payload":`,
+		`{"type":"text-delta"`,
+		`not json`,
+	} {
+		r := NewReader(strings.NewReader(line + "\n" + `{"type":"text-delta","text":"answer"}`))
+		ev, err := r.Next()
+		if err != nil || ev.Type != "text-delta" || ev.Text != "answer" {
+			t.Fatalf("unrelated tolerance changed: event=%v error=%v", ev, err)
+		}
+	}
+}
+
 func TestReaderFinalLineBeforeReadError(t *testing.T) {
 	for _, readErr := range []error{io.EOF, io.ErrUnexpectedEOF} {
 		for _, size := range []int{1, 64 * 1024, 5 * 1024 * 1024} {
@@ -175,12 +222,15 @@ func TestUsageNormalization(t *testing.T) {
 
 func TestMapFinishReason(t *testing.T) {
 	for in, want := range map[string]string{
-		"tool-calls": "tool_calls",
-		"tool_use":   "tool_calls",
-		"length":     "length",
-		"stop":       "stop",
-		"end_turn":   "stop",
-		"unknown":    "stop",
+		"tool-calls":     "tool_calls",
+		"tool_use":       "tool_calls",
+		"length":         "length",
+		"stop":           "stop",
+		"end_turn":       "stop",
+		"unknown":        "",
+		"error":          "",
+		"content_filter": "content_filter",
+		"content-filter": "content_filter",
 	} {
 		if got := MapFinishReason(in); got != want {
 			t.Errorf("MapFinishReason(%q) = %q, want %q", in, got, want)
