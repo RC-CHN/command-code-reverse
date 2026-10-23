@@ -6,6 +6,8 @@ versioning follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+## [v0.3.3] - 2026-10-23
+
 ### Fixed
 
 - Renew LLM idle timeouts on upstream response bytes, including partial NDJSON
