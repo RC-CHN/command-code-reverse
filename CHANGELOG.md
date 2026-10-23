@@ -6,6 +6,8 @@ versioning follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+## [v0.3.2] - 2026-10-23
+
 ### Fixed
 
 - Preserve explicit output-limit finishes (`length` / `max_tokens`) as successful
