@@ -20,10 +20,11 @@ const modelCatalogTTL = 5 * time.Minute
 // upstream fetch (or when the upstream is unreachable). Model IDs follow
 // the CLI gateway catalog, including canonical IDs without a vendor prefix.
 // Listing a model does not guarantee access under the caller's plan.
-// Refreshed against command-code@1.87.3; dynamic upstream data takes priority.
+// Refreshed against command-code@1.88.1 client catalog; dynamic upstream data takes priority.
 var fallbackModels = []commandcode.ModelInfo{
+	{ID: "gpt-6.1-terra", Name: "GPT-6.1 Terra", ContextLength: 1_050_000},
+	{ID: "moonshotai/Kimi-K3.1-Pro", Name: "Kimi K3.1 Pro", ContextLength: 1_048_576},
 	{ID: "minimax/minimax-m3.1-flash", Name: "MiniMax M3.1 Flash", ContextLength: 1_000_000},
-	{ID: "minimax/minimax-m3.1-flash:free", Name: "MiniMax M3.1 Flash", ContextLength: 1_000_000},
 	{ID: "reflection/beam:free", Name: "Beam 1.0", ContextLength: 1_048_576},
 	{ID: "google/gemini-4-argon", Name: "Gemini 4 Argon", ContextLength: 1_000_000},
 	{ID: "meta/muse-wonder-1.0", Name: "Muse Wonder", ContextLength: 1_048_576},
@@ -31,7 +32,6 @@ var fallbackModels = []commandcode.ModelInfo{
 	{ID: "Qwen/Qwen3.8-Max-Prime", Name: "Qwen 3.8 Max Prime", ContextLength: 1_000_000},
 	{ID: "nvidia/nemotron-3.5-super-vl", Name: "Nemotron 3.5 Super VL", ContextLength: 262_144},
 	{ID: "ornith/ornith-1.5-122b", Name: "Ornith 1.5 122B", ContextLength: 262_144},
-	{ID: "ornith/ornith-1.5-122b:free", Name: "Ornith 1.5 122B", ContextLength: 262_144},
 	{ID: "inclusionai/ling-3.1-flash", Name: "Ling 3.1 Flash", ContextLength: 262_144},
 	{ID: "deepseek/deepseek-v4.1-flash-fast", Name: "DeepSeek V4.1 Flash Fast (latest)", ContextLength: 1_000_000},
 	{ID: "mistral/mistral-large-4", Name: "Mistral Large 4", ContextLength: 524_288},
@@ -66,8 +66,6 @@ var fallbackModels = []commandcode.ModelInfo{
 	{ID: "xiaomi/mimo-v2.6-pro", Name: "MiMo V2.6 Pro", ContextLength: 1_048_576},
 	{ID: "xiaomi/mimo-v2.6-pro-ultraspeed", Name: "MiMo V2.6 Pro UltraSpeed", ContextLength: 1_048_576},
 	{ID: "xiaomi/mimo-v2.6-flash", Name: "MiMo V2.6 Flash", ContextLength: 1_048_576},
-	{ID: "xiaomi/mimo-v2.5-pro", Name: "MiMo V2.5 Pro", ContextLength: 1_000_000},
-	{ID: "xiaomi/mimo-v2.5", Name: "MiMo V2.5", ContextLength: 1_000_000},
 	{ID: "Qwen/Qwen3.8-Omni-Flash", Name: "Qwen 3.8 Omni Flash", ContextLength: 1_000_000},
 	{ID: "Qwen/Qwen3.8-Max", Name: "Qwen 3.8 Max", ContextLength: 1_000_000},
 	{ID: "Qwen/Qwen3.8-27B", Name: "Qwen 3.8 27B", ContextLength: 262_144},

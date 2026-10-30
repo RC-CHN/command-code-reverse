@@ -6,6 +6,14 @@ versioning follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Refresh the offline CLI version fallback to `1.88.1` and add GPT-6.1 Terra
+  and Kimi K3.1 Pro to the fallback model catalog. Remove the four entries hidden
+  in the client catalog: MiniMax M3.1 Flash Free, Ornith 1.5 122B Free, MiMo V2.5
+  and MiMo V2.5 Pro. Dynamic catalogs still take priority and explicit model IDs
+  remain unchanged; no automatic image trimming or model substitution is added.
+
 ## [v0.3.3] - 2026-10-23
 
 ### Fixed

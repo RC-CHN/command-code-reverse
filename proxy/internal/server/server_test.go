@@ -385,10 +385,11 @@ func TestFallbackModelsMatchCurrentCatalog(t *testing.T) {
 	}
 
 	for _, id := range []string{
+		"gpt-6.1-terra",
+		"moonshotai/Kimi-K3.1-Pro",
 		"deepseek/deepseek-v4.1-flash-fast",
 		"inclusionai/ling-3.1-flash",
 		"minimax/minimax-m3.1-flash",
-		"minimax/minimax-m3.1-flash:free",
 		"reflection/beam:free",
 		"google/gemini-4-argon",
 		"meta/muse-wonder-1.0",
@@ -396,7 +397,6 @@ func TestFallbackModelsMatchCurrentCatalog(t *testing.T) {
 		"Qwen/Qwen3.8-Max-Prime",
 		"nvidia/nemotron-3.5-super-vl",
 		"ornith/ornith-1.5-122b",
-		"ornith/ornith-1.5-122b:free",
 		"mistral/mistral-large-4",
 		"stealth/glyph-cluster:free",
 		"deepseek/deepseek-v4.1-flash",
@@ -432,6 +432,10 @@ func TestFallbackModelsMatchCurrentCatalog(t *testing.T) {
 	}
 
 	for _, retired := range []string{
+		"minimax/minimax-m3.1-flash:free",
+		"ornith/ornith-1.5-122b:free",
+		"xiaomi/mimo-v2.5",
+		"xiaomi/mimo-v2.5-pro",
 		"stealth/space-bunny-alpha",
 		"stealth/pixel-canary",
 		"minimax/minimax-m3-free",
