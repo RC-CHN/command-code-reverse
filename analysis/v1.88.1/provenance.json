@@ -1,0 +1,58 @@
+{
+  "checked_at": "2026-10-29T01:44:26.145043+00:00",
+  "package": "command-code",
+  "version": "1.88.1",
+  "baseline_version": "1.87.3",
+  "dist_tags_at_check": {
+    "alpha": "0.0.4-alpha.43",
+    "beta": "0.18.11-beta.0",
+    "rc": "1.32.2-rc.0",
+    "latest": "1.88.1"
+  },
+  "published_at": "2026-10-27T23:06:35.684Z",
+  "registry": "https://registry.npmjs.org/command-code",
+  "version_metadata_url": "https://registry.npmjs.org/command-code/1.88.1",
+  "dist": {
+    "tarball": "https://registry.npmjs.org/command-code/-/command-code-1.88.1.tgz",
+    "integrity": "sha512-OUxRyk/nadTMtYJbYwxIYfRpdQwla9EA2lSqx1gNUJzLBJLBDUgGBPS7VrCDRZBjaQGI2VsS3D7NWTmajmkhHQ==",
+    "shasum": "58950c8d1e5d6538be76cd314ae22d5dc0359c5d",
+    "fileCount": 80,
+    "unpackedSize": 7176162
+  },
+  "tarball_bytes": 4173240,
+  "tarball_sha256": "ba61301238924ce39bb7bb0a748f75dce6f8e6c1e4411b66ddd23f1edca7c8b3",
+  "validation": "npm SHA512 integrity and SHA1 verified; extracted for static analysis; CLI not installed or executed",
+  "formatter": "Prettier 3.6.2 (--ignore-path /dev/null)",
+  "parser": "Prettier 3.6.2 Babel parser",
+  "analysis": "analysis/v1.88.1/README.md",
+  "proxy_baseline": "v0.3.3 (fff44abd9971c7615433db716abe53255666156d)",
+  "source_hashes": {
+    "1.87.3": {
+      "raw_sha256": "512181e4090495e956743d00d65b34ddc986adc334f4968ab6b31c1845666f06",
+      "beautified_sha256": "748a9f70f548518b9eac0b30c4e83b4d89eea62234a835254cb0d154eae84a07"
+    },
+    "1.88.1": {
+      "raw_sha256": "d25cfc94298e173bddcbd30b4ec4ce833170c2574de0dc4408d6ceda5a888890",
+      "beautified_sha256": "e8cfe8712c43183d3e088d0bdb5c8db4f80fdea41bf7884a3ef5c413b519c61c"
+    }
+  },
+  "files": {
+    "metadata": {
+      "path": "references/command-code-npm/command-code-1.88.1.metadata.json",
+      "sha256": "02dff6f09f6ca7f1091daef430ac5f4ac28889498dca766df81846a6f09279b8"
+    },
+    "package_json": {
+      "path": "references/command-code-npm/extracted-1.88.1/package/package.json",
+      "sha256": "35104eb892c00edf35bc5636e6fdbfbe5c6fdf932d9dcca387d6b68fd1fe0b59"
+    },
+    "changelog": {
+      "path": "references/command-code-npm/extracted-1.88.1/package/CHANGELOG.md",
+      "sha256": "8b8c0595652bf8b89b4f05e0baf42bf6670244e4f3ccd7a4d42f8a217edd7ae8"
+    },
+    "comparison": {
+      "path": "analysis/v1.88.1/comparison.json",
+      "sha256": "70b735227f7abb61c28e1c62088197a97a1240e15d9ae109342aaa49a374bfb0"
+    }
+  },
+  "registry_rechecked_at": "2026-10-29T01:49:42.373233+00:00"
+}

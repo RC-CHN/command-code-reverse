@@ -1,0 +1,1345 @@
+{
+  "baseline": "1.87.3",
+  "version": "1.88.1",
+  "parser": "Prettier 3.6.2 Babel parser",
+  "functionEvidence": {
+    "buildCommandAuthHeaders": {
+      "1.87.3": {
+        "line": 35850,
+        "sha256": "35f0f7fc402d06c69a91eacc166d1c81824bfeeed1e9e431f18fdad6acc06a6e"
+      },
+      "1.88.1": {
+        "line": 36229,
+        "sha256": "e7aaf061477d5b82bd0a1022f1441453a663aa15d70b27fd8901d59b6898376d"
+      },
+      "textIdentical": false,
+      "identicalAfterVerifiedBindingRename": true
+    },
+    "buildCommandApiHeaders": {
+      "1.87.3": {
+        "line": 36054,
+        "sha256": "3483c0dcab8aeadd67e2a923f92f4040ca2596311b3758655a7c93ffac908197"
+      },
+      "1.88.1": {
+        "line": 36433,
+        "sha256": "acafdc0f5b5bda8d34c3246f01a4e0e2933e890699c8be949837131390e0504d"
+      },
+      "textIdentical": false,
+      "identicalAfterVerifiedBindingRename": true
+    },
+    "resolveCommandAuthHeaders": {
+      "1.87.3": {
+        "line": 62391,
+        "sha256": "c80177bfc3128310d1b100d0e05a85a8a45fc13d4d0d7a0e32ceb056ce5da7a1"
+      },
+      "1.88.1": {
+        "line": 62963,
+        "sha256": "1f6ec37359c605a846d92e01ced369406b1c57ce2a24d69cee85a8997c550fe7"
+      },
+      "textIdentical": false
+    },
+    "createModelClient": {
+      "1.87.3": {
+        "line": 44888,
+        "sha256": "640762b11ec821ed5f8868f30a9986986ca2cdff5d062a677b753e999d6ec706"
+      },
+      "1.88.1": {
+        "line": 45371,
+        "sha256": "16966f2a94697382a853ec95fb5929aacf82d5ec148ab0cb4579f549bcbf96fc"
+      },
+      "textIdentical": false,
+      "identicalAfterVerifiedBindingRename": true
+    },
+    "toWireMessages": {
+      "1.87.3": {
+        "line": 44529,
+        "sha256": "536cb452b30293c3fbc510b49ae219499d2897ebce65c04e62452ffc6165bc52"
+      },
+      "1.88.1": {
+        "line": 45012,
+        "sha256": "536cb452b30293c3fbc510b49ae219499d2897ebce65c04e62452ffc6165bc52"
+      },
+      "textIdentical": true
+    },
+    "toWireTools": {
+      "1.87.3": {
+        "line": 44510,
+        "sha256": "de73d50b44a23d80221e2b7fe032eeb74dd71d3a027e379d1bccabbfb773332e"
+      },
+      "1.88.1": {
+        "line": 44993,
+        "sha256": "de73d50b44a23d80221e2b7fe032eeb74dd71d3a027e379d1bccabbfb773332e"
+      },
+      "textIdentical": true
+    },
+    "toWireSystem": {
+      "1.87.3": {
+        "line": 44577,
+        "sha256": "8a6a92dfe765aba44071c3fc6c3d3b852f0cb0b04cc2d9e6284998ea92be78b1"
+      },
+      "1.88.1": {
+        "line": 45060,
+        "sha256": "8a6a92dfe765aba44071c3fc6c3d3b852f0cb0b04cc2d9e6284998ea92be78b1"
+      },
+      "textIdentical": true
+    },
+    "consumeStream": {
+      "1.87.3": {
+        "line": 44703,
+        "sha256": "3ab0286d648cdfb984a78470aeac6d3ec1a82c57244e56b43e537378f75a0fd9"
+      },
+      "1.88.1": {
+        "line": 45186,
+        "sha256": "44b66277632c0327a66a15d97a3eca2d01466ac546dff85da31d9d1a2e5b843e"
+      },
+      "textIdentical": false,
+      "identicalAfterVerifiedBindingRename": true
+    },
+    "readCacheWriteTokens1h": {
+      "1.87.3": {
+        "line": 44585,
+        "sha256": "0f9c74204d17a5c9a5954a1f57ca983051a5650509ae7fd1c2e1dfe5dcc4efb4"
+      },
+      "1.88.1": {
+        "line": 45068,
+        "sha256": "0f9c74204d17a5c9a5954a1f57ca983051a5650509ae7fd1c2e1dfe5dcc4efb4"
+      },
+      "textIdentical": true
+    },
+    "readCapturedCacheWriteTokens": {
+      "1.87.3": {
+        "line": 44596,
+        "sha256": "a2b0940c6dcaeef31ef5fedbb298e930a202f61fb1c2e3fb08c204fc4378c535"
+      },
+      "1.88.1": {
+        "line": 45079,
+        "sha256": "a2b0940c6dcaeef31ef5fedbb298e930a202f61fb1c2e3fb08c204fc4378c535"
+      },
+      "textIdentical": true
+    },
+    "readReasoningMetadata": {
+      "1.87.3": {
+        "line": 45163,
+        "sha256": "208b8b9cb565b3bfa9a5dcd12edfeccb0f9f99612619184c1ecfd590f65b3ab1"
+      },
+      "1.88.1": {
+        "line": 45646,
+        "sha256": "208b8b9cb565b3bfa9a5dcd12edfeccb0f9f99612619184c1ecfd590f65b3ab1"
+      },
+      "textIdentical": true
+    },
+    "reasoningProviderOptions": {
+      "1.87.3": {
+        "line": 44997,
+        "sha256": "ab481f21eab0a9aaf4f3c39977c1e5ca4e061ae5920d1703974cd3ba0a79cd87"
+      },
+      "1.88.1": {
+        "line": 45480,
+        "sha256": "ab481f21eab0a9aaf4f3c39977c1e5ca4e061ae5920d1703974cd3ba0a79cd87"
+      },
+      "textIdentical": true
+    },
+    "responsesProviderOptions": {
+      "1.87.3": {
+        "line": 44041,
+        "sha256": "389d5cefb0c7f3b5fa6c79b1e2c7c5ebfb4743a0711ced7fedd92e37b75a1d64"
+      },
+      "1.88.1": {
+        "line": 44524,
+        "sha256": "389d5cefb0c7f3b5fa6c79b1e2c7c5ebfb4743a0711ced7fedd92e37b75a1d64"
+      },
+      "textIdentical": true
+    },
+    "buildMachineFingerprint": {
+      "1.87.3": {
+        "line": 52450,
+        "sha256": "f2aae942137c0086ca2f0ec62b358b0ff51152b5be03b8d3b31d37a755669e91"
+      },
+      "1.88.1": {
+        "line": 53007,
+        "sha256": "9ef4413cac925f1a2f2f71dc5f56aaaa4370e1c2777b86825d1ba6ba8e3a7b42"
+      },
+      "textIdentical": false,
+      "identicalAfterVerifiedBindingRename": true
+    },
+    "trackCliSessionExistsEvent": {
+      "1.87.3": {
+        "line": 144450,
+        "sha256": "03b9059aec406ab4fb9ce69df23838c45d3816535ff4387343cacd684fefdd99"
+      },
+      "1.88.1": {
+        "line": 145334,
+        "sha256": "03b9059aec406ab4fb9ce69df23838c45d3816535ff4387343cacd684fefdd99"
+      },
+      "textIdentical": true
+    },
+    "parseSpendCapError": {
+      "1.87.3": {
+        "line": 36172,
+        "sha256": "406beb1387b8bba54b599360ef614bccb90f33e6dbec8833acd3b61ee851f0c6"
+      },
+      "1.88.1": {
+        "line": 36551,
+        "sha256": "859d0a393e3a604eebfa8e40e0aaa5c54e5068cf86ca0046497618907b648a64"
+      },
+      "textIdentical": false,
+      "identicalAfterVerifiedBindingRename": true
+    },
+    "formatRunError": {
+      "1.87.3": {
+        "line": 36453,
+        "sha256": "1b0ad59b8500c83d4ea955cd748119f576e95d43f5e5d44401bf227b866f018f"
+      },
+      "1.88.1": {
+        "line": 36844,
+        "sha256": "cb418365978ed0164ef55f7bdddc9434443e73049f1155d6cca287b1f72d7bbd"
+      },
+      "textIdentical": false
+    },
+    "parseWindowLimitError": {
+      "1.87.3": {
+        "line": 9641,
+        "sha256": "f32117973b157a2643163c4ce701c510368d995b98e84dcab69bce5c50245310"
+      },
+      "1.88.1": {
+        "line": 9688,
+        "sha256": "f32117973b157a2643163c4ce701c510368d995b98e84dcab69bce5c50245310"
+      },
+      "textIdentical": true
+    },
+    "readStreamErrorEvent": {
+      "1.87.3": {
+        "line": 44613,
+        "sha256": "7ac1b1abc1d838b61bf2e6280e8a6feedd12c12e9220ba525f8d7efc482aab0d"
+      },
+      "1.88.1": {
+        "line": 45096,
+        "sha256": "7ac1b1abc1d838b61bf2e6280e8a6feedd12c12e9220ba525f8d7efc482aab0d"
+      },
+      "textIdentical": true
+    },
+    "runSystemOne": {
+      "1.87.3": {
+        "line": 60644,
+        "sha256": "fd18ee34dd5a6c4bf7adc46a00979c5ca66ef5e62beef89bc7e880e7169943e1"
+      },
+      "1.88.1": {
+        "line": 61216,
+        "sha256": "e72d8b0c9d4dbc6e1ea8a40fafc9f0580f66346d57c8b993b6a26fb03061f119"
+      },
+      "textIdentical": false
+    },
+    "parseSystemOneQuery": {
+      "1.87.3": {
+        "line": 60624,
+        "sha256": "1ff2d2be2e5cebf5928a81a9c0e96fa597c55f49053244398414adc6db92213e"
+      },
+      "1.88.1": {
+        "line": 61196,
+        "sha256": "68598f56f2da71692aca87931429a17ad555e89053c84f4a5a6e6f5e4d5689db"
+      },
+      "textIdentical": false
+    },
+    "projectUsageView": {
+      "1.87.3": {
+        "line": 6818,
+        "sha256": "6e47cc0f41bd9f874ca83de6d24f61aaf8d1e40eee6f0d84841d55673d8b35b3"
+      },
+      "1.88.1": {
+        "line": 6834,
+        "sha256": "6e47cc0f41bd9f874ca83de6d24f61aaf8d1e40eee6f0d84841d55673d8b35b3"
+      },
+      "textIdentical": true
+    },
+    "evaluateModelAccess": {
+      "1.87.3": {
+        "line": 7207,
+        "sha256": "ab447e10c29f034ee3a1df24f1c80024843dd992760e6eab3fb5006ee13e25a4"
+      },
+      "1.88.1": {
+        "line": 7242,
+        "sha256": "8ec75eae3caa6bb280cdb67306e0b089bcbec1f387b5334addb4facf08cb51dc"
+      },
+      "textIdentical": false,
+      "identicalAfterVerifiedBindingRename": true
+    },
+    "createNodeTransport": {
+      "1.87.3": {
+        "line": 35918,
+        "sha256": "695e756e553d4d9bb1cced1752e0b1eabd06de8fe3f2662b8b6ecd04176da161"
+      },
+      "1.88.1": {
+        "line": 36297,
+        "sha256": "695e756e553d4d9bb1cced1752e0b1eabd06de8fe3f2662b8b6ecd04176da161"
+      },
+      "textIdentical": true
+    },
+    "createCommandApiClient": {
+      "1.87.3": {
+        "line": 36099,
+        "sha256": "f94e08ac0ff035fe2899facbc8b06808373c007e045cb206ce04ddc50f71d1f2"
+      },
+      "1.88.1": {
+        "line": 36478,
+        "sha256": "f94e08ac0ff035fe2899facbc8b06808373c007e045cb206ce04ddc50f71d1f2"
+      },
+      "textIdentical": true
+    },
+    "readLines": {
+      "1.87.3": {
+        "line": 44689,
+        "sha256": "8894d0feedf40a37c49381c7d4cbe68ccb34e0681457792a592a98e10ffaa846"
+      },
+      "1.88.1": {
+        "line": 45172,
+        "sha256": "8894d0feedf40a37c49381c7d4cbe68ccb34e0681457792a592a98e10ffaa846"
+      },
+      "textIdentical": true
+    },
+    "guardStreamFailures": {
+      "1.87.3": {
+        "line": 44674,
+        "sha256": "ade54378e69bb5ae59b36cf6bc5456203824476760ca3fc3f9b6e104eccdddbc"
+      },
+      "1.88.1": {
+        "line": 45157,
+        "sha256": "ade54378e69bb5ae59b36cf6bc5456203824476760ca3fc3f9b6e104eccdddbc"
+      },
+      "textIdentical": true
+    },
+    "isStreamErrorRetryable": {
+      "1.87.3": {
+        "line": 44629,
+        "sha256": "69021201c733f8c10e8f8f36c63dc4f79f3223b26b15d40108925ec3ac395a3c"
+      },
+      "1.88.1": {
+        "line": 45112,
+        "sha256": "69021201c733f8c10e8f8f36c63dc4f79f3223b26b15d40108925ec3ac395a3c"
+      },
+      "textIdentical": true
+    },
+    "getApiBaseUrl": {
+      "1.87.3": {
+        "line": 3964,
+        "sha256": "0247b5522ec215f3254f93ce5fedd7d821a2ea7c25aa096db2d444a01b505763"
+      },
+      "1.88.1": {
+        "line": 3980,
+        "sha256": "0247b5522ec215f3254f93ce5fedd7d821a2ea7c25aa096db2d444a01b505763"
+      },
+      "textIdentical": true
+    },
+    "coerceToolInput": {
+      "1.87.3": {
+        "line": 44475,
+        "sha256": "c02fd5b17dad08056303f6966ee4c63ffa7abfafe1b389fca087c25b7446dc1f"
+      },
+      "1.88.1": {
+        "line": 44958,
+        "sha256": "c02fd5b17dad08056303f6966ee4c63ffa7abfafe1b389fca087c25b7446dc1f"
+      },
+      "textIdentical": true
+    },
+    "formatServerToolOutput": {
+      "1.87.3": {
+        "line": 44666,
+        "sha256": "50ec723bce6d7e9313522c3bcf758a3bf7551a33b688b80d1a992759aa26b4a5"
+      },
+      "1.88.1": {
+        "line": 45149,
+        "sha256": "50ec723bce6d7e9313522c3bcf758a3bf7551a33b688b80d1a992759aa26b4a5"
+      },
+      "textIdentical": true
+    },
+    "isThinkingEffort": {
+      "1.87.3": {
+        "line": 3908,
+        "sha256": "bc1b15e5abd31aa1a012fc2f37568abe50ef3da779729a2d3cbb66eca7041f34"
+      },
+      "1.88.1": {
+        "line": 3924,
+        "sha256": "bc1b15e5abd31aa1a012fc2f37568abe50ef3da779729a2d3cbb66eca7041f34"
+      },
+      "textIdentical": true
+    },
+    "consumedStopReason": {
+      "1.87.3": {
+        "line": 44656,
+        "sha256": "2fbb58d3d0da140fc911df8dd28ca3e11d2e7ebddd7465287e714468be285ec8"
+      },
+      "1.88.1": {
+        "line": 45139,
+        "sha256": "2fbb58d3d0da140fc911df8dd28ca3e11d2e7ebddd7465287e714468be285ec8"
+      },
+      "textIdentical": true
+    },
+    "isRefusalFinishReason": {
+      "1.87.3": {
+        "line": 44463,
+        "sha256": "d829e7fc4c18922ed982b05dccc399c19b0ff0340d697d02c0b56464abce6fd4"
+      },
+      "1.88.1": {
+        "line": 44946,
+        "sha256": "6c555ba546bfe5e519012d645c0d9e52ded14efdca9f90aa8d1d75df15c0ed2f"
+      },
+      "textIdentical": false,
+      "identicalAfterVerifiedBindingRename": true
+    },
+    "parseUnavailableModel": {
+      "1.87.3": {
+        "line": 36436,
+        "sha256": "f1b794427b790f5316ca17b68b5e1a9e70510f3e08b632c73df7ed755f0b35be"
+      },
+      "1.88.1": {
+        "line": 36827,
+        "sha256": "bb2dce29ca8c527452824554a65e329122d9d243b9364f11a692245b598ddfc1"
+      },
+      "textIdentical": false,
+      "identicalAfterVerifiedBindingRename": true
+    },
+    "isRenewalPendingMessage": {
+      "1.87.3": {
+        "line": 35835,
+        "sha256": "79d8fa3aca356f490802151b94c37a602d2d150f78004b1b0b703dcba11f95e3"
+      },
+      "1.88.1": {
+        "line": 36214,
+        "sha256": "b88808140559a8c44c8b258665936da422ddfd526038f7c78d857fa85be296bd"
+      },
+      "textIdentical": false,
+      "identicalAfterVerifiedBindingRename": true
+    },
+    "parseModelCatalog": {
+      "1.87.3": {
+        "line": 4189,
+        "sha256": "bfa863a69ea475233586d8068daf71d464e742ed2ab25b3a55816f118740e473"
+      },
+      "1.88.1": {
+        "line": 4205,
+        "sha256": "bfa863a69ea475233586d8068daf71d464e742ed2ab25b3a55816f118740e473"
+      },
+      "textIdentical": true
+    },
+    "imageSizesOf": {
+      "1.88.1": {
+        "line": 29198,
+        "sha256": "64d267b19601630d609ecfec3ed40bdbed8e6f662156e9f02fb370a28dbdc648"
+      }
+    },
+    "imageBytesOf": {
+      "1.88.1": {
+        "line": 29213,
+        "sha256": "a1d083be306ee8ab9f525912259fc0a1f4f6b4d61a30fe201a7eda8751012ff0"
+      }
+    },
+    "chooseDrops": {
+      "1.88.1": {
+        "line": 29216,
+        "sha256": "5e96d40cb0831ded223245590688803d9f37b2f8fca06ba5ceba06849441bc09"
+      }
+    },
+    "takeImage": {
+      "1.88.1": {
+        "line": 29229,
+        "sha256": "9b6b06b7b2c1a6620cfd94f5651abc506b2ef72662c54088ccb536d127b86f84"
+      }
+    },
+    "dropToolResultImages": {
+      "1.88.1": {
+        "line": 29236,
+        "sha256": "0bb0d86228f1d5837c63c332e4a5f06b2dac3c88cea72c7578313bc9e380f7b6"
+      }
+    },
+    "dropMessageImages": {
+      "1.88.1": {
+        "line": 29243,
+        "sha256": "04e3cec531e2fd16470f0d82a49d3261bbe0c15435f6bcbbd74814b116076c38"
+      }
+    },
+    "imgCompact": {
+      "1.88.1": {
+        "line": 29255,
+        "sha256": "b5b67cdfc98c80792a280b04c34bb79ebb464b0350de85062d35396abecca3c2"
+      }
+    },
+    "compressWithLadder": {
+      "1.88.1": {
+        "line": 40807,
+        "sha256": "41736a21d2f1170327e90e13408a8c908b13d62a99c339b1b59d29535f3540b6"
+      }
+    },
+    "coordinateNote": {
+      "1.88.1": {
+        "line": 40820,
+        "sha256": "8fbe879670e9b1ddecffa2c3ac1c20e1eeaec374e08e2ab07ee6e0f961025472"
+      }
+    },
+    "omittedNote": {
+      "1.88.1": {
+        "line": 40832,
+        "sha256": "dd0730b9037792669d23e35d83037e52c20571a136e002880643bffc2ed7135c"
+      }
+    },
+    "compressImageBlock": {
+      "1.88.1": {
+        "line": 40839,
+        "sha256": "d6fa21ecc0fc27b72dc63e49b799926c6fc7d578b04b0532213ecf84561e5a0a"
+      }
+    },
+    "compressToolResultImages": {
+      "1.88.1": {
+        "line": 40858,
+        "sha256": "ac244ea658df3b07c1ce484b39bc091c6672c4b7dd533aba5fe5dd3da1eb147d"
+      }
+    },
+    "compressToolRunResultImages": {
+      "1.88.1": {
+        "line": 40868,
+        "sha256": "eef2fe057badf121a1c19b44a405c101e88a29b294e61cd5d5eaa37eb6583158"
+      }
+    },
+    "isRequestTooLargeError": {
+      "1.88.1": {
+        "line": 29521,
+        "sha256": "1db70448ecedb4ab68664dbfe829c21e476b55768a94a3a93fdd59e849303648"
+      }
+    },
+    "isWorkerResourceError": {
+      "1.88.1": {
+        "line": 29525,
+        "sha256": "713bd4e469ec8a5fe10a80d16db2e57898c0f5f7a46870a1e821b7c01ebf642e"
+      }
+    },
+    "isModelCallRetryable": {
+      "1.87.3": {
+        "line": 29303,
+        "sha256": "500cf2d2732fb03328dc184059ce5ce80694d87cbd0a9eabd424338fa15500be"
+      },
+      "1.88.1": {
+        "line": 29533,
+        "sha256": "397fd67062738d7d5cf07084ee380255475d49b3cf0313d0224e34f563364428"
+      },
+      "textIdentical": false
+    },
+    "callModelWithRetry": {
+      "1.87.3": {
+        "line": 29308,
+        "sha256": "59f8f85a8b4fb7ce3ac985f43f23fa14d939b273174a5c7825c14e3326026679"
+      },
+      "1.88.1": {
+        "line": 29541,
+        "sha256": "862086db6cfe19bea8011329eb3d8a77e75480ce62d85d8a916db55e055695f4"
+      },
+      "textIdentical": false
+    },
+    "stripThinkingFrom": {
+      "1.88.1": {
+        "line": 29657,
+        "sha256": "f4019937b5b529400c90e2c24594b1167bdd8c84db3c19cd9b8e9634ed2ab19e"
+      }
+    },
+    "resolveFeatureModel": {
+      "1.87.3": {
+        "line": 7380,
+        "sha256": "1d23e2297bf89ab944715f9d6052a4fb60f90af63ae61d41de284252f62f40aa"
+      },
+      "1.88.1": {
+        "line": 7415,
+        "sha256": "09288001b4b0c2104d57a8759fc699d0f48438a65898e0069647b27ebaeca834"
+      },
+      "textIdentical": false
+    },
+    "defaultFeatureModel": {
+      "1.87.3": {
+        "line": 7369,
+        "sha256": "3fdd013019417bfd61c5c7a37035aac63dc8a300f6ea03efd9588cdfaf2f2e4d"
+      },
+      "1.88.1": {
+        "line": 7404,
+        "sha256": "3fdd013019417bfd61c5c7a37035aac63dc8a300f6ea03efd9588cdfaf2f2e4d"
+      },
+      "textIdentical": true
+    },
+    "freeModelForcingTransition": {
+      "1.88.1": {
+        "line": 7449,
+        "sha256": "5d7eb57a2760d016ddc8ef2b58ab59a49c0b52257418520d841eaa05bf03b346"
+      }
+    },
+    "buildCatalogFeatureRoles": {
+      "1.87.3": {
+        "line": 4377,
+        "sha256": "f0c276805c4ccfe60dccd8c56c95370bb4e83b17a4fd9cb6dcb54c04849d7ee6"
+      },
+      "1.88.1": {
+        "line": 4393,
+        "sha256": "f0c276805c4ccfe60dccd8c56c95370bb4e83b17a4fd9cb6dcb54c04849d7ee6"
+      },
+      "textIdentical": true
+    },
+    "readErrorText": {
+      "1.88.1": {
+        "line": 29513,
+        "sha256": "d2d9e9061407926e4495c6af800d60dc5f6f1c755c1da080d13d0252a9154ec5"
+      }
+    },
+    "prepareForSend": {
+      "1.87.3": {
+        "line": 29259,
+        "sha256": "3d17ef17ef013684a1277a40eab66ebb5f4e98420e5c94ca6b5c05bcf02794b9"
+      },
+      "1.88.1": {
+        "line": 29466,
+        "sha256": "3d17ef17ef013684a1277a40eab66ebb5f4e98420e5c94ca6b5c05bcf02794b9"
+      },
+      "textIdentical": true
+    },
+    "hoistToolResultImages": {
+      "1.87.3": {
+        "line": 29222,
+        "sha256": "fc6b13a2100643db84cf16899501dab4c647bda786e2495e9b680eeac1467098"
+      },
+      "1.88.1": {
+        "line": 29429,
+        "sha256": "59395f5d65957191a90a2dceec8ab2e4ae4df5862ee572cf6448c7e4c998ae2e"
+      },
+      "textIdentical": false
+    },
+    "isSizeFailure": {
+      "1.88.1": {
+        "line": 36082,
+        "sha256": "e7f46ea17ad3d47f9bec8918829a2617b6fa613c224b20c8ad53527fd20b2b3d"
+      }
+    },
+    "requestBytes": {
+      "1.88.1": {
+        "line": 36085,
+        "sha256": "0764d415e1a7cd078310c0d93673cb4cb41a866038a4cea077b36430acf7aef5"
+      }
+    },
+    "withoutStaleThinking": {
+      "1.88.1": {
+        "line": 36110,
+        "sha256": "728bc750458d4deb5716ccd3a13ed025807031898cd01d42ad4dcfdb322e4138"
+      }
+    },
+    "retryShrunk": {
+      "1.88.1": {
+        "line": 36118,
+        "sha256": "e7d2e1bc1fd251b0418434348b96bc5d3752f6c132c5f15939ef1392703a85f5"
+      }
+    },
+    "retryAsBystander": {
+      "1.88.1": {
+        "line": 36155,
+        "sha256": "2763db950ffc2de0ca085897667413dfb73d277a4e40c5963df832cb70fce4a3"
+      }
+    },
+    "withContextRecovery": {
+      "1.87.3": {
+        "line": 35802,
+        "sha256": "2fe303dd2011bdcaa204b72007ea1002ca6606c3dd2b9d2ccfb186717f252aec"
+      },
+      "1.88.1": {
+        "line": 36175,
+        "sha256": "31e1e8fd292fdfe51264483ec53d9a1f403e8a2f00d40a794e268bc5b43b2fe9"
+      },
+      "textIdentical": false
+    },
+    "retryCompacted": {
+      "1.88.1": {
+        "line": 36103,
+        "sha256": "8b06ccc3276aa85503bc9cab0596905995f7b1746ad5a743d9168dab6e631286"
+      }
+    }
+  },
+  "catalogCounts": {
+    "old": 104,
+    "new": 106
+  },
+  "addedModels": {
+    "moonshotai/Kimi-K3.1-Pro": {
+      "line": 94712,
+      "name": "Kimi K3.1 Pro",
+      "provider": "vercel-ai-gateway",
+      "contextWindow": 1048576,
+      "reasoning": true,
+      "reasoningEfforts": [
+        "low",
+        "high",
+        "max"
+      ],
+      "inputModalities": [
+        "text",
+        "image"
+      ]
+    },
+    "gpt-6.1-terra": {
+      "line": 94485,
+      "name": "GPT-6.1 Terra",
+      "provider": "openai",
+      "contextWindow": 1050000,
+      "reasoning": true,
+      "reasoningEfforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "inputModalities": [
+        "text",
+        "image"
+      ]
+    }
+  },
+  "removedModels": {},
+  "changedModels": {
+    "xiaomi/mimo-v2.5": {
+      "old": {
+        "line": 94235,
+        "name": "MiMo V2.5",
+        "provider": "vercel-ai-gateway",
+        "contextWindow": 1000000,
+        "inputModalities": [
+          "text",
+          "image"
+        ]
+      },
+      "new": {
+        "line": 95042,
+        "name": "MiMo V2.5",
+        "provider": "vercel-ai-gateway",
+        "contextWindow": 1000000,
+        "hidden": true,
+        "inputModalities": [
+          "text",
+          "image"
+        ]
+      }
+    },
+    "xiaomi/mimo-v2.5-pro": {
+      "old": {
+        "line": 94224,
+        "name": "MiMo V2.5 Pro",
+        "provider": "vercel-ai-gateway",
+        "contextWindow": 1000000,
+        "inputModalities": [
+          "text"
+        ]
+      },
+      "new": {
+        "line": 95030,
+        "name": "MiMo V2.5 Pro",
+        "provider": "vercel-ai-gateway",
+        "contextWindow": 1000000,
+        "hidden": true,
+        "inputModalities": [
+          "text"
+        ]
+      }
+    }
+  },
+  "addedLiteralRoutes": [],
+  "removedLiteralRoutes": [],
+  "bindingEvidence": {
+    "KT": {
+      "1.87.3": {
+        "line": 89308,
+        "value": "/alpha/generate"
+      },
+      "1.88.1": {
+        "identifier": "aE",
+        "line": 90078,
+        "value": "/alpha/generate"
+      },
+      "valueIdentical": true
+    },
+    "zT": {
+      "1.87.3": {
+        "line": 89309,
+        "value": 64000
+      },
+      "1.88.1": {
+        "identifier": "iE",
+        "line": 90079,
+        "value": 64000
+      },
+      "valueIdentical": true
+    },
+    "rS": {
+      "1.87.3": {
+        "line": 87038,
+        "value": 5
+      },
+      "1.88.1": {
+        "identifier": "gS",
+        "line": 87760,
+        "value": 5
+      },
+      "valueIdentical": true
+    },
+    "qT": {
+      "1.87.3": {
+        "line": 89311,
+        "value": "x-cmd-zdr"
+      },
+      "1.88.1": {
+        "identifier": "lE",
+        "line": 90081,
+        "value": "x-cmd-zdr"
+      },
+      "valueIdentical": true
+    },
+    "VT": {
+      "1.87.3": {
+        "line": 89300,
+        "value": {
+          "expression": "new Set([\"refusal\", \"content_filter\", \"content-filter\"])"
+        }
+      },
+      "1.88.1": {
+        "identifier": "sE",
+        "line": 90070,
+        "value": {
+          "expression": "new Set([\"refusal\", \"content_filter\", \"content-filter\"])"
+        }
+      },
+      "valueIdentical": true
+    },
+    "YT": {
+      "1.87.3": {
+        "line": 89312,
+        "value": {
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0
+        }
+      },
+      "1.88.1": {
+        "identifier": "cE",
+        "line": 90082,
+        "value": {
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0
+        }
+      },
+      "valueIdentical": true
+    },
+    "sP": {
+      "1.87.3": {
+        "line": 89800,
+        "value": "command-code:device-fingerprint:v1"
+      },
+      "1.88.1": {
+        "identifier": "SP",
+        "line": 90575,
+        "value": "command-code:device-fingerprint:v1"
+      },
+      "valueIdentical": true
+    },
+    "rP": {
+      "1.87.3": {
+        "line": 89799,
+        "value": 1
+      },
+      "1.88.1": {
+        "identifier": "vP",
+        "line": 90574,
+        "value": 1
+      },
+      "valueIdentical": true
+    },
+    "WA": {
+      "1.87.3": {
+        "line": 91550,
+        "value": "/provider/v1/systemone"
+      },
+      "1.88.1": {
+        "identifier": "rR",
+        "line": 92327,
+        "value": "/provider/v1/systemone"
+      },
+      "valueIdentical": true
+    },
+    "YA": {
+      "1.87.3": {
+        "line": 91592,
+        "value": 100
+      },
+      "1.88.1": {
+        "identifier": "uR",
+        "line": 92369,
+        "value": 100
+      },
+      "valueIdentical": true
+    },
+    "nk": {
+      "1.87.3": {
+        "line": 87908,
+        "value": {
+          "OAUTH_TOKEN": "x-oauth-token",
+          "OAUTH_PROVIDER": "x-oauth-provider",
+          "PROJECT_SLUG": "x-project-slug",
+          "TASTE_LEARNING": "x-taste-learning",
+          "CLI_ENVIRONMENT": "x-cli-environment",
+          "CLI_VERSION": "x-command-code-version",
+          "CLI_SURFACE": "x-cli-surface",
+          "OSS_PRIMARY_PROVIDER": "x-oss-primary-provider",
+          "SESSION_ID": "x-session-id",
+          "CMD_ZDR": "x-cmd-zdr",
+          "PROVIDER_DEEPSEEK_INTERNAL": "x-cmd-provider-deepseek-internal"
+        }
+      },
+      "1.88.1": {
+        "identifier": "hk",
+        "line": 88656,
+        "value": {
+          "OAUTH_TOKEN": "x-oauth-token",
+          "OAUTH_PROVIDER": "x-oauth-provider",
+          "PROJECT_SLUG": "x-project-slug",
+          "TASTE_LEARNING": "x-taste-learning",
+          "CLI_ENVIRONMENT": "x-cli-environment",
+          "CLI_VERSION": "x-command-code-version",
+          "CLI_SURFACE": "x-cli-surface",
+          "OSS_PRIMARY_PROVIDER": "x-oss-primary-provider",
+          "SESSION_ID": "x-session-id",
+          "CMD_ZDR": "x-cmd-zdr",
+          "PROVIDER_DEEPSEEK_INTERNAL": "x-cmd-provider-deepseek-internal"
+        }
+      },
+      "valueIdentical": true
+    },
+    "ok": {
+      "1.87.3": {
+        "line": 87921,
+        "value": "cli"
+      },
+      "1.88.1": {
+        "identifier": "fk",
+        "line": 88669,
+        "value": "cli"
+      },
+      "valueIdentical": true
+    },
+    "ak": {
+      "1.87.3": {
+        "line": 87939,
+        "value": "USAGE_EXCEEDED"
+      },
+      "1.88.1": {
+        "identifier": "Sk",
+        "line": 88687,
+        "value": "USAGE_EXCEEDED"
+      },
+      "valueIdentical": true
+    },
+    "tk": {
+      "1.87.3": {
+        "line": 87905,
+        "value": "RENEWAL_PENDING"
+      },
+      "1.88.1": {
+        "identifier": "gk",
+        "line": 88653,
+        "value": "RENEWAL_PENDING"
+      },
+      "valueIdentical": true
+    },
+    "ek": {
+      "1.87.3": {
+        "line": 87904,
+        "value": "Renewal payment processing. Credits refill when payment clears."
+      },
+      "1.88.1": {
+        "identifier": "pk",
+        "line": 88652,
+        "value": "Renewal payment processing. Credits refill when payment clears."
+      },
+      "valueIdentical": true
+    },
+    "yk": {
+      "1.87.3": {
+        "line": 87997,
+        "value": "Model/provider not recognized:"
+      },
+      "1.88.1": {
+        "identifier": "xk",
+        "line": 88751,
+        "value": "Model/provider not recognized:"
+      },
+      "valueIdentical": true
+    },
+    "qr": {
+      "1.87.3": {
+        "line": 77114,
+        "value": {
+          "individual-go": {
+            "allowedCategories": [
+              "opensource"
+            ]
+          },
+          "individual-go-v1": {
+            "allowedCategories": [
+              "opensource"
+            ]
+          },
+          "individual-goat": {
+            "allowedCategories": [
+              "opensource"
+            ]
+          },
+          "individual-pro": {
+            "allowedCategories": [
+              "premium",
+              "opensource"
+            ]
+          },
+          "individual-pro-v1": {
+            "allowedCategories": [
+              "premium",
+              "opensource"
+            ]
+          },
+          "individual-provider": {
+            "allowedCategories": [
+              "premium",
+              "opensource"
+            ]
+          },
+          "individual-max": {
+            "allowedCategories": [
+              "premium",
+              "opensource"
+            ]
+          },
+          "individual-ultra": {
+            "allowedCategories": [
+              "premium",
+              "opensource"
+            ]
+          },
+          "teams-pro": {
+            "allowedCategories": [
+              "premium",
+              "opensource"
+            ]
+          }
+        }
+      },
+      "1.88.1": {
+        "identifier": "Kr",
+        "line": 77795,
+        "value": {
+          "individual-go": {
+            "allowedCategories": [
+              "opensource"
+            ]
+          },
+          "individual-go-v1": {
+            "allowedCategories": [
+              "opensource"
+            ]
+          },
+          "individual-goat": {
+            "allowedCategories": [
+              "opensource"
+            ]
+          },
+          "individual-pro": {
+            "allowedCategories": [
+              "premium",
+              "opensource"
+            ]
+          },
+          "individual-pro-v1": {
+            "allowedCategories": [
+              "premium",
+              "opensource"
+            ]
+          },
+          "individual-provider": {
+            "allowedCategories": [
+              "premium",
+              "opensource"
+            ]
+          },
+          "individual-max": {
+            "allowedCategories": [
+              "premium",
+              "opensource"
+            ]
+          },
+          "individual-ultra": {
+            "allowedCategories": [
+              "premium",
+              "opensource"
+            ]
+          },
+          "teams-pro": {
+            "allowedCategories": [
+              "premium",
+              "opensource"
+            ]
+          }
+        }
+      },
+      "valueIdentical": true
+    },
+    "Qr": {
+      "1.87.3": {
+        "line": 77152,
+        "value": {
+          "allowed": true,
+          "minimumPlanId": null,
+          "minimumPlanName": null
+        }
+      },
+      "1.88.1": {
+        "identifier": "Jr",
+        "line": 77833,
+        "value": {
+          "allowed": true,
+          "minimumPlanId": null,
+          "minimumPlanName": null
+        }
+      },
+      "valueIdentical": true
+    }
+  },
+  "jevSchemaEvidence": {
+    "1.87.3": {
+      "startLine": 91549,
+      "endLine": 91634,
+      "sha256": "332c066e7e95c2738fb0cb1fdef467ef6e6aa5944b8639e802d587ebc07530ab"
+    },
+    "1.88.1": {
+      "startLine": 92326,
+      "endLine": 92411,
+      "sha256": "f3600aed24217797a0885b923bdedfc08d13999ad49b927942a7b321e44a5c19"
+    },
+    "identicalAfterBindingRename": true
+  },
+  "clientCatalog": {
+    "schemaVersion": 1,
+    "catalogVersion": "7f405e24044e414ddf7d5b73eb3b80016c7274e86a98299ef61cefaf4efce7b9",
+    "refreshAfterSeconds": 900,
+    "rolesUnchanged": true,
+    "oldCount": 104,
+    "newCount": 106,
+    "addedModels": {
+      "gpt-6.1-terra": {
+        "aliases": [],
+        "behaviorProfile": "no-deferred-tools-v1",
+        "category": "premium",
+        "context_length": 1050000,
+        "display": {
+          "badge": null,
+          "description": "fast, efficient model for visual reasoning, computer use & writing",
+          "group": "OpenAI",
+          "label": "GPT-6.1 Terra",
+          "notice": null
+        },
+        "id": "gpt-6.1-terra",
+        "inputModalities": [
+          "text",
+          "image"
+        ],
+        "maxOutputTokens": null,
+        "minimumPlan": "individual-pro",
+        "name": "GPT-6.1 Terra",
+        "object": "model",
+        "owned_by": "command-code",
+        "pricing": {
+          "cacheReadCost": 0.05,
+          "cacheWrite1hCost": 0,
+          "cacheWriteCost": 1.25,
+          "contextTiers": [
+            {
+              "maxContext": 272000,
+              "rates": {
+                "cacheReadCost": 0.05,
+                "cacheWrite1hCost": 0,
+                "cacheWriteCost": 1.25,
+                "inputCost": 1,
+                "outputCost": 5
+              }
+            },
+            {
+              "rates": {
+                "cacheReadCost": 0.1,
+                "cacheWrite1hCost": 0,
+                "cacheWriteCost": 2.5,
+                "inputCost": 2,
+                "outputCost": 7.5
+              }
+            }
+          ],
+          "inputCost": 1,
+          "outputCost": 5
+        },
+        "reasoningEfforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ],
+        "zdr": true
+      },
+      "moonshotai/Kimi-K3.1-Pro": {
+        "aliases": [],
+        "behaviorProfile": "no-deferred-tools-v1",
+        "category": "opensource",
+        "context_length": 1048576,
+        "display": {
+          "badge": null,
+          "description": "frontier reasoning & agentic coding with 1M context",
+          "group": "Open Source",
+          "label": "Kimi K3.1 Pro",
+          "notice": null
+        },
+        "id": "moonshotai/Kimi-K3.1-Pro",
+        "inputModalities": [
+          "text",
+          "image"
+        ],
+        "maxOutputTokens": null,
+        "minimumPlan": "individual-go",
+        "name": "Kimi K3.1 Pro",
+        "object": "model",
+        "owned_by": "command-code",
+        "pricing": {
+          "cacheReadCost": 0.2,
+          "inputCost": 2,
+          "outputCost": 10
+        },
+        "reasoningEfforts": [
+          "low",
+          "high",
+          "max"
+        ],
+        "zdr": true
+      }
+    },
+    "removedModelIDs": [],
+    "changedModelsExcludingDisplayOrder": {
+      "minimax/minimax-m3.1-flash:free": {
+        "hidden": {
+          "old": null,
+          "new": true
+        }
+      },
+      "xiaomi/mimo-v2.5-pro": {
+        "hidden": {
+          "old": null,
+          "new": true
+        }
+      },
+      "xiaomi/mimo-v2.5": {
+        "hidden": {
+          "old": null,
+          "new": true
+        }
+      },
+      "ornith/ornith-1.5-122b:free": {
+        "hidden": {
+          "old": null,
+          "new": true
+        }
+      }
+    },
+    "visibilityNote": "The embedded client catalog hides two free models that the legacy object table still leaves visible. Prefer client-catalog visibility; hidden does not prove API rejection."
+  },
+  "imageRecoveryConstants": {
+    "mS": {
+      "line": 87758,
+      "value": 20971520
+    },
+    "pS": {
+      "line": 87759,
+      "value": 10485760
+    },
+    "lS": {
+      "line": 87754,
+      "value": 8388608
+    },
+    "cS": {
+      "line": 87755,
+      "value": 4194304
+    },
+    "dS": {
+      "line": 87756,
+      "value": 2
+    },
+    "uS": {
+      "line": 87757,
+      "value": 5000
+    },
+    "hb": {
+      "line": 89362,
+      "value": 5000000
+    },
+    "fb": {
+      "line": 89363,
+      "value": [
+        80,
+        60,
+        40,
+        20
+      ]
+    },
+    "vS": {
+      "line": 87794,
+      "value": {
+        "expression": "/request_too_large|over the \\d+ mb limit for one request|request body exceeds the \\d+ mb limit/"
+      }
+    },
+    "SS": {
+      "line": 87796,
+      "value": {
+        "expression": "/worker_exceeded_resources|error 1102|exceeded (its )?resource limits/"
+      }
+    }
+  },
+  "imageRecoveryConstantsUnits": "mS/pS/cS and hb measure base64 string characters, not decoded image bytes or an upstream request-body contract; lS measures serialized local call-parameter UTF-8 bytes.",
+  "proxyFollowUp": [
+    "Refresh fallback CLI version to 1.88.1 and fallback model catalog with two additions and four client-catalog hidden entries removed from fallback display.",
+    "Preserve upstream HTTP 413/request_too_large as a clear request-size error; current classifyUpstreamError falls back to 502.",
+    "Do not adopt CLI image dropping, compression, prefix-thinking removal, automatic compaction/replay or background free-model routing without a separate downstream opt-in contract.",
+    "Keep existing chat wire, plaintext reasoning replay, Jev option policy, ZDR and independent key-pool policies."
+  ],
+  "scope": "Static release-package analysis against proxy v0.3.3, followed by local compatibility changes and mocked HTTP/stream regression checks. No paid live inference or production changes.",
+  "proxyChanges": {
+    "offlineVersion": "1.88.1",
+    "fallbackModelCount": 58,
+    "catalogVerifiedAgainstEmbeddedClientSnapshot": true,
+    "chatSizeError": {
+      "status": 413,
+      "type": "invalid_request_error",
+      "code": "upstream_request_too_large",
+      "fixedMessage": true,
+      "sseErrorThenOneDone": true,
+      "replay": false,
+      "keyRotation": false,
+      "breakerOpen": false
+    },
+    "preservedDownstream": [
+      "explicit model IDs including hidden entries",
+      "token budget",
+      "reasoning effort",
+      "images",
+      "plaintext reasoning"
+    ]
+  },
+  "proxyValidation": {
+    "goVersion": "1.24.0",
+    "raceTests": "passed",
+    "vet": "passed",
+    "golangciLint": "2.1.6: 0 issues",
+    "liveInference": false
+  }
+}

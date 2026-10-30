@@ -1,7 +1,7 @@
 # command-code-reverse
 
 Reverse engineering of the [Command Code](https://commandcode.ai) CLI
-protocol (initial analysis: `1.32.2`; latest static review: `1.79.1`), plus a production-grade Go proxy that
+protocol (initial analysis: `1.32.2`; latest static review: `1.88.1`), plus a production-grade Go proxy that
 exposes its upstream API as an OpenAI-compatible interface.
 
 [中文文档](./README.zh-CN.md)
@@ -15,6 +15,8 @@ exposes its upstream API as an OpenAI-compatible interface.
 | [`analysis/v1.54.2/`](./analysis/v1.54.2/README.md) | Upstream review: unchanged core protocol, refreshed offline version and two new fallback models |
 | [`analysis/v1.62.1/`](./analysis/v1.62.1/README.md) | Upstream review: Jev decision API (live verified), BYOK Responses support, eight new chat models, unchanged core chat wire |
 | [`analysis/v1.79.1/`](./analysis/v1.79.1/README.md) | Static review: cache-write usage event, optional ACP/RPC header, model catalog changes; core chat and reasoning replay unchanged |
+| [`analysis/v1.87.3/`](./analysis/v1.87.3/README.md) | Static review: refusal aliases, Jev 100-question limit, model additions and rich client catalog |
+| [`analysis/v1.88.1/`](./analysis/v1.88.1/README.md) | Static review: CLI image/context recovery and background free-model routing; proxy catalog refreshed and upstream request-size errors mapped to 413 |
 | `proxy/` | **commandcode-proxy** — Go service bridging `POST /alpha/generate` (NDJSON streaming) to `/v1/chat/completions` (OpenAI SSE) |
 | `.github/workflows/` | CI (vet + race tests + lint + image build) and tag-triggered releases |
 
