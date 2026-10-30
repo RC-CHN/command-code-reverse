@@ -5,9 +5,9 @@ package stream
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"math"
 	"strconv"
@@ -45,7 +45,7 @@ type Event struct {
 	Error   *StreamError `json:"error,omitempty"`
 	Message string       `json:"message,omitempty"`
 
-	// raw line, retained for unknown-event logging
+	// Only error events retain their own raw line for nested billing markers.
 	Raw json.RawMessage `json:"-"`
 }
 
@@ -198,8 +198,9 @@ type Reader struct {
 	err error // returned after any complete event read alongside it
 }
 
-// NewReader wraps an upstream response body. ReadString has no per-line
-// size limit: start-step events can echo multi-megabyte image requests.
+// NewReader wraps an upstream response body. Short lines are decoded directly
+// from the buffer; longer lines still have no fixed size limit, since start-step
+// events can echo multi-megabyte image requests.
 func NewReader(r io.Reader) *Reader {
 	return &Reader{br: bufio.NewReaderSize(r, 64*1024)}
 }
@@ -211,17 +212,24 @@ func (r *Reader) Next() (*Event, error) {
 		if r.err != nil {
 			return nil, r.err
 		}
-		line, err := r.br.ReadString('\n')
+		line, err := r.br.ReadSlice('\n')
+		if errors.Is(err, bufio.ErrBufferFull) {
+			// Copy the prefix before another read reuses the buffer. Keep large
+			// allocations local to this event rather than growing Reader state.
+			prefix := bytes.Clone(line)
+			rest, tailErr := r.br.ReadBytes('\n')
+			line, err = append(prefix, rest...), tailErr
+		}
 		// A reader may return data and an error together. Decode any complete
 		// final event before exposing the terminal error on the next call.
 		r.err = err
-		line = strings.TrimSpace(line)
-		if line == "" || line == "[DONE]" || strings.HasPrefix(line, ":") {
+		line = bytes.TrimSpace(line)
+		if len(line) == 0 || bytes.Equal(line, []byte("[DONE]")) || line[0] == ':' {
 			continue
 		}
 		var ev Event
-		if json.Unmarshal([]byte(line), &ev) != nil {
-			if err != nil && !errors.Is(err, io.EOF) && !json.Valid([]byte(line)) {
+		if json.Unmarshal(line, &ev) != nil {
+			if err != nil && !errors.Is(err, io.EOF) && !json.Valid(line) {
 				// An interrupted read can leave any event half-written. Preserve
 				// its I/O cause instead of blaming incomplete JSON on the peer.
 				return nil, err
@@ -235,7 +243,10 @@ func (r *Reader) Next() (*Event, error) {
 		if ev.Type == "" {
 			continue
 		}
-		ev.Raw = json.RawMessage(line)
+		if ev.Type == "error" {
+			// Raw must survive later reads, just like decoded text/tool input.
+			ev.Raw = bytes.Clone(line)
+		}
 		return &ev, nil
 	}
 }
@@ -243,8 +254,8 @@ func (r *Reader) Next() (*Event, error) {
 // malformedCriticalEvent reads only enough JSON to identify a tool/terminal
 // event. This also catches a readable type followed by a truncated payload;
 // arbitrary text and unrelated events keep the reader's previous tolerance.
-func malformedCriticalEvent(line string) bool {
-	d := json.NewDecoder(strings.NewReader(line))
+func malformedCriticalEvent(line []byte) bool {
+	d := json.NewDecoder(bytes.NewReader(line))
 	first, err := d.Token()
 	if err != nil || first != json.Delim('{') {
 		return false
@@ -398,7 +409,7 @@ func UsageFromUpstream(u *Usage) *OpenAIUsage {
 // SSE serializes a chunk as one SSE data frame.
 func SSE(c *Chunk) string {
 	b, _ := json.Marshal(c)
-	return fmt.Sprintf("data: %s\n\n", b)
+	return "data: " + string(b) + "\n\n"
 }
 
 // DoneSSE is the terminal SSE sentinel.

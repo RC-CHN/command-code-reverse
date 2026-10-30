@@ -65,12 +65,42 @@ func TestReaderHandlesHugeLine(t *testing.T) {
 	if ev.Type != "start-step" {
 		t.Fatalf("Type = %q, want start-step", ev.Type)
 	}
+	if ev.Raw != nil {
+		t.Fatal("retained unused multi-image request echo")
+	}
 	ev, err = r.Next()
 	if err != nil {
 		t.Fatalf("Next(second): %v", err)
 	}
 	if ev.Type != "text-delta" || ev.Text != "Hi" {
 		t.Fatalf("ev = %+v", ev)
+	}
+}
+
+func TestReaderEventsSurviveBufferReuse(t *testing.T) {
+	line := `{"type":"error","error":{"message":"failure"},"nested":{"marker":"premium_credits_exhausted"}}`
+	tool := `{"type":"tool-call","toolCallId":"call-1","toolName":"lookup","input":{"id":42}}`
+	text := `{"type":"text-delta","text":"hello"}`
+	padding := `{"type":"start-step","request":"` + strings.Repeat("x", 128<<10) + `"}`
+	r := NewReader(strings.NewReader(strings.Join([]string{line, tool, text, padding, text}, "\n")))
+	var events []*Event
+	for range 5 {
+		ev, err := r.Next()
+		if err != nil {
+			t.Fatal(err)
+		}
+		events = append(events, ev)
+	}
+	if string(events[0].Raw) != line || TerminalError(events[0]) == nil {
+		t.Fatal("buffer reuse lost nested billing marker")
+	}
+	if string(events[1].Input) != `{"id":42}` || events[1].ToolCallID != "call-1" || events[2].Text != "hello" {
+		t.Fatal("buffer reuse corrupted decoded data")
+	}
+	for _, ev := range events[1:] {
+		if ev.Raw != nil {
+			t.Fatalf("unneeded raw retained for %s", ev.Type)
+		}
 	}
 }
 

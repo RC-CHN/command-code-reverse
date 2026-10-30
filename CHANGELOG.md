@@ -25,6 +25,11 @@ versioning follows [SemVer](https://semver.org/).
 
 ### Changed
 
+- Reduce NDJSON allocation by decoding short events directly from the reader
+  buffer, retaining raw copies only for error-marker inspection. Large image
+  echoes still have no fixed line limit and do not grow the retained reader
+  buffer. Preserve decoded data ownership and final events arriving with I/O
+  errors; simplify SSE framing without changing its wire format.
 - Refresh the offline CLI version fallback to `1.88.1` and add GPT-6.1 Terra
   and Kimi K3.1 Pro to the fallback model catalog. Remove the four entries hidden
   in the client catalog: MiniMax M3.1 Flash Free, Ornith 1.5 122B Free, MiMo V2.5
