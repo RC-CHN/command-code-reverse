@@ -261,6 +261,20 @@ LLM 没有固定请求总时长上限。超时窗口覆盖连接建立及等待�
 | `DASHBOARD_API_KEY` | 面板开启时 | | 独立管理密钥；不使用下游或上游 API key 登录 |
 | `DASHBOARD_RECENT_REQUESTS` | | `100` | 内存中的最近完成请求数，范围 1–1000，LLM/Jev 共用环形队列 |
 
+聊天请求的错误日志统一为 `chat request failed`，记录 `requestId`、模型、`stream`、
+`stage`（`generate` 建连/响应头阶段或 `stream` 读取响应体阶段）、实际 `keyId`、尝试次数、
+`responseStarted`、`errorStatus`、归一化 `errorType`/`code` 和耗时。
+`requestId` 由代理生成，经 `X-Request-ID` 响应头返回，并与本次上游 trace ID 一致；
+启用面板时额外记录 `recordId`，可关联最近请求记录。关闭面板仍有错误诊断，无需启用历史留存。
+
+`errorStatus` 是错误分类状态：SSE 已开始时实际 HTTP 状态仍为 200。
+`upstreamStatus` 仅在有上游 API 错误时记录，表示解析出的错误状态（流内未提供状态时可能归一化为 502），
+不能把它当作流式连接建立时的 HTTP 状态。`key-1` 等编号对应启动配置顺序，透传模式仅记 `passthrough`；
+未选到 key 时记 `unselected`。日志不记录原始错误文本、未知上游 code/type、请求正文、回复、CoT 或密钥前缀。
+例如 `upstream_rate_limited`、`upstream_server_error`、`upstream_idle_timeout`、`upstream_truncated`、
+`upstream_invalid_tool_call` 可区分限流、服务异常、空闲超时、截断和未完成工具调用。
+新增诊断码仅用于日志，不改变原有响应体、请求重试或 key 轮换/熔断策略。
+
 ### 实时面板
 
 设置 `DASHBOARD_ENABLED=true` 和独立的 `DASHBOARD_API_KEY`，重启后访问

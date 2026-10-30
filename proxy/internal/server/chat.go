@@ -33,6 +33,7 @@ type Upstream interface {
 // handleChatCompletions serves POST /v1/chat/completions.
 func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
+	r, diagnostic := beginChatDiagnostics(w, r, len(s.cfg.APIKeys), start)
 
 	var req convert.ChatRequest
 	if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, s.cfg.MaxBodyBytes)).Decode(&req); err != nil {
@@ -61,7 +62,7 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 	// mirroring the CLI's per-iteration trace.
 	meta := commandcode.CallMeta{
 		Root:    convert.ConversationRoot(req.Messages),
-		TraceID: commandcode.NewTraceID(),
+		TraceID: diagnostic.requestID,
 	}
 	wire, err := convert.ToWire(&req, s.deps.Sessions.ThreadID(meta.Root), s.cfg.MaxTokensClamp, 64000)
 	if err != nil {
@@ -85,14 +86,15 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 		var ae *commandcode.APIError
 		var unavailable *keypool.UnavailableError
 		if r.Context().Err() != nil || (!errors.As(err, &ae) && !errors.As(err, &unavailable)) {
-			s.handleStreamReadError(w, r, &req, false, err, start)
+			s.handleStreamReadError(w, r, &req, false, err)
 			return
 		}
-		slog.Warn("upstream generate failed", "model", req.Model, "error", err)
+		logChatAPIError(r, &req, false, err)
 		s.recordFailure(r, &req, req.Stream, "upstream_error")
 		writeUpstreamError(w, err)
 		return
 	}
+	diagnostic.stage = "stream"
 	reader := &chatIdleReader{reader: body, watch: watch}
 	if req.Stream {
 		s.serveStream(w, r, reader, &req, start)
@@ -274,14 +276,14 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 			break
 		}
 		if err != nil {
-			s.handleStreamReadError(w, r, req, started, err, start)
+			s.handleStreamReadError(w, r, req, started, err)
 			return
 		}
 		// In-band terminal markers (billing/plan) — the old proxy swallowed
 		// these; we surface them with explicit semantics.
 		if te := stream.TerminalError(ev); te != nil {
 			status, typ, msg := terminalErrorStatus(te.Message)
-			slog.Warn("terminal marker in stream", "marker", te.Message, "model", req.Model)
+			logChatFailure(r, req, started, status, openAIErrorBody{Type: typ}, 0)
 			s.recordFailure(r, req, true, "terminal_marker")
 			if !started {
 				writeError(w, status, typ, msg, 0)
@@ -293,6 +295,7 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 		}
 
 		if ae := ev.APIError(); ae != nil {
+			logChatAPIError(r, req, started, ae)
 			s.recordFailure(r, req, req.Stream, "upstream_error")
 			if !started {
 				writeUpstreamError(w, ae)
@@ -400,18 +403,19 @@ func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.
 			break
 		}
 		if err != nil {
-			s.handleStreamReadError(w, r, req, false, err, start)
+			s.handleStreamReadError(w, r, req, false, err)
 			return
 		}
 		if te := stream.TerminalError(ev); te != nil {
 			status, typ, msg := terminalErrorStatus(te.Message)
-			slog.Warn("terminal marker in stream", "marker", te.Message, "model", req.Model)
+			logChatFailure(r, req, false, status, openAIErrorBody{Type: typ}, 0)
 			s.recordFailure(r, req, false, "terminal_marker")
 			writeError(w, status, typ, msg, 0)
 			return
 		}
 
 		if ae := ev.APIError(); ae != nil {
+			logChatAPIError(r, req, false, ae)
 			s.recordFailure(r, req, req.Stream, "upstream_error")
 			writeUpstreamError(w, ae)
 			return
@@ -452,6 +456,7 @@ func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.
 		return
 	}
 	if usageOut(st.usage) == 0 && st.finishReason != "length" && st.finishReason != "content_filter" {
+		logChatFailure(r, req, false, http.StatusTooManyRequests, openAIErrorBody{Type: "rate_limit_error", Code: "upstream_empty_response"}, 0)
 		s.recordFailure(r, req, false, "empty_response")
 		writeError(w, http.StatusTooManyRequests, "rate_limit_error",
 			"Empty response from upstream (zero output tokens)", 10)
@@ -505,6 +510,7 @@ func (s *Server) handleProtocolFailure(w http.ResponseWriter, r *http.Request, r
 	if r.Context().Err() != nil {
 		return
 	}
+	logChatFailure(r, req, started, http.StatusBadGateway, body, 0)
 	s.recordFailure(r, req, req.Stream, body.Code)
 	if !started {
 		writeErrorBody(w, http.StatusBadGateway, body, 0)
@@ -563,12 +569,12 @@ func (s *Server) handleTruncatedStream(w http.ResponseWriter, r *http.Request, r
 		return
 	}
 	s.recordFailure(r, req, req.Stream, "truncated_response")
-	slog.Warn("upstream stream ended without finish or abort", "model", req.Model, "stream", req.Stream)
 	body := openAIErrorBody{
 		Message: "Upstream response was truncated before completion (no finish event)",
 		Type:    "server_error",
 		Code:    "upstream_truncated",
 	}
+	logChatFailure(r, req, started, http.StatusBadGateway, body, 0)
 	if !started {
 		writeErrorBody(w, http.StatusBadGateway, body, 0)
 		return
@@ -583,11 +589,10 @@ func (s *Server) handleTruncatedStream(w http.ResponseWriter, r *http.Request, r
 // handleStreamReadError reports a read failure (idle timeout or transport).
 // The I/O watchdog preserves its cancellation cause; downstream cancellation
 // belongs to r.Context() and must not become an upstream failure.
-func (s *Server) handleStreamReadError(w http.ResponseWriter, r *http.Request, req *convert.ChatRequest, started bool, err error, start time.Time) {
+func (s *Server) handleStreamReadError(w http.ResponseWriter, r *http.Request, req *convert.ChatRequest, started bool, err error) {
 	if r.Context().Err() != nil {
 		s.recordFailure(r, req, req.Stream, "canceled")
-		slog.Warn("client disconnected mid-stream", "model", req.Model,
-			"elapsedMs", time.Since(start).Milliseconds())
+		logChatFailure(r, req, started, 0, openAIErrorBody{Type: "canceled", Code: "client_canceled"}, 0)
 		return // nothing sensible left to write
 	}
 
@@ -613,11 +618,7 @@ func (s *Server) handleStreamReadError(w http.ResponseWriter, r *http.Request, r
 		body.Code, body.Message = "upstream_timeout", "Upstream request timed out"
 	}
 	s.recordFailure(r, req, req.Stream, result)
-	slog.Warn("stream read failed",
-		"model", req.Model, "stream", req.Stream,
-		"code", body.Code, "error", err,
-		"elapsedMs", time.Since(start).Milliseconds(),
-	)
+	logChatFailure(r, req, started, status, body, 0)
 	if !started {
 		writeErrorBody(w, status, body, 0)
 		return

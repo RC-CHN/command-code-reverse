@@ -6,6 +6,15 @@ versioning follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Add redacted chat failure logs with a generated `X-Request-ID`, upstream trace
+  correlation, actual key slot and attempt count, response phase, normalized
+  error code/status and elapsed time. Diagnostics work without dashboard
+  retention; when enabled, dashboard record IDs link the two views. Remove raw
+  chat error text and key prefixes from failure logs, preserving response,
+  retry and circuit-breaker behavior.
+
 ### Fixed
 
 - Report upstream HTTP 413 and the CLI's request-size error signatures as

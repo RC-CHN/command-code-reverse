@@ -149,7 +149,7 @@ func withKey[T any](ctx context.Context, p *Pool, hint string, call func(string)
 			return zero, lastErr
 		}
 		slog.Warn("keypool: key failed, spilling to next",
-			"keyPrefix", prefix(ks.state.key), "systemOne", p.systemOne)
+			"keyId", ks.state.id, "systemOne", p.systemOne)
 	}
 }
 
@@ -318,7 +318,7 @@ func (p *Pool) open(lease *keyLease, ttl time.Duration, reason string) {
 	p.mu.Unlock()
 
 	slog.Warn("keypool: circuit opened",
-		"keyPrefix", prefix(ks.key), "reason", reason, "openFor", ttl, "systemOne", p.systemOne)
+		"keyId", ks.id, "reason", reason, "openFor", ttl, "systemOne", p.systemOne)
 }
 
 // creds builds per-request upstream credentials for a key. Session identity

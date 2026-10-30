@@ -156,6 +156,7 @@ func SetModel(ctx context.Context, model string, streamed bool) {
 
 // SelectKey observes the actual key lease, not a pre-request routing guess.
 func SelectKey(ctx context.Context, id string) {
+	observeKey(ctx, id)
 	r := FromContext(ctx)
 	if r == nil || !r.store.allowed[id] {
 		return
