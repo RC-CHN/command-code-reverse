@@ -6,6 +6,8 @@ versioning follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+## [v0.3.4] - 2026-10-30
+
 ### Added
 
 - Add redacted chat failure logs with a generated `X-Request-ID`, upstream trace
