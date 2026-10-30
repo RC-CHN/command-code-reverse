@@ -23,6 +23,10 @@ func TestExplicitStreamFailures(t *testing.T) {
 	}{
 		{"string", `{"type":"error","error":"service unavailable"}`, "server_error", 502},
 		{"object", `{"type":"error","error":{"message":"service unavailable","statusCode":503}}`, "server_error", 503},
+		{"size status", `{"type":"error","error":{"message":"synthetic private payload","statusCode":413}}`, "invalid_request_error", 413},
+		{"size code", `{"type":"error","error":{"message":"synthetic private payload","code":"request_too_large"}}`, "invalid_request_error", 413},
+		{"size text", `{"type":"error","error":"Request body exceeds the 32 MB limit"}`, "invalid_request_error", 413},
+		{"size embedded", `{"type":"error","error":"413 {\"error\":{\"type\":\"request_too_large\",\"message\":\"synthetic private payload\"}}"}`, "invalid_request_error", 413},
 		{"spend cap", `{"type":"error","error":{"message":"Org cap reached","code":"USAGE_EXCEEDED","statusCode":403}}`, "spend_limit_error", 403},
 		{"ZDR code", `{"type":"error","error":{"message":"No ZDR route","code":"CMD_ZDR_NO_PROVIDERS","statusCode":403}}`, "zdr_error", 403},
 		{"ZDR type", `{"type":"error","error":{"message":"No ZDR route","type":"cmd_zdr_no_providers","statusCode":403}}`, "zdr_error", 403},
@@ -54,6 +58,14 @@ func TestExplicitStreamFailures(t *testing.T) {
 					}
 					if streamed && partial && !strings.HasSuffix(body, "data: [DONE]\n\n") {
 						t.Fatalf("missing terminal frame: %s", body)
+					}
+					if tc.status == 413 {
+						if !strings.Contains(body, `"code":"upstream_request_too_large"`) || strings.Contains(body, "synthetic private") || rec.Header().Get("Retry-After") != "" {
+							t.Fatalf("incorrect size error: %s", body)
+						}
+						if streamed && partial && strings.Count(body, "data: [DONE]") != 1 {
+							t.Fatalf("incorrect terminal count: %s", body)
+						}
 					}
 					if tc.name == "spend cap" && (!strings.Contains(body, `"code":"USAGE_EXCEEDED"`) || !strings.Contains(body, "Org cap reached")) {
 						t.Fatalf("spend cap detail lost: %s", body)

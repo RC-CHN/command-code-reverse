@@ -235,6 +235,9 @@ func (p *Pool) reportFailure(ks *keyLease, err error) (rotate bool) {
 	case errors.Is(err, context.Canceled), errors.Is(err, context.DeadlineExceeded):
 		p.releaseProbe(ks)
 		return false
+	case errors.As(err, &ae) && ae.IsRequestTooLarge():
+		p.close(ks)
+		return false
 	case errors.As(err, &ae) && ae.IsZDRUnavailable():
 		p.close(ks)
 		return false

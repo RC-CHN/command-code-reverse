@@ -6,6 +6,14 @@ versioning follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Report upstream HTTP 413 and the CLI's request-size error signatures as
+  413 `invalid_request_error` / `upstream_request_too_large`. After SSE starts,
+  send the same error code and one `[DONE]` without a successful finish. Use a
+  fixed diagnostic instead of echoing the upstream error body; do not retry,
+  rotate keys, or open breakers for request-size failures.
+
 ### Changed
 
 - Refresh the offline CLI version fallback to `1.88.1` and add GPT-6.1 Terra

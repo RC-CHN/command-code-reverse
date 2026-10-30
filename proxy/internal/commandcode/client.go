@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -53,6 +54,16 @@ func (e *APIError) IsInsufficientCredits() bool {
 
 // IsRateLimited reports 429.
 func (e *APIError) IsRateLimited() bool { return e.Status == 429 }
+
+var requestTooLargePattern = regexp.MustCompile(`(?i)request_too_large|over the [0-9]+ mb limit for one request|request body exceeds the [0-9]+ mb limit`)
+
+// IsRequestTooLarge follows the CLI's size-error signatures. The request is
+// unchanged by switching accounts, even when a gateway wraps it in 403/429.
+func (e *APIError) IsRequestTooLarge() bool {
+	return e.Status == http.StatusRequestEntityTooLarge ||
+		requestTooLargePattern.MatchString(e.Code) || requestTooLargePattern.MatchString(e.Type) ||
+		requestTooLargePattern.MatchString(e.Message)
+}
 
 // IsSpendCapExceeded identifies the organization/model spend cap added in
 // CLI 1.49.1. It is a policy limit, not a rejected credential.
