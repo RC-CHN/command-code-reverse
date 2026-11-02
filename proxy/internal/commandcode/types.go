@@ -73,14 +73,16 @@ type WireMessage struct {
 //   - "tool-result": ToolCallID + ToolName + Output          (tool role)
 //   - "reasoning":   Text                                    (assistant)
 type WireContentPart struct {
-	Type       string         `json:"type"`
-	Text       string         `json:"text,omitempty"`
-	Image      string         `json:"image,omitempty"`
-	MimeType   string         `json:"mimeType,omitempty"`
-	ToolCallID string         `json:"toolCallId,omitempty"`
-	ToolName   string         `json:"toolName,omitempty"`
-	Input      map[string]any `json:"input,omitempty"`
-	Output     *WireOutput    `json:"output,omitempty"`
+	Type       string `json:"type"`
+	Text       string `json:"text,omitempty"`
+	Image      string `json:"image,omitempty"`
+	MimeType   string `json:"mimeType,omitempty"`
+	ToolCallID string `json:"toolCallId,omitempty"`
+	ToolName   string `json:"toolName,omitempty"`
+	// An empty object is required for parameterless tool calls. Omit only nil
+	// (other content types); omitempty would drop {} and fail upstream validation.
+	Input  map[string]any `json:"input,omitzero"`
+	Output *WireOutput    `json:"output,omitempty"`
 }
 
 // WireOutput wraps a tool result value.

@@ -419,6 +419,11 @@ func parseArguments(args string) map[string]any {
 	if args != "" {
 		_ = json.Unmarshal([]byte(args), &out)
 	}
+	// JSON null clears a map even when it was initialized. Keep the same
+	// empty-object fallback as missing/non-object arguments and the CLI.
+	if out == nil {
+		out = map[string]any{}
+	}
 	return out
 }
 
