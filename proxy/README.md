@@ -12,6 +12,7 @@ Go 版 Command Code → OpenAI 兼容代理。把 `POST /alpha/generate`（NDJSO
 ## 功能
 
 - `POST /v1/chat/completions` — 流式（SSE）+ 非流式，工具调用、思考链（reasoning_content）、缓存命中透传
+- 历史工具调用保留空参数对象（`arguments: "{}"` → `input: {}`），支持无参数工具执行后的多轮续聊
 - `POST /v1/systemone` — Jev 原生 JSON 决策接口，支持 noul / choice / score；独立熔断
 - `GET /v1/models` — 动态拉取 `/provider/v1/models`（5min 缓存 + 静态兜底）
 - `GET /v1/credits` — 透传 billing/credits + subscriptions（5h/weekly 窗口可见）

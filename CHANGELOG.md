@@ -6,6 +6,17 @@ versioning follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+## [v0.3.5] - 2026-11-02
+
+### Fixed
+
+- Preserve `input: {}` when replaying parameterless tool calls in message
+  history, matching the upstream CLI. Empty maps are no longer omitted during
+  JSON serialization, and null arguments use the existing empty-object
+  fallback. This prevents upstream missing-input validation failures surfaced
+  as 502 responses on subsequent turns. Cover the serialized request and both
+  streaming and non-streaming paths with regression tests.
+
 ## [v0.3.4] - 2026-10-30
 
 ### Added
