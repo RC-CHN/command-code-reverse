@@ -11,6 +11,7 @@ import (
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/convert"
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/keypool"
 	"github.com/RC-CHN/command-code-reverse/proxy/internal/stats"
+	"github.com/RC-CHN/command-code-reverse/proxy/internal/stream"
 )
 
 type chatDiagnosticsKey struct{}
@@ -18,15 +19,64 @@ type chatDiagnosticsKey struct{}
 // All fields are request-local. The pool updates selection synchronously when
 // it acquires a key; logging never guesses the key from the pool's next route.
 type chatDiagnostics struct {
-	requestID string
-	start     time.Time
-	stage     string
-	selection *stats.KeySelection
+	requestID      string
+	start          time.Time
+	stage          string
+	selection      *stats.KeySelection
+	idleTimeout    time.Duration
+	ioWait         time.Duration
+	ioErrorKind    string
+	http2ErrorCode string
+	receivedBytes  int64
+	lastByte       time.Time
+	lastEvent      string
+	lastEventAt    time.Time
+	eventCount     int64
+	finishAt       time.Time
+	finishReason   string
+	state          *streamState
+}
+
+// observeIO runs on the handler goroutine after Generate or a body Read. The
+// watchdog's cancellation cause takes precedence over its transport wakeup.
+func (d *chatDiagnostics) observeIO(start time.Time, n int, err error) {
+	now := time.Now()
+	d.ioWait = now.Sub(start)
+	d.receivedBytes += int64(n)
+	if n > 0 {
+		d.lastByte = now
+	}
+	d.ioErrorKind, d.http2ErrorCode = classifyChatIOError(err)
+}
+
+func (d *chatDiagnostics) observeEvent(ev *stream.Event) {
+	if d == nil {
+		return
+	}
+	d.eventCount++
+	d.lastEventAt = time.Now()
+	// Never retain an arbitrary upstream type or finish reason in diagnostics.
+	switch ev.Type {
+	case "start", "start-step", "text-start", "text-delta", "text-end",
+		"reasoning-start", "reasoning-delta", "reasoning-end",
+		"tool-input-start", "tool-input-delta", "tool-input-end", "tool-call", "tool-result",
+		"finish-step", "finish", "provider-metadata", "cache-write-tokens", "abort", "error":
+		d.lastEvent = ev.Type
+	default:
+		d.lastEvent = "unknown"
+	}
+	if ev.Type == "finish" && d.finishAt.IsZero() {
+		d.finishAt = d.lastEventAt
+		d.finishReason = ev.OpenAIFinishReason()
+		if d.finishReason == "" {
+			d.finishReason = "unknown"
+		}
+	}
 }
 
 func beginChatDiagnostics(w http.ResponseWriter, r *http.Request, keyCount int, start time.Time) (*http.Request, *chatDiagnostics) {
 	ctx, selection := stats.ObserveKeys(r.Context(), keyCount)
-	d := &chatDiagnostics{requestID: commandcode.NewTraceID(), start: start, stage: "generate", selection: selection}
+	d := &chatDiagnostics{requestID: commandcode.NewTraceID(), start: start, stage: "generate", selection: selection, lastEvent: "none", ioErrorKind: "none"}
 	// Generate our own ID rather than logging an arbitrary caller-supplied header.
 	w.Header().Set("X-Request-ID", d.requestID)
 	return r.WithContext(context.WithValue(ctx, chatDiagnosticsKey{}, d)), d
@@ -60,6 +110,28 @@ func logChatFailure(r *http.Request, req *convert.ChatRequest, started bool, sta
 		slog.String("errorType", body.Type),
 		slog.String("code", diagnosticErrorCode(body)),
 		slog.Int64("elapsedMs", time.Since(d.start).Milliseconds()),
+		slog.String("ioErrorKind", d.ioErrorKind),
+		slog.Int64("idleTimeoutMs", d.idleTimeout.Milliseconds()),
+		slog.Int64("ioWaitMs", d.ioWait.Milliseconds()),
+		slog.Int64("receivedBytes", d.receivedBytes),
+		slog.Int64("eventCount", d.eventCount),
+		slog.String("lastEvent", d.lastEvent),
+		slog.Bool("finishSeen", !d.finishAt.IsZero()),
+	}
+	if d.http2ErrorCode != "" {
+		attrs = append(attrs, slog.String("http2ErrorCode", d.http2ErrorCode))
+	}
+	if !d.lastByte.IsZero() {
+		attrs = append(attrs, slog.Int64("sinceLastByteMs", time.Since(d.lastByte).Milliseconds()))
+	}
+	if !d.lastEventAt.IsZero() {
+		attrs = append(attrs, slog.Int64("sinceLastEventMs", time.Since(d.lastEventAt).Milliseconds()))
+	}
+	if !d.finishAt.IsZero() {
+		attrs = append(attrs, slog.String("finishReason", d.finishReason), slog.Int64("sinceFinishMs", time.Since(d.finishAt).Milliseconds()))
+	}
+	if d.state != nil {
+		attrs = append(attrs, slog.Int("pendingToolCalls", len(d.state.pendingTools)))
 	}
 	if upstreamStatus >= 400 && upstreamStatus <= 599 {
 		attrs = append(attrs, slog.Int("upstreamStatus", upstreamStatus))

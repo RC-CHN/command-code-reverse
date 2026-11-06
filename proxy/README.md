@@ -268,6 +268,29 @@ LLM 没有固定请求总时长上限。超时窗口覆盖连接建立及等待�
 `requestId` 由代理生成，经 `X-Request-ID` 响应头返回，并与本次上游 trace ID 一致；
 启用面板时额外记录 `recordId`，可关联最近请求记录。关闭面板仍有错误诊断，无需启用历史留存。
 
+读取故障另记 `ioErrorKind`，区分 `unexpected_eof`、`connection_reset`、`connection_aborted`、
+`broken_pipe`、`connection_closed`、`network_timeout`、`idle_timeout`、DNS/TLS 故障等。
+Go 内置 HTTP/2 的流错误、连接错误和 GOAWAY 分别记录为 `http2_stream_error`、
+`http2_connection_error`、`http2_goaway`，附带白名单内的 `http2ErrorCode`（如 `INTERNAL_ERROR`）；
+无法识别的错误记为 `other`，不会回退到输出原始错误文本。
+
+每条失败日志还包含以下进度信息，流式和非流式均适用：
+
+| 字段 | 含义 |
+|---|---|
+| `idleTimeoutMs` / `ioWaitMs` | 配置的空闲阈值 / 最近一次上游操作的等待时长；`generate` 阶段为请求发送至响应头，`stream` 阶段为一次底层读取（含连续空读） |
+| `receivedBytes` / `eventCount` | 已读取的响应体字节数 / 已解析的事件数；字节数包含心跳和未完成 JSON，不保存这些内容 |
+| `lastEvent` / `sinceLastEventMs` | 最后解析出的事件类型 / 距解析该事件的时间；未知类型统一为 `unknown` |
+| `sinceLastByteMs` | 距最近一次读到非空字节的时间；包含本地处理或下游写入时间，不能直接等同于上游空闲等待 |
+| `finishSeen` / `finishReason` / `sinceFinishMs` | 是否收到 `finish` / 归一化结束原因 / 距首次收到 `finish` 的时间 |
+| `pendingToolCalls` | 已开始传输参数但尚未收到完整 `tool-call` 的数量 |
+
+未收到字节、事件或 `finish` 时，相应时间字段省略。`finishSeen=true` 只表示收到过结束事件，
+不代表整轮成功：后续仍可能出现错误、未完成工具调用或连接中断。
+例如 `ioErrorKind=idle_timeout` 且 `finishSeen=true` 表示已收到结束事件后仍在等待尾部；
+`ioErrorKind=http2_stream_error` 且 `finishSeen=false` 表示结束事件到达前 HTTP/2 流发生错误。
+这些计数和时间仅保留在当前请求中，不缓存响应正文，也不新增逐事件日志。
+
 `errorStatus` 是错误分类状态：SSE 已开始时实际 HTTP 状态仍为 200。
 `upstreamStatus` 仅在有上游 API 错误时记录，表示解析出的错误状态（流内未提供状态时可能归一化为 502），
 不能把它当作流式连接建立时的 HTTP 状态。`key-1` 等编号对应启动配置顺序，透传模式仅记 `passthrough`；

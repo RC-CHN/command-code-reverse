@@ -76,9 +76,12 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 	}
 	watch := newChatIdle(r.Context(), idle)
 	defer watch.close()
+	diagnostic.idleTimeout = idle
+	ioStart := time.Now()
 	watch.begin()
 	body, err := s.deps.Upstream.Generate(watch.ctx, downstreamKey(r.Context()), meta, wire)
 	err = watch.end(err)
+	diagnostic.observeIO(ioStart, 0, nil)
 	if body != nil {
 		defer func() { _ = body.Close() }()
 	}
@@ -86,6 +89,7 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 		var ae *commandcode.APIError
 		var unavailable *keypool.UnavailableError
 		if r.Context().Err() != nil || (!errors.As(err, &ae) && !errors.As(err, &unavailable)) {
+			diagnostic.ioErrorKind, diagnostic.http2ErrorCode = classifyChatIOError(err)
 			s.handleStreamReadError(w, r, &req, false, err)
 			return
 		}
@@ -95,7 +99,7 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	diagnostic.stage = "stream"
-	reader := &chatIdleReader{reader: body, watch: watch}
+	reader := &chatIdleReader{reader: body, watch: watch, diagnostic: diagnostic}
 	if req.Stream {
 		s.serveStream(w, r, reader, &req, start)
 	} else {
@@ -250,6 +254,10 @@ func toolCallArgs(input json.RawMessage) string {
 func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Reader, req *convert.ChatRequest, start time.Time) {
 	reader := stream.NewReader(body)
 	st := &streamState{}
+	diagnostic, _ := r.Context().Value(chatDiagnosticsKey{}).(*chatDiagnostics)
+	if diagnostic != nil {
+		diagnostic.state = st
+	}
 	completionID := ids.NewCompletionID()
 	created := time.Now().Unix()
 	started := false
@@ -279,6 +287,7 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 			s.handleStreamReadError(w, r, req, started, err)
 			return
 		}
+		diagnostic.observeEvent(ev)
 		// In-band terminal markers (billing/plan) — the old proxy swallowed
 		// these; we surface them with explicit semantics.
 		if te := stream.TerminalError(ev); te != nil {
@@ -396,6 +405,10 @@ func (s *Server) serveStream(w http.ResponseWriter, r *http.Request, body io.Rea
 func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.Reader, req *convert.ChatRequest, start time.Time) {
 	reader := stream.NewReader(body)
 	st := &streamState{}
+	diagnostic, _ := r.Context().Value(chatDiagnosticsKey{}).(*chatDiagnostics)
+	if diagnostic != nil {
+		diagnostic.state = st
+	}
 
 	for {
 		ev, err := reader.Next()
@@ -406,6 +419,7 @@ func (s *Server) serveNonStream(w http.ResponseWriter, r *http.Request, body io.
 			s.handleStreamReadError(w, r, req, false, err)
 			return
 		}
+		diagnostic.observeEvent(ev)
 		if te := stream.TerminalError(ev); te != nil {
 			status, typ, msg := terminalErrorStatus(te.Message)
 			logChatFailure(r, req, false, status, openAIErrorBody{Type: typ}, 0)

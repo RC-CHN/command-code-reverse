@@ -85,16 +85,23 @@ func (w *chatIdle) close() {
 }
 
 type chatIdleReader struct {
-	reader io.Reader
-	watch  *chatIdle
+	reader     io.Reader
+	watch      *chatIdle
+	diagnostic *chatDiagnostics
 }
 
 func (r *chatIdleReader) Read(p []byte) (n int, err error) {
 	if len(p) == 0 {
 		return 0, nil
 	}
+	start := time.Now()
 	r.watch.begin()
-	defer func() { err = r.watch.end(err) }()
+	defer func() {
+		err = r.watch.end(err)
+		if r.diagnostic != nil {
+			r.diagnostic.observeIO(start, n, err)
+		}
+	}()
 	for {
 		if cause := context.Cause(r.watch.ctx); cause != nil {
 			return 0, cause
