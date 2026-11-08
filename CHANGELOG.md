@@ -6,6 +6,18 @@ versioning follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+## [v0.3.6] - 2026-11-08
+
+### Added
+
+- Extend chat failure diagnostics with typed network errors and HTTP/2 error
+  codes, received-byte and event counts, last-event and finish progress,
+  pending tool calls, and upstream I/O timing. Distinguish failures before
+  output, mid-stream and after finish without retaining prompts, responses,
+  reasoning, credentials or arbitrary upstream error text. Preserve existing
+  response, timeout, retry and circuit-breaker behavior. Cover streaming and
+  non-streaming paths, including real HTTP/2 stream resets, with regression tests.
+
 ## [v0.3.5] - 2026-11-02
 
 ### Fixed
