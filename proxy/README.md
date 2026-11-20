@@ -4,7 +4,7 @@ Go 版 Command Code → OpenAI 兼容代理。把 `POST /alpha/generate`（NDJSO
 包装成标准 OpenAI 接口，可直接对接任何 OpenAI SDK / 生态工具。
 
 协议依据：`analysis/v1.32.2/README.md`（command-code@1.32.2 静态逆向 + 实测）。
-最新核对：[command-code@1.88.1](../analysis/v1.88.1/README.md)（聊天、CoT、Jev 和 ZDR 主协议未变；已更新离线版本与模型目录，并修正聊天上游请求过大的 413 错误映射）。
+最新核对：[command-code@1.91.1](../analysis/v1.91.1/README.md)（聊天、CoT、Jev 和 ZDR 主协议保持兼容；已更新离线版本，新增 12 个可见模型并从兜底目录移除 Beam 免费版）。
 现已提供原生 Jev 决策端点 `/v1/systemone`；Responses 端点仍待接入。
 此前的 [1.51.3 协议分析](../analysis/v1.51.3/README.md) 和 [真实上游验证](../analysis/v1.51.3/LIVE.md) 保留作为历史记录。
 零第三方依赖（标准库 only）。

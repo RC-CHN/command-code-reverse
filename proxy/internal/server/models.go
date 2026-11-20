@@ -20,12 +20,23 @@ const modelCatalogTTL = 5 * time.Minute
 // upstream fetch (or when the upstream is unreachable). Model IDs follow
 // the CLI gateway catalog, including canonical IDs without a vendor prefix.
 // Listing a model does not guarantee access under the caller's plan.
-// Refreshed against command-code@1.88.1 client catalog; dynamic upstream data takes priority.
+// Refreshed against command-code@1.91.1 client catalog; dynamic upstream data takes priority.
 var fallbackModels = []commandcode.ModelInfo{
+	{ID: "claude-fable-5-2", Name: "Claude Fable 5.2", ContextLength: 1_000_000},
+	{ID: "gpt-6.2-astra", Name: "GPT-6.2 Astra", ContextLength: 1_050_000},
+	{ID: "gpt-6.2-sol", Name: "GPT-6.2 Sol", ContextLength: 1_050_000},
+	{ID: "deepseek/deepseek-v4.1-flash-ultrafast", Name: "DeepSeek V4.1 Flash Ultrafast", ContextLength: 1_048_576},
+	{ID: "Qwen/Qwen4-Max", Name: "Qwen 4 Max", ContextLength: 1_000_000},
+	{ID: "tencent/hy4", Name: "Tencent Hy4", ContextLength: 1_024_000},
+	{ID: "tencent/hy4-flash", Name: "Tencent Hy4 Flash", ContextLength: 1_024_000},
+	{ID: "google/gemini-4-carbon", Name: "Gemini 4 Carbon", ContextLength: 1_000_000},
+	{ID: "thinkingmachines/inkling-2-small:free", Name: "Inkling 2 Small", ContextLength: 1_048_576},
+	{ID: "recursive/flint-v1.0:free", Name: "Flint", ContextLength: 262_144},
+	{ID: "inclusionai/ling-3.1-flash-1019", Name: "Ling 3.1 Flash 1019", ContextLength: 1_000_000},
+	{ID: "meta/muse-ember", Name: "Muse Ember", ContextLength: 1_048_576},
 	{ID: "gpt-6.1-terra", Name: "GPT-6.1 Terra", ContextLength: 1_050_000},
 	{ID: "moonshotai/Kimi-K3.1-Pro", Name: "Kimi K3.1 Pro", ContextLength: 1_048_576},
 	{ID: "minimax/minimax-m3.1-flash", Name: "MiniMax M3.1 Flash", ContextLength: 1_000_000},
-	{ID: "reflection/beam:free", Name: "Beam 1.0", ContextLength: 1_048_576},
 	{ID: "google/gemini-4-argon", Name: "Gemini 4 Argon", ContextLength: 1_000_000},
 	{ID: "meta/muse-wonder-1.0", Name: "Muse Wonder", ContextLength: 1_048_576},
 	{ID: "meta/muse-spark-open", Name: "Muse Spark Open", ContextLength: 1_048_576},

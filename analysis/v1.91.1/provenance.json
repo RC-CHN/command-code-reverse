@@ -1,0 +1,19 @@
+{
+  "package": "command-code",
+  "baseline": "1.88.1",
+  "version": "1.91.1",
+  "checkedAt": "2026-11-19T06:31:13.278544+00:00",
+  "publishedAt": "2026-11-18T20:14:14.275Z",
+  "registryLatest": "1.91.1",
+  "metadataURL": "https://registry.npmjs.org/command-code/1.91.1",
+  "tarballURL": "https://registry.npmjs.org/command-code/-/command-code-1.91.1.tgz",
+  "integrityVerified": true,
+  "sha1Verified": true,
+  "tarballSHA256": "ff7146c3c8fc65fce81bfc35018dc813781ef55a77335b59c643f5f2eb4422d2",
+  "cliSHA256": "18352db218621b984d1b3d176185ff454d1f98090978e285ea13c9bb44ab03d4",
+  "extractedPath": "references/command-code-npm/extracted-1.91.1",
+  "executedCLI": false,
+  "beautifiedSHA256": "09e5152591c4349ca610f889a0d87c96561893779c3ff9988f2999961d0b0d9e",
+  "formatter": "Prettier 3.6.2 (--ignore-path /dev/null --parser babel)",
+  "baselineCLI_SHA256": "d25cfc94298e173bddcbd30b4ec4ce833170c2574de0dc4408d6ceda5a888890"
+}

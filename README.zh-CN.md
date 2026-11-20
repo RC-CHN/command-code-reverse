@@ -1,6 +1,6 @@
 # command-code-reverse
 
-对 [Command Code](https://commandcode.ai) CLI 协议（初始分析 `1.32.2`，最新静态核对 `1.88.1`）的
+对 [Command Code](https://commandcode.ai) CLI 协议（初始分析 `1.32.2`，最新静态核对 `1.91.1`）的
 逆向工程分析，外加一个生产级 Go 代理，把它的上游 API 包装成 OpenAI 兼容接口。
 
 [English README](./README.md)
@@ -16,6 +16,7 @@
 | [`analysis/v1.79.1/`](./analysis/v1.79.1/README.md) | 静态核对：缓存写入用量事件、ACP/RPC 可选请求头和模型目录变化；聊天及思考回传主协议未变 |
 | [`analysis/v1.87.3/`](./analysis/v1.87.3/README.md) | 静态核对：拒答别名、Jev 100 问题上限、新模型及富客户端目录 |
 | [`analysis/v1.88.1/`](./analysis/v1.88.1/README.md) | 静态核对：CLI 多图/上下文恢复、后台免费模型路由；代理已同步模型目录并修正上游请求过大的 413 映射 |
+| [`analysis/v1.91.1/`](./analysis/v1.91.1/README.md) | 静态核对：聊天/CoT/Jev 保持兼容，移除内部 DeepSeek 请求头，新增模型和 CLI 公告；代理已同步离线版本及可见模型目录 |
 | `proxy/` | **commandcode-proxy**——把 `POST /alpha/generate`（NDJSON 流）桥接成 `/v1/chat/completions`（OpenAI SSE）的 Go 服务 |
 | `.github/workflows/` | CI（vet + race 测试 + lint + 镜像构建）与 tag 触发的发版流水线 |
 

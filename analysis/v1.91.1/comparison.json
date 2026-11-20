@@ -1,0 +1,3303 @@
+{
+  "baseline": "1.88.1",
+  "version": "1.91.1",
+  "parser": "Prettier 3.6.2 Babel parser",
+  "scope": "Static official npm package review; no CLI execution or live model calls. Proxy offline version and fallback models subsequently updated after user approval; no release or cluster changes.",
+  "normalizationNote": "AST comparison removes locations/formatting and applies explicit identifier mappings. Binding values, imports, and schema structures are separately checked; equality is scoped to the selected code, not a proof of whole-program equivalence.",
+  "summary": {
+    "coreFunctions": 69,
+    "textIdentical": 36,
+    "astIdenticalAfterBindingRenames": 64,
+    "coreFunctionsWithSubstantiveChanges": [
+      "buildCommandAuthHeaders",
+      "buildCommandApiHeaders",
+      "resolveCommandAuthHeaders",
+      "resolveFeatureModel",
+      "defaultFeatureModel"
+    ]
+  },
+  "functionEvidence": {
+    "isThinkingEffort": {
+      "1.88.1": {
+        "line": 3924,
+        "sha256": "bc1b15e5abd31aa1a012fc2f37568abe50ef3da779729a2d3cbb66eca7041f34"
+      },
+      "1.91.1": {
+        "line": 3938,
+        "sha256": "efac41188b11f987afacf0543770268954e31bc79497835079efbdf9852a0999"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "getApiBaseUrl": {
+      "1.88.1": {
+        "line": 3980,
+        "sha256": "0247b5522ec215f3254f93ce5fedd7d821a2ea7c25aa096db2d444a01b505763"
+      },
+      "1.91.1": {
+        "line": 3994,
+        "sha256": "0247b5522ec215f3254f93ce5fedd7d821a2ea7c25aa096db2d444a01b505763"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "parseModelCatalog": {
+      "1.88.1": {
+        "line": 4205,
+        "sha256": "bfa863a69ea475233586d8068daf71d464e742ed2ab25b3a55816f118740e473"
+      },
+      "1.91.1": {
+        "line": 4219,
+        "sha256": "c5700235bcb0b67a666fceacab1a5c6a90767eefba05930704bd31b578f72a5b"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "buildCatalogFeatureRoles": {
+      "1.88.1": {
+        "line": 4393,
+        "sha256": "f0c276805c4ccfe60dccd8c56c95370bb4e83b17a4fd9cb6dcb54c04849d7ee6"
+      },
+      "1.91.1": {
+        "line": 4407,
+        "sha256": "f0c276805c4ccfe60dccd8c56c95370bb4e83b17a4fd9cb6dcb54c04849d7ee6"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "projectUsageView": {
+      "1.88.1": {
+        "line": 6834,
+        "sha256": "6e47cc0f41bd9f874ca83de6d24f61aaf8d1e40eee6f0d84841d55673d8b35b3"
+      },
+      "1.91.1": {
+        "line": 6849,
+        "sha256": "d00930d09ebde61cdff41a9af591733d0839e8ecb99ce69770d7e38bba0786ab"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "evaluateModelAccess": {
+      "1.88.1": {
+        "line": 7242,
+        "sha256": "8ec75eae3caa6bb280cdb67306e0b089bcbec1f387b5334addb4facf08cb51dc"
+      },
+      "1.91.1": {
+        "line": 7284,
+        "sha256": "13a9b546d219a5bc35d019e12cb3ec5ed58bb819085c20fc17e740148c6a044e"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "defaultFeatureModel": {
+      "1.88.1": {
+        "line": 7404,
+        "sha256": "3fdd013019417bfd61c5c7a37035aac63dc8a300f6ea03efd9588cdfaf2f2e4d"
+      },
+      "1.91.1": {
+        "line": 7446,
+        "sha256": "b0f322074c732d67e50aadafcf24d22d0961261858fb3f4f9691c584eeb2931b"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": false
+    },
+    "resolveFeatureModel": {
+      "1.88.1": {
+        "line": 7415,
+        "sha256": "09288001b4b0c2104d57a8759fc699d0f48438a65898e0069647b27ebaeca834"
+      },
+      "1.91.1": {
+        "line": 7458,
+        "sha256": "1cc3782b10a9809f127692de15d085a9403c3d328c1406fae1e1a0371746ec75"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": false
+    },
+    "freeModelForcingTransition": {
+      "1.88.1": {
+        "line": 7449,
+        "sha256": "5d7eb57a2760d016ddc8ef2b58ab59a49c0b52257418520d841eaa05bf03b346"
+      },
+      "1.91.1": {
+        "line": 7494,
+        "sha256": "5d7eb57a2760d016ddc8ef2b58ab59a49c0b52257418520d841eaa05bf03b346"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "validateCommandApiKey": {
+      "1.88.1": {
+        "line": 8103,
+        "sha256": "b9ac2cbeac6e002141beb61c6df59a01ab8997f2f7ace66df7f123e3f6ae98b3"
+      },
+      "1.91.1": {
+        "line": 8151,
+        "sha256": "930c8f52aed7656a373c05ccf471ba1161e556380401cac289f501b6fa448dea"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "checkExistingCommandAuth": {
+      "1.88.1": {
+        "line": 9384,
+        "sha256": "a409c20317fdc66dd4eb2787cf113d41479a14b0dab4ac80d874681c98b05d27"
+      },
+      "1.91.1": {
+        "line": 9457,
+        "sha256": "dd30947c7ef25aea5178cb12964125036e631db6e64f2f4f797b8c9c18b36a58"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": false
+    },
+    "parseWindowLimitError": {
+      "1.88.1": {
+        "line": 9688,
+        "sha256": "f32117973b157a2643163c4ce701c510368d995b98e84dcab69bce5c50245310"
+      },
+      "1.91.1": {
+        "line": 9778,
+        "sha256": "f32117973b157a2643163c4ce701c510368d995b98e84dcab69bce5c50245310"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "parseVerdict": {
+      "1.88.1": {
+        "line": 29069,
+        "sha256": "3d01459ee88ed08e19ffad503e712973eff15d34fa07a815a565bfd4703942a4"
+      },
+      "1.91.1": {
+        "line": 29329,
+        "sha256": "3d01459ee88ed08e19ffad503e712973eff15d34fa07a815a565bfd4703942a4"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "verifyGoalCompletion": {
+      "1.88.1": {
+        "line": 29085,
+        "sha256": "5a73f214386520ef07a80926ac1a11ade6d748a83f8f8a8895478e42978d3c51"
+      },
+      "1.91.1": {
+        "line": 29406,
+        "sha256": "58bd4eb87d03dae16585b3b4d22e75bf4e01d2015eaa0a933227e9bc6e11a6d8"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": false
+    },
+    "imageSizesOf": {
+      "1.88.1": {
+        "line": 29198,
+        "sha256": "64d267b19601630d609ecfec3ed40bdbed8e6f662156e9f02fb370a28dbdc648"
+      },
+      "1.91.1": {
+        "line": 29491,
+        "sha256": "64d267b19601630d609ecfec3ed40bdbed8e6f662156e9f02fb370a28dbdc648"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "imageBytesOf": {
+      "1.88.1": {
+        "line": 29213,
+        "sha256": "a1d083be306ee8ab9f525912259fc0a1f4f6b4d61a30fe201a7eda8751012ff0"
+      },
+      "1.91.1": {
+        "line": 29506,
+        "sha256": "a1d083be306ee8ab9f525912259fc0a1f4f6b4d61a30fe201a7eda8751012ff0"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "chooseDrops": {
+      "1.88.1": {
+        "line": 29216,
+        "sha256": "5e96d40cb0831ded223245590688803d9f37b2f8fca06ba5ceba06849441bc09"
+      },
+      "1.91.1": {
+        "line": 29509,
+        "sha256": "5e96d40cb0831ded223245590688803d9f37b2f8fca06ba5ceba06849441bc09"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "takeImage": {
+      "1.88.1": {
+        "line": 29229,
+        "sha256": "9b6b06b7b2c1a6620cfd94f5651abc506b2ef72662c54088ccb536d127b86f84"
+      },
+      "1.91.1": {
+        "line": 29522,
+        "sha256": "9b6b06b7b2c1a6620cfd94f5651abc506b2ef72662c54088ccb536d127b86f84"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "dropToolResultImages": {
+      "1.88.1": {
+        "line": 29236,
+        "sha256": "0bb0d86228f1d5837c63c332e4a5f06b2dac3c88cea72c7578313bc9e380f7b6"
+      },
+      "1.91.1": {
+        "line": 29529,
+        "sha256": "65d6b41536146898df209f1e19328be759e4a79584923ba498a592177ab6ffe2"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "dropMessageImages": {
+      "1.88.1": {
+        "line": 29243,
+        "sha256": "04e3cec531e2fd16470f0d82a49d3261bbe0c15435f6bcbbd74814b116076c38"
+      },
+      "1.91.1": {
+        "line": 29536,
+        "sha256": "3e61327b1fc02788684f14cff7a696933139a78d69ee746ef2e62541acc5246b"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "imgCompact": {
+      "1.88.1": {
+        "line": 29255,
+        "sha256": "b5b67cdfc98c80792a280b04c34bb79ebb464b0350de85062d35396abecca3c2"
+      },
+      "1.91.1": {
+        "line": 29548,
+        "sha256": "b5b67cdfc98c80792a280b04c34bb79ebb464b0350de85062d35396abecca3c2"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "hoistToolResultImages": {
+      "1.88.1": {
+        "line": 29429,
+        "sha256": "59395f5d65957191a90a2dceec8ab2e4ae4df5862ee572cf6448c7e4c998ae2e"
+      },
+      "1.91.1": {
+        "line": 29722,
+        "sha256": "029c6453b5b5fdb9fdce8712dc4419b353598e3ca922b8b8629905f935b2227d"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "prepareForSend": {
+      "1.88.1": {
+        "line": 29466,
+        "sha256": "3d17ef17ef013684a1277a40eab66ebb5f4e98420e5c94ca6b5c05bcf02794b9"
+      },
+      "1.91.1": {
+        "line": 29759,
+        "sha256": "3d17ef17ef013684a1277a40eab66ebb5f4e98420e5c94ca6b5c05bcf02794b9"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "readErrorText": {
+      "1.88.1": {
+        "line": 29513,
+        "sha256": "d2d9e9061407926e4495c6af800d60dc5f6f1c755c1da080d13d0252a9154ec5"
+      },
+      "1.91.1": {
+        "line": 29806,
+        "sha256": "d2d9e9061407926e4495c6af800d60dc5f6f1c755c1da080d13d0252a9154ec5"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "isRequestTooLargeError": {
+      "1.88.1": {
+        "line": 29521,
+        "sha256": "1db70448ecedb4ab68664dbfe829c21e476b55768a94a3a93fdd59e849303648"
+      },
+      "1.91.1": {
+        "line": 29814,
+        "sha256": "72468337bfdb5352d6d26a866946a0645d18cd625e908589c1ae492d4aad2ff4"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "isWorkerResourceError": {
+      "1.88.1": {
+        "line": 29525,
+        "sha256": "713bd4e469ec8a5fe10a80d16db2e57898c0f5f7a46870a1e821b7c01ebf642e"
+      },
+      "1.91.1": {
+        "line": 29818,
+        "sha256": "2ec472433c25a684d37338316db7d7e4c340f81ec5233df121ce3d1356ed7eb5"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "isModelCallRetryable": {
+      "1.88.1": {
+        "line": 29533,
+        "sha256": "397fd67062738d7d5cf07084ee380255475d49b3cf0313d0224e34f563364428"
+      },
+      "1.91.1": {
+        "line": 29826,
+        "sha256": "397fd67062738d7d5cf07084ee380255475d49b3cf0313d0224e34f563364428"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "callModelWithRetry": {
+      "1.88.1": {
+        "line": 29541,
+        "sha256": "862086db6cfe19bea8011329eb3d8a77e75480ce62d85d8a916db55e055695f4"
+      },
+      "1.91.1": {
+        "line": 29834,
+        "sha256": "740fdca975be879adfc334b6e8a38a532eeb18506ba27fe7a250317bb6c685aa"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "stripThinkingFrom": {
+      "1.88.1": {
+        "line": 29657,
+        "sha256": "f4019937b5b529400c90e2c24594b1167bdd8c84db3c19cd9b8e9634ed2ab19e"
+      },
+      "1.91.1": {
+        "line": 29950,
+        "sha256": "f4019937b5b529400c90e2c24594b1167bdd8c84db3c19cd9b8e9634ed2ab19e"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "isSizeFailure": {
+      "1.88.1": {
+        "line": 36082,
+        "sha256": "e7f46ea17ad3d47f9bec8918829a2617b6fa613c224b20c8ad53527fd20b2b3d"
+      },
+      "1.91.1": {
+        "line": 36344,
+        "sha256": "e7f46ea17ad3d47f9bec8918829a2617b6fa613c224b20c8ad53527fd20b2b3d"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "requestBytes": {
+      "1.88.1": {
+        "line": 36085,
+        "sha256": "0764d415e1a7cd078310c0d93673cb4cb41a866038a4cea077b36430acf7aef5"
+      },
+      "1.91.1": {
+        "line": 36347,
+        "sha256": "0764d415e1a7cd078310c0d93673cb4cb41a866038a4cea077b36430acf7aef5"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "retryCompacted": {
+      "1.88.1": {
+        "line": 36103,
+        "sha256": "8b06ccc3276aa85503bc9cab0596905995f7b1746ad5a743d9168dab6e631286"
+      },
+      "1.91.1": {
+        "line": 36365,
+        "sha256": "8b06ccc3276aa85503bc9cab0596905995f7b1746ad5a743d9168dab6e631286"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "withoutStaleThinking": {
+      "1.88.1": {
+        "line": 36110,
+        "sha256": "728bc750458d4deb5716ccd3a13ed025807031898cd01d42ad4dcfdb322e4138"
+      },
+      "1.91.1": {
+        "line": 36372,
+        "sha256": "728bc750458d4deb5716ccd3a13ed025807031898cd01d42ad4dcfdb322e4138"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "retryShrunk": {
+      "1.88.1": {
+        "line": 36118,
+        "sha256": "e7d2e1bc1fd251b0418434348b96bc5d3752f6c132c5f15939ef1392703a85f5"
+      },
+      "1.91.1": {
+        "line": 36380,
+        "sha256": "ddd42def20769f2c28518c86b537ef6542f477668ada5bbd776674edf9670859"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "retryAsBystander": {
+      "1.88.1": {
+        "line": 36155,
+        "sha256": "2763db950ffc2de0ca085897667413dfb73d277a4e40c5963df832cb70fce4a3"
+      },
+      "1.91.1": {
+        "line": 36417,
+        "sha256": "1b9f240ca699cc42991a1995acaa94784a2ca028f7d7d87857d67f2125015b4e"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "withContextRecovery": {
+      "1.88.1": {
+        "line": 36175,
+        "sha256": "31e1e8fd292fdfe51264483ec53d9a1f403e8a2f00d40a794e268bc5b43b2fe9"
+      },
+      "1.91.1": {
+        "line": 36437,
+        "sha256": "964c3223c73689059d94bc56bc85f06364ebfd3ec7b4b3d67f9144e9229663d4"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "isRenewalPendingMessage": {
+      "1.88.1": {
+        "line": 36214,
+        "sha256": "b88808140559a8c44c8b258665936da422ddfd526038f7c78d857fa85be296bd"
+      },
+      "1.91.1": {
+        "line": 36476,
+        "sha256": "0e4cc199eb25081244563738c6fc197ba5e52e82a15489a850d55b929439e317"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "buildCommandAuthHeaders": {
+      "1.88.1": {
+        "line": 36229,
+        "sha256": "e7aaf061477d5b82bd0a1022f1441453a663aa15d70b27fd8901d59b6898376d"
+      },
+      "1.91.1": {
+        "line": 36491,
+        "sha256": "b2616f3f364ce9188002ee547ede6a3237c945a0dac68578f4a4c08bd5d059c3"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": false
+    },
+    "isRetryableStatus": {
+      "1.88.1": {
+        "line": 36283,
+        "sha256": "03ad63e7a95106f678f4c4f94fc6587025902d137ebdb3370995e668579f2ced"
+      },
+      "1.91.1": {
+        "line": 36544,
+        "sha256": "03ad63e7a95106f678f4c4f94fc6587025902d137ebdb3370995e668579f2ced"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "createNodeTransport": {
+      "1.88.1": {
+        "line": 36297,
+        "sha256": "695e756e553d4d9bb1cced1752e0b1eabd06de8fe3f2662b8b6ecd04176da161"
+      },
+      "1.91.1": {
+        "line": 36558,
+        "sha256": "695e756e553d4d9bb1cced1752e0b1eabd06de8fe3f2662b8b6ecd04176da161"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "buildCommandApiHeaders": {
+      "1.88.1": {
+        "line": 36433,
+        "sha256": "acafdc0f5b5bda8d34c3246f01a4e0e2933e890699c8be949837131390e0504d"
+      },
+      "1.91.1": {
+        "line": 36694,
+        "sha256": "17ad283e2f4390b8852fd7270241fad5136a340a2708b2d6f18b0522b52af993"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": false
+    },
+    "transportErrorToApiError": {
+      "1.88.1": {
+        "line": 36460,
+        "sha256": "88149dee2764dc4833c1b3c7a3296eb934b0cb958168d0da0ddf0104003d0492"
+      },
+      "1.91.1": {
+        "line": 36719,
+        "sha256": "4eac52409df0d454947cda24fc90f3afd4cecd0dca11a4fefc7699dee5cd9908"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "createCommandApiClient": {
+      "1.88.1": {
+        "line": 36478,
+        "sha256": "f94e08ac0ff035fe2899facbc8b06808373c007e045cb206ce04ddc50f71d1f2"
+      },
+      "1.91.1": {
+        "line": 36737,
+        "sha256": "535e3d9d928fbd177e7e30fa1f8df2097c4bc8bc00c7e0ca5e16c1b03babe164"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "parseSpendCapError": {
+      "1.88.1": {
+        "line": 36551,
+        "sha256": "859d0a393e3a604eebfa8e40e0aaa5c54e5068cf86ca0046497618907b648a64"
+      },
+      "1.91.1": {
+        "line": 36810,
+        "sha256": "2cddbc8097cd133b5e00546349fa59bad9375f9a341e982b516a8a3761ae17e1"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "parseUnavailableModel": {
+      "1.88.1": {
+        "line": 36827,
+        "sha256": "bb2dce29ca8c527452824554a65e329122d9d243b9364f11a692245b598ddfc1"
+      },
+      "1.91.1": {
+        "line": 37086,
+        "sha256": "92b054ba73c61f04efda65d195d2a617d9112182110a0ffc6abf12719727bc5a"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "formatRunError": {
+      "1.88.1": {
+        "line": 36844,
+        "sha256": "cb418365978ed0164ef55f7bdddc9434443e73049f1155d6cca287b1f72d7bbd"
+      },
+      "1.91.1": {
+        "line": 37103,
+        "sha256": "4f655c3110f506f003a427b77ee43e67908e65493aeb4df52c5ce2e813be1a58"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "compressWithLadder": {
+      "1.88.1": {
+        "line": 40807,
+        "sha256": "41736a21d2f1170327e90e13408a8c908b13d62a99c339b1b59d29535f3540b6"
+      },
+      "1.91.1": {
+        "line": 41355,
+        "sha256": "3c543be3ae7e6215128a0e585832557f70005f0b550fa25615d31f88a0bf3970"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "coordinateNote": {
+      "1.88.1": {
+        "line": 40820,
+        "sha256": "8fbe879670e9b1ddecffa2c3ac1c20e1eeaec374e08e2ab07ee6e0f961025472"
+      },
+      "1.91.1": {
+        "line": 41368,
+        "sha256": "8fbe879670e9b1ddecffa2c3ac1c20e1eeaec374e08e2ab07ee6e0f961025472"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "omittedNote": {
+      "1.88.1": {
+        "line": 40832,
+        "sha256": "dd0730b9037792669d23e35d83037e52c20571a136e002880643bffc2ed7135c"
+      },
+      "1.91.1": {
+        "line": 41380,
+        "sha256": "66ad9a959686b7253b61a40b8d985d36c9e30abde9300a187810baafa7428210"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "compressImageBlock": {
+      "1.88.1": {
+        "line": 40839,
+        "sha256": "d6fa21ecc0fc27b72dc63e49b799926c6fc7d578b04b0532213ecf84561e5a0a"
+      },
+      "1.91.1": {
+        "line": 41387,
+        "sha256": "d635992364c36e2cfe8403ab38487bd3314d30a76fdd5a16641b0b52b111f39a"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "compressToolResultImages": {
+      "1.88.1": {
+        "line": 40858,
+        "sha256": "ac244ea658df3b07c1ce484b39bc091c6672c4b7dd533aba5fe5dd3da1eb147d"
+      },
+      "1.91.1": {
+        "line": 41406,
+        "sha256": "ac244ea658df3b07c1ce484b39bc091c6672c4b7dd533aba5fe5dd3da1eb147d"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "compressToolRunResultImages": {
+      "1.88.1": {
+        "line": 40868,
+        "sha256": "eef2fe057badf121a1c19b44a405c101e88a29b294e61cd5d5eaa37eb6583158"
+      },
+      "1.91.1": {
+        "line": 41416,
+        "sha256": "eef2fe057badf121a1c19b44a405c101e88a29b294e61cd5d5eaa37eb6583158"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "responsesProviderOptions": {
+      "1.88.1": {
+        "line": 44524,
+        "sha256": "389d5cefb0c7f3b5fa6c79b1e2c7c5ebfb4743a0711ced7fedd92e37b75a1d64"
+      },
+      "1.91.1": {
+        "line": 45071,
+        "sha256": "389d5cefb0c7f3b5fa6c79b1e2c7c5ebfb4743a0711ced7fedd92e37b75a1d64"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "isRefusalFinishReason": {
+      "1.88.1": {
+        "line": 44946,
+        "sha256": "6c555ba546bfe5e519012d645c0d9e52ded14efdca9f90aa8d1d75df15c0ed2f"
+      },
+      "1.91.1": {
+        "line": 36152,
+        "sha256": "07b90cbc8af54f9a7be475035f713a90befc06a8736ba85793530b3bfc5b6104"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "coerceToolInput": {
+      "1.88.1": {
+        "line": 44958,
+        "sha256": "c02fd5b17dad08056303f6966ee4c63ffa7abfafe1b389fca087c25b7446dc1f"
+      },
+      "1.91.1": {
+        "line": 45502,
+        "sha256": "c02fd5b17dad08056303f6966ee4c63ffa7abfafe1b389fca087c25b7446dc1f"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "toWireTools": {
+      "1.88.1": {
+        "line": 44993,
+        "sha256": "de73d50b44a23d80221e2b7fe032eeb74dd71d3a027e379d1bccabbfb773332e"
+      },
+      "1.91.1": {
+        "line": 45537,
+        "sha256": "de73d50b44a23d80221e2b7fe032eeb74dd71d3a027e379d1bccabbfb773332e"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "toWireMessages": {
+      "1.88.1": {
+        "line": 45012,
+        "sha256": "536cb452b30293c3fbc510b49ae219499d2897ebce65c04e62452ffc6165bc52"
+      },
+      "1.91.1": {
+        "line": 45556,
+        "sha256": "536cb452b30293c3fbc510b49ae219499d2897ebce65c04e62452ffc6165bc52"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "toWireSystem": {
+      "1.88.1": {
+        "line": 45060,
+        "sha256": "8a6a92dfe765aba44071c3fc6c3d3b852f0cb0b04cc2d9e6284998ea92be78b1"
+      },
+      "1.91.1": {
+        "line": 45604,
+        "sha256": "8a6a92dfe765aba44071c3fc6c3d3b852f0cb0b04cc2d9e6284998ea92be78b1"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "readCacheWriteTokens1h": {
+      "1.88.1": {
+        "line": 45068,
+        "sha256": "0f9c74204d17a5c9a5954a1f57ca983051a5650509ae7fd1c2e1dfe5dcc4efb4"
+      },
+      "1.91.1": {
+        "line": 45612,
+        "sha256": "0f9c74204d17a5c9a5954a1f57ca983051a5650509ae7fd1c2e1dfe5dcc4efb4"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "readCapturedCacheWriteTokens": {
+      "1.88.1": {
+        "line": 45079,
+        "sha256": "a2b0940c6dcaeef31ef5fedbb298e930a202f61fb1c2e3fb08c204fc4378c535"
+      },
+      "1.91.1": {
+        "line": 45623,
+        "sha256": "a2b0940c6dcaeef31ef5fedbb298e930a202f61fb1c2e3fb08c204fc4378c535"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "readStreamErrorEvent": {
+      "1.88.1": {
+        "line": 45096,
+        "sha256": "7ac1b1abc1d838b61bf2e6280e8a6feedd12c12e9220ba525f8d7efc482aab0d"
+      },
+      "1.91.1": {
+        "line": 45640,
+        "sha256": "7ac1b1abc1d838b61bf2e6280e8a6feedd12c12e9220ba525f8d7efc482aab0d"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "hasTerminalMarker": {
+      "1.88.1": {
+        "line": 45108,
+        "sha256": "034fde9858d32a05bb4735d7baf319bdf65be2e75f1353b90fcacf0ba3aa57e1"
+      },
+      "1.91.1": {
+        "line": 45652,
+        "sha256": "4174ee6ebc73d44e95a76c7f9782987014c73aa26bfcae493e8c8914ccae7883"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "isStreamErrorRetryable": {
+      "1.88.1": {
+        "line": 45112,
+        "sha256": "69021201c733f8c10e8f8f36c63dc4f79f3223b26b15d40108925ec3ac395a3c"
+      },
+      "1.91.1": {
+        "line": 45656,
+        "sha256": "69021201c733f8c10e8f8f36c63dc4f79f3223b26b15d40108925ec3ac395a3c"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "toWirePermissionMode": {
+      "1.88.1": {
+        "line": 45120,
+        "sha256": "6a7f002b84bea463b2ed7f6cfd190bf74a4ef4ba52b3f7f03a8319e14cdde361"
+      },
+      "1.91.1": {
+        "line": 45664,
+        "sha256": "6a7f002b84bea463b2ed7f6cfd190bf74a4ef4ba52b3f7f03a8319e14cdde361"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "toWireThreadId": {
+      "1.88.1": {
+        "line": 45127,
+        "sha256": "6b19299f70346d5769abff368d4c2f158ef5e077e8f115ca1d1c866ad8d7add3"
+      },
+      "1.91.1": {
+        "line": 45671,
+        "sha256": "49ce3227edd750f1edcff7842336a3d4f4465201f5afaee900a57ff8a7f3d5dc"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "normalizeStopReason": {
+      "1.88.1": {
+        "line": 45130,
+        "sha256": "be06b1eda40aed5bca3d73c8f5a6985c9448de1f393714b5fa9a94e740576975"
+      },
+      "1.91.1": {
+        "line": 45674,
+        "sha256": "be06b1eda40aed5bca3d73c8f5a6985c9448de1f393714b5fa9a94e740576975"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "consumedStopReason": {
+      "1.88.1": {
+        "line": 45139,
+        "sha256": "2fbb58d3d0da140fc911df8dd28ca3e11d2e7ebddd7465287e714468be285ec8"
+      },
+      "1.91.1": {
+        "line": 45683,
+        "sha256": "2fbb58d3d0da140fc911df8dd28ca3e11d2e7ebddd7465287e714468be285ec8"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "formatServerToolOutput": {
+      "1.88.1": {
+        "line": 45149,
+        "sha256": "50ec723bce6d7e9313522c3bcf758a3bf7551a33b688b80d1a992759aa26b4a5"
+      },
+      "1.91.1": {
+        "line": 45693,
+        "sha256": "50ec723bce6d7e9313522c3bcf758a3bf7551a33b688b80d1a992759aa26b4a5"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "guardStreamFailures": {
+      "1.88.1": {
+        "line": 45157,
+        "sha256": "ade54378e69bb5ae59b36cf6bc5456203824476760ca3fc3f9b6e104eccdddbc"
+      },
+      "1.91.1": {
+        "line": 45701,
+        "sha256": "ade54378e69bb5ae59b36cf6bc5456203824476760ca3fc3f9b6e104eccdddbc"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "readLines": {
+      "1.88.1": {
+        "line": 45172,
+        "sha256": "8894d0feedf40a37c49381c7d4cbe68ccb34e0681457792a592a98e10ffaa846"
+      },
+      "1.91.1": {
+        "line": 45716,
+        "sha256": "8894d0feedf40a37c49381c7d4cbe68ccb34e0681457792a592a98e10ffaa846"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "consumeStream": {
+      "1.88.1": {
+        "line": 45186,
+        "sha256": "44b66277632c0327a66a15d97a3eca2d01466ac546dff85da31d9d1a2e5b843e"
+      },
+      "1.91.1": {
+        "line": 45730,
+        "sha256": "a40f072aa5d6155aa6278b3aa60603af1e5d372e2fc43ecb3ff5c890e1f66457"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "createModelClient": {
+      "1.88.1": {
+        "line": 45371,
+        "sha256": "16966f2a94697382a853ec95fb5929aacf82d5ec148ab0cb4579f549bcbf96fc"
+      },
+      "1.91.1": {
+        "line": 45915,
+        "sha256": "db3d1824b6f54c4175de631b35cab037808493b422c1cc2412693edabf030cd6"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "reasoningProviderOptions": {
+      "1.88.1": {
+        "line": 45480,
+        "sha256": "ab481f21eab0a9aaf4f3c39977c1e5ca4e061ae5920d1703974cd3ba0a79cd87"
+      },
+      "1.91.1": {
+        "line": 46024,
+        "sha256": "ab481f21eab0a9aaf4f3c39977c1e5ca4e061ae5920d1703974cd3ba0a79cd87"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "readReasoningMetadata": {
+      "1.88.1": {
+        "line": 45646,
+        "sha256": "208b8b9cb565b3bfa9a5dcd12edfeccb0f9f99612619184c1ecfd590f65b3ab1"
+      },
+      "1.91.1": {
+        "line": 46190,
+        "sha256": "208b8b9cb565b3bfa9a5dcd12edfeccb0f9f99612619184c1ecfd590f65b3ab1"
+      },
+      "textIdentical": true,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "buildMachineFingerprint": {
+      "1.88.1": {
+        "line": 53007,
+        "sha256": "9ef4413cac925f1a2f2f71dc5f56aaaa4370e1c2777b86825d1ba6ba8e3a7b42"
+      },
+      "1.91.1": {
+        "line": 53624,
+        "sha256": "4239bb33d978ac0058ac0b6ae89142b3cb92140e739445815ad70e132f6e6c88"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "parseSystemOneQuery": {
+      "1.88.1": {
+        "line": 61196,
+        "sha256": "68598f56f2da71692aca87931429a17ad555e89053c84f4a5a6e6f5e4d5689db"
+      },
+      "1.91.1": {
+        "line": 61980,
+        "sha256": "49f7688416008714ad269a0b56679b52bcd65f409b75f77ee5eff5e31447416a"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "runSystemOne": {
+      "1.88.1": {
+        "line": 61216,
+        "sha256": "e72d8b0c9d4dbc6e1ea8a40fafc9f0580f66346d57c8b993b6a26fb03061f119"
+      },
+      "1.91.1": {
+        "line": 62000,
+        "sha256": "e0537c569ca83d880ef30949ac9da46c7bbecf5f63949556583a2d35475d9a8f"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "resolveCommandAuthHeaders": {
+      "1.88.1": {
+        "line": 62963,
+        "sha256": "1f6ec37359c605a846d92e01ced369406b1c57ce2a24d69cee85a8997c550fe7"
+      },
+      "1.91.1": {
+        "line": 63747,
+        "sha256": "f78001bdbe7088923332d9391ae0d54331ff9513c0d93b5b07fe4caabead312d"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": false
+    },
+    "trackCliSessionExistsEvent": {
+      "1.88.1": {
+        "line": 145334,
+        "sha256": "03b9059aec406ab4fb9ce69df23838c45d3816535ff4387343cacd684fefdd99"
+      },
+      "1.91.1": {
+        "line": 150074,
+        "sha256": "5c4aaf8008148130aafb1fe6b80c3e40b42b34d80dfa1e75c34c9a61b927bf9b"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": true
+    },
+    "getGoalAutoContinueSync": {
+      "1.88.1": null,
+      "1.91.1": {
+        "line": 7921,
+        "sha256": "9ccdc57a9a0387addba4dde0e9bf2a29a37f2a4e05568d686f5436a7747a86a7"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": false
+    },
+    "isCommandApiKeyRejected": {
+      "1.88.1": null,
+      "1.91.1": {
+        "line": 8169,
+        "sha256": "a40d3da0c643f991197f687a571fa773054d7d54ec7c2427f6077273a7a8d541"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": false
+    },
+    "validateStoredCommandApiKey": {
+      "1.88.1": null,
+      "1.91.1": {
+        "line": 9447,
+        "sha256": "fff50e540070d50f2220ce5679295ed8263eaa51c1dfd7a44fd226db4dde590e"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": false
+    },
+    "reasoningTagAt": {
+      "1.88.1": null,
+      "1.91.1": {
+        "line": 29304,
+        "sha256": "65a03267f9f717e1c19a157568804706f0de624ae0169265972aa6b47c4aa3d1"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": false
+    },
+    "stripThinkTags": {
+      "1.88.1": null,
+      "1.91.1": {
+        "line": 29309,
+        "sha256": "c78325d4437a7d26d354ba01ee859107f094c4d3f0058f23ac941b168b4a3a13"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": false
+    },
+    "requestVerdict": {
+      "1.88.1": null,
+      "1.91.1": {
+        "line": 29363,
+        "sha256": "128532ac0ea8cda0383f4495887bbc8d53eee2dd100bde3c10f019088c8fd5dc"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": false
+    },
+    "parseNotices": {
+      "1.88.1": null,
+      "1.91.1": {
+        "line": 114083,
+        "sha256": "f56e2ab5f523afc1681b037eb23f9e734a9fa8f2c339afef456749222187989a"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": false
+    },
+    "refreshNotices": {
+      "1.88.1": null,
+      "1.91.1": {
+        "line": 114380,
+        "sha256": "17e9f580afbecfb5495c2614613107113766676489c213a129635a00bf28ac38"
+      },
+      "textIdentical": false,
+      "astIdenticalAfterBindingRenames": false
+    }
+  },
+  "bindingEvidence": [
+    {
+      "oldName": "fk",
+      "newName": "Ak",
+      "1.88.1": {
+        "line": 88669,
+        "value": "cli"
+      },
+      "1.91.1": {
+        "line": 90002,
+        "value": "cli"
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "SP",
+      "newName": "NP",
+      "1.88.1": {
+        "line": 90575,
+        "value": "command-code:device-fingerprint:v1"
+      },
+      "1.91.1": {
+        "line": 91915,
+        "value": "command-code:device-fingerprint:v1"
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "vP",
+      "newName": "DP",
+      "1.88.1": {
+        "line": 90574,
+        "value": 1
+      },
+      "1.91.1": {
+        "line": 91914,
+        "value": 1
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "nS",
+      "newName": "Hr",
+      "1.88.1": {
+        "line": 87748,
+        "value": 10
+      },
+      "1.91.1": {
+        "line": 78980,
+        "value": 10
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "iS",
+      "newName": "qr",
+      "1.88.1": {
+        "line": 87753,
+        "value": 3
+      },
+      "1.91.1": {
+        "line": 78985,
+        "value": 3
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "aS",
+      "newName": "zr",
+      "1.88.1": {
+        "line": 87752,
+        "value": 3
+      },
+      "1.91.1": {
+        "line": 78984,
+        "value": 3
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "hb",
+      "newName": "OC",
+      "1.88.1": {
+        "line": 89362,
+        "value": 5000000
+      },
+      "1.91.1": {
+        "line": 90703,
+        "value": 5000000
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "fb",
+      "newName": "LC",
+      "1.88.1": {
+        "line": 89363,
+        "value": [
+          80,
+          60,
+          40,
+          20
+        ]
+      },
+      "1.91.1": {
+        "line": 90704,
+        "value": [
+          80,
+          60,
+          40,
+          20
+        ]
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "cE",
+      "newName": "EE",
+      "1.88.1": {
+        "line": 90082,
+        "value": {
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0
+        }
+      },
+      "1.91.1": {
+        "line": 91421,
+        "value": {
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "lE",
+      "newName": "TE",
+      "1.88.1": {
+        "line": 90081,
+        "value": "x-cmd-zdr"
+      },
+      "1.91.1": {
+        "line": 91420,
+        "value": "x-cmd-zdr"
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "gS",
+      "newName": "ts",
+      "1.88.1": {
+        "line": 87760,
+        "value": 5
+      },
+      "1.91.1": {
+        "line": 78992,
+        "value": 5
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "aE",
+      "newName": "bE",
+      "1.88.1": {
+        "line": 90078,
+        "value": "/alpha/generate"
+      },
+      "1.91.1": {
+        "line": 91417,
+        "value": "/alpha/generate"
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "iE",
+      "newName": "CE",
+      "1.88.1": {
+        "line": 90079,
+        "value": 64000
+      },
+      "1.91.1": {
+        "line": 91418,
+        "value": 64000
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "fS",
+      "newName": "xS",
+      "1.88.1": {
+        "line": 87764,
+        "value": "[image left out: an older screenshot was dropped to keep this request under its size limit. You can no longer see it, so do not describe it from memory. If it matters, take the screenshot or read the file again, or ask the user to attach it again.]"
+      },
+      "1.91.1": {
+        "line": 89097,
+        "value": "[image left out: an older screenshot was dropped to keep this request under its size limit. You can no longer see it, so do not describe it from memory. If it matters, take the screenshot or read the file again, or ask the user to attach it again.]"
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "sE",
+      "newName": "bk",
+      "1.88.1": {
+        "line": 90070,
+        "value": {
+          "expression": "new Set([\"refusal\", \"content_filter\", \"content-filter\"])"
+        }
+      },
+      "1.91.1": {
+        "line": 89959,
+        "value": {
+          "expression": "new Set([\"refusal\", \"content_filter\", \"content-filter\"])"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "pk",
+      "newName": "Pk",
+      "1.88.1": {
+        "line": 88652,
+        "value": "Renewal payment processing. Credits refill when payment clears."
+      },
+      "1.91.1": {
+        "line": 89986,
+        "value": "Renewal payment processing. Credits refill when payment clears."
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "vS",
+      "newName": "AS",
+      "1.88.1": {
+        "line": 87793,
+        "value": {
+          "expression": "/request_too_large|over the \\d+ mb limit for one request|request body exceeds the \\d+ mb limit/"
+        }
+      },
+      "1.91.1": {
+        "line": 89126,
+        "value": {
+          "expression": "/request_too_large|over the \\d+ mb limit for one request|request body exceeds the \\d+ mb limit/"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "xn",
+      "newName": "Dn",
+      "1.88.1": {
+        "line": 73906,
+        "value": {
+          "off": true,
+          "low": true,
+          "medium": true,
+          "high": true,
+          "xhigh": true,
+          "max": true
+        }
+      },
+      "1.91.1": {
+        "line": 74718,
+        "value": {
+          "off": true,
+          "low": true,
+          "medium": true,
+          "high": true,
+          "xhigh": true,
+          "max": true
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "SS",
+      "newName": "RS",
+      "1.88.1": {
+        "line": 87795,
+        "value": {
+          "expression": "/worker_exceeded_resources|error 1102|exceeded (its )?resource limits/"
+        }
+      },
+      "1.91.1": {
+        "line": 89128,
+        "value": {
+          "expression": "/worker_exceeded_resources|error 1102|exceeded (its )?resource limits/"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "Fn",
+      "newName": "Wn",
+      "1.88.1": {
+        "line": 77074,
+        "value": 1
+      },
+      "1.91.1": {
+        "line": 78308,
+        "value": 1
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "Sk",
+      "newName": "Lk",
+      "1.88.1": {
+        "line": 88687,
+        "value": "USAGE_EXCEEDED"
+      },
+      "1.91.1": {
+        "line": 90020,
+        "value": "USAGE_EXCEEDED"
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "pR",
+      "newName": "LR",
+      "1.88.1": {
+        "line": 92384,
+        "value": "{\"state\": <text or JSON>, \"questions\": {\"<name>\": {\"type\": \"noul\" | \"choice\" | \"score\", \"instructions\": \"...\", \"criteria\": ...}}}"
+      },
+      "1.91.1": {
+        "line": 93738,
+        "value": "{\"state\": <text or JSON>, \"questions\": {\"<name>\": {\"type\": \"noul\" | \"choice\" | \"score\", \"instructions\": \"...\", \"criteria\": ...}}}"
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "xk",
+      "newName": "Wk",
+      "1.88.1": {
+        "line": 88751,
+        "value": "Model/provider not recognized:"
+      },
+      "1.91.1": {
+        "line": 90084,
+        "value": "Model/provider not recognized:"
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "Dr",
+      "newName": "Ur",
+      "1.88.1": {
+        "line": 77726,
+        "value": "https://commandcode.ai"
+      },
+      "1.91.1": {
+        "line": 78960,
+        "value": "https://commandcode.ai"
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "dS",
+      "newName": "Qr",
+      "1.88.1": {
+        "line": 87756,
+        "value": 2
+      },
+      "1.91.1": {
+        "line": 78988,
+        "value": 2
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "uS",
+      "newName": "Xr",
+      "1.88.1": {
+        "line": 87757,
+        "value": 5000
+      },
+      "1.91.1": {
+        "line": 78989,
+        "value": 5000
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "cS",
+      "newName": "Jr",
+      "1.88.1": {
+        "line": 87755,
+        "value": 4194304
+      },
+      "1.91.1": {
+        "line": 78987,
+        "value": 4194304
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "lS",
+      "newName": "Yr",
+      "1.88.1": {
+        "line": 87754,
+        "value": 8388608
+      },
+      "1.91.1": {
+        "line": 78986,
+        "value": 8388608
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "rR",
+      "newName": "TR",
+      "1.88.1": {
+        "line": 92327,
+        "value": "/provider/v1/systemone"
+      },
+      "1.91.1": {
+        "line": 93683,
+        "value": "/provider/v1/systemone"
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "Jr",
+      "newName": "vs",
+      "1.88.1": {
+        "line": 77833,
+        "value": {
+          "allowed": true,
+          "minimumPlanId": null,
+          "minimumPlanName": null
+        }
+      },
+      "1.91.1": {
+        "line": 79087,
+        "value": {
+          "allowed": true,
+          "minimumPlanId": null,
+          "minimumPlanName": null
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "Kr",
+      "newName": "hs",
+      "1.88.1": {
+        "line": 77795,
+        "value": {
+          "individual-go": {
+            "allowedCategories": [
+              {
+                "expression": "zr = \"opensource\""
+              }
+            ]
+          },
+          "individual-go-v1": {
+            "allowedCategories": [
+              {
+                "expression": "zr"
+              }
+            ]
+          },
+          "individual-goat": {
+            "allowedCategories": [
+              {
+                "expression": "zr"
+              }
+            ]
+          },
+          "individual-pro": {
+            "allowedCategories": [
+              {
+                "expression": "Vr = \"premium\""
+              },
+              {
+                "expression": "zr"
+              }
+            ]
+          },
+          "individual-pro-v1": {
+            "allowedCategories": [
+              {
+                "expression": "Vr"
+              },
+              {
+                "expression": "zr"
+              }
+            ]
+          },
+          "individual-provider": {
+            "allowedCategories": [
+              {
+                "expression": "Vr"
+              },
+              {
+                "expression": "zr"
+              }
+            ]
+          },
+          "individual-max": {
+            "allowedCategories": [
+              {
+                "expression": "Vr"
+              },
+              {
+                "expression": "zr"
+              }
+            ]
+          },
+          "individual-ultra": {
+            "allowedCategories": [
+              {
+                "expression": "Vr"
+              },
+              {
+                "expression": "zr"
+              }
+            ]
+          },
+          "teams-pro": {
+            "allowedCategories": [
+              {
+                "expression": "Vr"
+              },
+              {
+                "expression": "zr"
+              }
+            ]
+          }
+        }
+      },
+      "1.91.1": {
+        "line": 79049,
+        "value": {
+          "individual-go": {
+            "allowedCategories": [
+              {
+                "expression": "gs = \"opensource\""
+              }
+            ]
+          },
+          "individual-go-v1": {
+            "allowedCategories": [
+              {
+                "expression": "gs"
+              }
+            ]
+          },
+          "individual-goat": {
+            "allowedCategories": [
+              {
+                "expression": "gs"
+              }
+            ]
+          },
+          "individual-pro": {
+            "allowedCategories": [
+              {
+                "expression": "ps = \"premium\""
+              },
+              {
+                "expression": "gs"
+              }
+            ]
+          },
+          "individual-pro-v1": {
+            "allowedCategories": [
+              {
+                "expression": "ps"
+              },
+              {
+                "expression": "gs"
+              }
+            ]
+          },
+          "individual-provider": {
+            "allowedCategories": [
+              {
+                "expression": "ps"
+              },
+              {
+                "expression": "gs"
+              }
+            ]
+          },
+          "individual-max": {
+            "allowedCategories": [
+              {
+                "expression": "ps"
+              },
+              {
+                "expression": "gs"
+              }
+            ]
+          },
+          "individual-ultra": {
+            "allowedCategories": [
+              {
+                "expression": "ps"
+              },
+              {
+                "expression": "gs"
+              }
+            ]
+          },
+          "teams-pro": {
+            "allowedCategories": [
+              {
+                "expression": "ps"
+              },
+              {
+                "expression": "gs"
+              }
+            ]
+          }
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "wk",
+      "newName": "Dk",
+      "1.88.1": {
+        "line": 88691,
+        "value": "Interrupted by user"
+      },
+      "1.91.1": {
+        "line": 90024,
+        "value": "Interrupted by user"
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "Ck",
+      "newName": "Fk",
+      "1.88.1": {
+        "line": 88693,
+        "value": {
+          "INSUFFICIENT_CREDITS": "Insufficient credits",
+          "MODEL_NOT_AVAILABLE": "Model not available",
+          "PREMIUM_CREDITS_EXHAUSTED": "Premium credits exhausted",
+          "SPEND_LIMIT_REACHED": "Spend limit reached",
+          "USAGE_LIMIT_REACHED": "Usage limit reached",
+          "ERROR": "Error"
+        }
+      },
+      "1.91.1": {
+        "line": 90026,
+        "value": {
+          "INSUFFICIENT_CREDITS": "Insufficient credits",
+          "MODEL_NOT_AVAILABLE": "Model not available",
+          "PREMIUM_CREDITS_EXHAUSTED": "Premium credits exhausted",
+          "SPEND_LIMIT_REACHED": "Spend limit reached",
+          "USAGE_LIMIT_REACHED": "Usage limit reached",
+          "ERROR": "Error"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "gk",
+      "newName": "xk",
+      "1.88.1": {
+        "line": 88653,
+        "value": "RENEWAL_PENDING"
+      },
+      "1.91.1": {
+        "line": 89987,
+        "value": "RENEWAL_PENDING"
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "Ek",
+      "newName": "Bk",
+      "1.88.1": {
+        "line": 88734,
+        "value": "\n\nType \"continue\" to try again. If the issue persists, contact support: https://commandcode.ai/discord"
+      },
+      "1.91.1": {
+        "line": 90067,
+        "value": "\n\nType \"continue\" to try again. If the issue persists, contact support: https://commandcode.ai/discord"
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "_o",
+      "newName": "Ho",
+      "1.88.1": {
+        "line": 77448,
+        "value": {
+          "expression": "class extends Fo {\n        static {\n          __name(this, \"APIConnectionError\");\n        }\n        status = void 0;\n        constructor({ message: e, cause: n }) {\n          (super(void 0, void 0, e || \"Connection error.\", void 0),\n            n && (this.cause = n));\n        }\n      }"
+        }
+      },
+      "1.91.1": {
+        "line": 78682,
+        "value": {
+          "expression": "class extends Wo {\n        static {\n          __name(this, \"APIConnectionError\");\n        }\n        status = void 0;\n        constructor({ message: e, cause: n }) {\n          (super(void 0, void 0, e || \"Connection error.\", void 0),\n            n && (this.cause = n));\n        }\n      }"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "Bo",
+      "newName": "Ko",
+      "1.88.1": {
+        "line": 77472,
+        "value": {
+          "expression": "class extends Fo {\n        static {\n          __name(this, \"AuthenticationError\");\n        }\n        status = 401;\n      }"
+        }
+      },
+      "1.91.1": {
+        "line": 78706,
+        "value": {
+          "expression": "class extends Wo {\n        static {\n          __name(this, \"AuthenticationError\");\n        }\n        status = 401;\n      }"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "eO",
+      "newName": "wO",
+      "1.88.1": {
+        "line": 92671,
+        "value": {
+          "expression": "__name(\n        (e) =>\n          getCommandAuthKey({\n            runtime: e.runtime,\n            path: e.authFilePath,\n            env: e.env,\n          }),\n        \"defaultGetApiKey\",\n      )"
+        }
+      },
+      "1.91.1": {
+        "line": 94027,
+        "value": {
+          "expression": "__name(\n        (e) =>\n          getCommandAuthKey({\n            runtime: e.runtime,\n            path: e.authFilePath,\n            env: e.env,\n          }),\n        \"defaultGetApiKey\",\n      )"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "yS",
+      "newName": "IS",
+      "1.88.1": {
+        "line": 87788,
+        "value": {
+          "expression": "__name((e) => `[image ${e} attached below]`, \"hoistedImageNote\")"
+        }
+      },
+      "1.91.1": {
+        "line": 89121,
+        "value": {
+          "expression": "__name((e) => `[image ${e} attached below]`, \"hoistedImageNote\")"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "hk",
+      "newName": "Ik",
+      "1.88.1": {
+        "line": 88656,
+        "value": {
+          "OAUTH_TOKEN": "x-oauth-token",
+          "OAUTH_PROVIDER": "x-oauth-provider",
+          "PROJECT_SLUG": "x-project-slug",
+          "TASTE_LEARNING": "x-taste-learning",
+          "CLI_ENVIRONMENT": "x-cli-environment",
+          "CLI_VERSION": "x-command-code-version",
+          "CLI_SURFACE": "x-cli-surface",
+          "OSS_PRIMARY_PROVIDER": "x-oss-primary-provider",
+          "SESSION_ID": "x-session-id",
+          "CMD_ZDR": "x-cmd-zdr",
+          "PROVIDER_DEEPSEEK_INTERNAL": "x-cmd-provider-deepseek-internal"
+        }
+      },
+      "1.91.1": {
+        "line": 89990,
+        "value": {
+          "OAUTH_TOKEN": "x-oauth-token",
+          "OAUTH_PROVIDER": "x-oauth-provider",
+          "PROJECT_SLUG": "x-project-slug",
+          "TASTE_LEARNING": "x-taste-learning",
+          "CLI_ENVIRONMENT": "x-cli-environment",
+          "CLI_VERSION": "x-command-code-version",
+          "CLI_SURFACE": "x-cli-surface",
+          "OSS_PRIMARY_PROVIDER": "x-oss-primary-provider",
+          "SESSION_ID": "x-session-id",
+          "CMD_ZDR": "x-cmd-zdr"
+        }
+      },
+      "equalAfterBindingRenames": false
+    },
+    {
+      "oldName": "zr",
+      "newName": "gs",
+      "1.88.1": {
+        "line": 77796,
+        "value": "opensource"
+      },
+      "1.91.1": {
+        "line": 79050,
+        "value": "opensource"
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "Vr",
+      "newName": "ps",
+      "1.88.1": {
+        "line": 77799,
+        "value": "premium"
+      },
+      "1.91.1": {
+        "line": 79053,
+        "value": "premium"
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "Fo",
+      "newName": "Wo",
+      "1.88.1": {
+        "line": 77389,
+        "value": {
+          "expression": "class _APIError extends Error {\n        static {\n          __name(this, \"_APIError\");\n        }\n        status;\n        headers;\n        error;\n        code;\n        param;\n        type;\n        request_id;\n        constructor(e, n, o, r) {\n          (super(_APIError.makeMessage(e, n, o)),\n            (this.status = e),\n            (this.headers = r),\n            (this.request_id = r?.[\"lb-request-id\"]));\n          const s = n;\n          ((this.error = s),\n            (this.code = s?.code),\n            null != s?.status && (this.status = s.status));\n        }\n        static makeMessage(e, n, o) {\n          const r =\n              n && \"object\" == typeof n && \"message\" in n ? n.message : void 0,\n            s = r\n              ? \"string\" == typeof r\n                ? r\n                : JSON.stringify(r)\n              : n\n                ? JSON.stringify(n)\n                : o;\n          return e && s\n            ? `${e} ${s}`\n            : e\n              ? `${e} status code (no body)`\n              : s || \"(no status code or body)\";\n        }\n        static generate(e, n, o, r) {\n          if (!e) return new _o({ cause: n instanceof Error ? n : void 0 });\n          const s = n?.error;\n          return 400 === e\n            ? new Uo(e, s, o, r)\n            : 401 === e\n              ? new Bo(e, s, o, r)\n              : 403 === e\n                ? new jo(e, s, o, r)\n                : 404 === e\n                  ? new Wo(e, s, o, r)\n                  : 409 === e\n                    ? new Ho(e, s, o, r)\n                    : 422 === e\n                      ? new Go(e, s, o, r)\n                      : 429 === e\n                        ? new Vo(e, s, o, r)\n                        : e >= 500\n                          ? new zo(e, s, o, r)\n                          : new _APIError(e, s, o, r);\n        }\n      }"
+        }
+      },
+      "1.91.1": {
+        "line": 78623,
+        "value": {
+          "expression": "class _APIError extends Error {\n        static {\n          __name(this, \"_APIError\");\n        }\n        status;\n        headers;\n        error;\n        code;\n        param;\n        type;\n        request_id;\n        constructor(e, n, o, r) {\n          (super(_APIError.makeMessage(e, n, o)),\n            (this.status = e),\n            (this.headers = r),\n            (this.request_id = r?.[\"lb-request-id\"]));\n          const s = n;\n          ((this.error = s),\n            (this.code = s?.code),\n            null != s?.status && (this.status = s.status));\n        }\n        static makeMessage(e, n, o) {\n          const r =\n              n && \"object\" == typeof n && \"message\" in n ? n.message : void 0,\n            s = r\n              ? \"string\" == typeof r\n                ? r\n                : JSON.stringify(r)\n              : n\n                ? JSON.stringify(n)\n                : o;\n          return e && s\n            ? `${e} ${s}`\n            : e\n              ? `${e} status code (no body)`\n              : s || \"(no status code or body)\";\n        }\n        static generate(e, n, o, r) {\n          if (!e) return new Ho({ cause: n instanceof Error ? n : void 0 });\n          const s = n?.error;\n          return 400 === e\n            ? new Vo(e, s, o, r)\n            : 401 === e\n              ? new Ko(e, s, o, r)\n              : 403 === e\n                ? new zo(e, s, o, r)\n                : 404 === e\n                  ? new qo(e, s, o, r)\n                  : 409 === e\n                    ? new Yo(e, s, o, r)\n                    : 422 === e\n                      ? new Jo(e, s, o, r)\n                      : 429 === e\n                        ? new Qo(e, s, o, r)\n                        : e >= 500\n                          ? new Xo(e, s, o, r)\n                          : new _APIError(e, s, o, r);\n        }\n      }"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "Uo",
+      "newName": "Vo",
+      "1.88.1": {
+        "line": 77466,
+        "value": {
+          "expression": "class extends Fo {\n        static {\n          __name(this, \"BadRequestError\");\n        }\n        status = 400;\n      }"
+        }
+      },
+      "1.91.1": {
+        "line": 78700,
+        "value": {
+          "expression": "class extends Wo {\n        static {\n          __name(this, \"BadRequestError\");\n        }\n        status = 400;\n      }"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "jo",
+      "newName": "zo",
+      "1.88.1": {
+        "line": 77478,
+        "value": {
+          "expression": "class extends Fo {\n        static {\n          __name(this, \"PermissionDeniedError\");\n        }\n        status = 403;\n      }"
+        }
+      },
+      "1.91.1": {
+        "line": 78712,
+        "value": {
+          "expression": "class extends Wo {\n        static {\n          __name(this, \"PermissionDeniedError\");\n        }\n        status = 403;\n      }"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "Wo",
+      "newName": "qo",
+      "1.88.1": {
+        "line": 77484,
+        "value": {
+          "expression": "class extends Fo {\n        static {\n          __name(this, \"NotFoundError\");\n        }\n        status = 404;\n      }"
+        }
+      },
+      "1.91.1": {
+        "line": 78718,
+        "value": {
+          "expression": "class extends Wo {\n        static {\n          __name(this, \"NotFoundError\");\n        }\n        status = 404;\n      }"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "Ho",
+      "newName": "Yo",
+      "1.88.1": {
+        "line": 77490,
+        "value": {
+          "expression": "class extends Fo {\n        static {\n          __name(this, \"ConflictError\");\n        }\n        status = 409;\n      }"
+        }
+      },
+      "1.91.1": {
+        "line": 78724,
+        "value": {
+          "expression": "class extends Wo {\n        static {\n          __name(this, \"ConflictError\");\n        }\n        status = 409;\n      }"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "Go",
+      "newName": "Jo",
+      "1.88.1": {
+        "line": 77496,
+        "value": {
+          "expression": "class extends Fo {\n        static {\n          __name(this, \"UnprocessableEntityError\");\n        }\n        status = 422;\n      }"
+        }
+      },
+      "1.91.1": {
+        "line": 78730,
+        "value": {
+          "expression": "class extends Wo {\n        static {\n          __name(this, \"UnprocessableEntityError\");\n        }\n        status = 422;\n      }"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "Vo",
+      "newName": "Qo",
+      "1.88.1": {
+        "line": 77502,
+        "value": {
+          "expression": "class extends Fo {\n        static {\n          __name(this, \"RateLimitError\");\n        }\n        status = 429;\n      }"
+        }
+      },
+      "1.91.1": {
+        "line": 78736,
+        "value": {
+          "expression": "class extends Wo {\n        static {\n          __name(this, \"RateLimitError\");\n        }\n        status = 429;\n      }"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "zo",
+      "newName": "Xo",
+      "1.88.1": {
+        "line": 77508,
+        "value": {
+          "expression": "class extends Fo {\n        static {\n          __name(this, \"InternalServerError\");\n        }\n      }"
+        }
+      },
+      "1.91.1": {
+        "line": 78742,
+        "value": {
+          "expression": "class extends Wo {\n        static {\n          __name(this, \"InternalServerError\");\n        }\n      }"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "oR",
+      "newName": "CR",
+      "1.88.1": {
+        "line": 92326,
+        "value": [
+          "typesafe/jev"
+        ]
+      },
+      "1.91.1": {
+        "line": 93682,
+        "value": [
+          "typesafe/jev"
+        ]
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "sR",
+      "newName": "ER",
+      "1.88.1": {
+        "line": 92328,
+        "value": {
+          "jev": "typesafe/jev",
+          "jev-latest": "typesafe/jev",
+          "typesafe/jev": "typesafe/jev",
+          "typesafe-ai/jev": "typesafe/jev"
+        }
+      },
+      "1.91.1": {
+        "line": 93684,
+        "value": {
+          "jev": "typesafe/jev",
+          "jev-latest": "typesafe/jev",
+          "typesafe/jev": "typesafe/jev",
+          "typesafe-ai/jev": "typesafe/jev"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "aR",
+      "newName": "MR",
+      "1.88.1": {
+        "line": 92335,
+        "value": {
+          "expression": "be.lazy(() =>\n        be.union([\n          be.string(),\n          be.number(),\n          be.boolean(),\n          be.null(),\n          be.array(aR),\n          be.record(be.string(), aR),\n        ]),\n      )"
+        }
+      },
+      "1.91.1": {
+        "line": 93691,
+        "value": {
+          "expression": "Ee.lazy(() =>\n        Ee.union([\n          Ee.string(),\n          Ee.number(),\n          Ee.boolean(),\n          Ee.null(),\n          Ee.array(MR),\n          Ee.record(Ee.string(), MR),\n        ]),\n      )"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "iR",
+      "newName": "PR",
+      "1.88.1": {
+        "line": 92345,
+        "value": {
+          "expression": "be.union([\n        be.string(),\n        be.record(be.string(), aR),\n        be.array(aR),\n        be.null(),\n      ])"
+        }
+      },
+      "1.91.1": {
+        "line": 93701,
+        "value": {
+          "expression": "Ee.union([\n        Ee.string(),\n        Ee.record(Ee.string(), MR),\n        Ee.array(MR),\n        Ee.null(),\n      ])"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "lR",
+      "newName": "xR",
+      "1.88.1": {
+        "line": 92351,
+        "value": {
+          "expression": "be.object({\n        type: be.literal(\"noul\"),\n        instructions: iR,\n        criteria: be\n          .object({ true: iR.optional(), false: iR.optional() })\n          .nullable()\n          .optional(),\n      })"
+        }
+      },
+      "1.91.1": {
+        "line": 93707,
+        "value": {
+          "expression": "Ee.object({\n        type: Ee.literal(\"noul\"),\n        instructions: PR,\n        criteria: Ee.object({ true: PR.optional(), false: PR.optional() })\n          .nullable()\n          .optional(),\n      })"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "cR",
+      "newName": "IR",
+      "1.88.1": {
+        "line": 92359,
+        "value": {
+          "expression": "be.object({\n        type: be.literal(\"choice\"),\n        instructions: iR,\n        criteria: be.record(be.string(), iR),\n      })"
+        }
+      },
+      "1.91.1": {
+        "line": 93714,
+        "value": {
+          "expression": "Ee.object({\n        type: Ee.literal(\"choice\"),\n        instructions: PR,\n        criteria: Ee.record(Ee.string(), PR),\n      })"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "dR",
+      "newName": "AR",
+      "1.88.1": {
+        "line": 92364,
+        "value": {
+          "expression": "be.object({\n        type: be.literal(\"score\"),\n        instructions: iR,\n        criteria: be.array(iR).min(2),\n      })"
+        }
+      },
+      "1.91.1": {
+        "line": 93719,
+        "value": {
+          "expression": "Ee.object({\n        type: Ee.literal(\"score\"),\n        instructions: PR,\n        criteria: Ee.array(PR).min(2),\n      })"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "uR",
+      "newName": "RR",
+      "1.88.1": {
+        "line": 92369,
+        "value": 100
+      },
+      "1.91.1": {
+        "line": 93724,
+        "value": 100
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "mR",
+      "newName": "OR",
+      "1.88.1": {
+        "line": 92370,
+        "value": {
+          "expression": "be.object({\n        state: iR,\n        questions: be\n          .record(\n            be.string().min(1),\n            be.discriminatedUnion(\"type\", [lR, cR, dR]),\n          )\n          .refine((e) => Object.keys(e).length > 0, {\n            message: \"questions must name at least one question\",\n          })\n          .refine((e) => Object.keys(e).length <= uR, {\n            message: `at most ${uR} questions per call`,\n          }),\n      })"
+        }
+      },
+      "1.91.1": {
+        "line": 93725,
+        "value": {
+          "expression": "Ee.object({\n        state: PR,\n        questions: Ee.record(\n          Ee.string().min(1),\n          Ee.discriminatedUnion(\"type\", [xR, IR, AR]),\n        )\n          .refine((e) => Object.keys(e).length > 0, {\n            message: \"questions must name at least one question\",\n          })\n          .refine((e) => Object.keys(e).length <= RR, {\n            message: `at most ${RR} questions per call`,\n          }),\n      })"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "gR",
+      "newName": "DR",
+      "1.88.1": {
+        "line": 92387,
+        "value": {
+          "expression": "be.record(be.string(), be.number())"
+        }
+      },
+      "1.91.1": {
+        "line": 93741,
+        "value": {
+          "expression": "Ee.record(Ee.string(), Ee.number())"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "hR",
+      "newName": "NR",
+      "1.88.1": {
+        "line": 92388,
+        "value": {
+          "expression": "be.discriminatedUnion(\"type\", [\n        be.object({ type: be.literal(\"noul\"), noul: be.number() }),\n        be.object({\n          type: be.literal(\"choice\"),\n          choice: be.string(),\n          confidence: be.number().optional(),\n          probabilities: gR.optional(),\n        }),\n        be.object({\n          type: be.literal(\"score\"),\n          score: be.number(),\n          confidence: be.number().optional(),\n          legend: be.record(be.string(), iR).optional(),\n          probabilities: gR.optional(),\n        }),\n      ])"
+        }
+      },
+      "1.91.1": {
+        "line": 93742,
+        "value": {
+          "expression": "Ee.discriminatedUnion(\"type\", [\n        Ee.object({ type: Ee.literal(\"noul\"), noul: Ee.number() }),\n        Ee.object({\n          type: Ee.literal(\"choice\"),\n          choice: Ee.string(),\n          confidence: Ee.number().optional(),\n          probabilities: DR.optional(),\n        }),\n        Ee.object({\n          type: Ee.literal(\"score\"),\n          score: Ee.number(),\n          confidence: Ee.number().optional(),\n          legend: Ee.record(Ee.string(), PR).optional(),\n          probabilities: DR.optional(),\n        }),\n      ])"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "fR",
+      "newName": "FR",
+      "1.88.1": {
+        "line": 92404,
+        "value": {
+          "expression": "be.object({\n        model: be.string().optional(),\n        answers: be.record(be.string(), hR),\n        usage: be\n          .object({ input_tokens: be.number(), output_tokens: be.number() })\n          .partial()\n          .optional(),\n      })"
+        }
+      },
+      "1.91.1": {
+        "line": 93758,
+        "value": {
+          "expression": "Ee.object({\n        model: Ee.string().optional(),\n        answers: Ee.record(Ee.string(), NR),\n        usage: Ee.object({\n          input_tokens: Ee.number(),\n          output_tokens: Ee.number(),\n        })\n          .partial()\n          .optional(),\n      })"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "dE",
+      "newName": "ME",
+      "1.88.1": {
+        "line": 90092,
+        "value": [
+          "premium_credits_exhausted",
+          "model_not_in_plan",
+          "insufficient credits"
+        ]
+      },
+      "1.91.1": {
+        "line": 91431,
+        "value": [
+          "premium_credits_exhausted",
+          "model_not_in_plan",
+          "insufficient credits"
+        ]
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "_s",
+      "newName": "sa",
+      "1.88.1": {
+        "line": 78627,
+        "value": "/alpha/whoami"
+      },
+      "1.91.1": {
+        "line": 79884,
+        "value": "/alpha/whoami"
+      },
+      "equalAfterBindingRenames": true
+    }
+  ],
+  "importEvidence": {
+    "os": {
+      "old": {
+        "source": "os",
+        "type": "ImportNamespaceSpecifier"
+      },
+      "new": {
+        "source": "os",
+        "type": "ImportNamespaceSpecifier"
+      }
+    },
+    "zod": {
+      "old": {
+        "source": "zod",
+        "type": "ImportSpecifier",
+        "imported": "z"
+      },
+      "new": {
+        "source": "zod",
+        "type": "ImportSpecifier",
+        "imported": "z"
+      },
+      "declaredDependency": "^4.1.5 (both versions)"
+    }
+  },
+  "jevSchemaEvidence": [
+    {
+      "oldName": "pR",
+      "newName": "LR",
+      "1.88.1": {
+        "line": 92384,
+        "value": "{\"state\": <text or JSON>, \"questions\": {\"<name>\": {\"type\": \"noul\" | \"choice\" | \"score\", \"instructions\": \"...\", \"criteria\": ...}}}"
+      },
+      "1.91.1": {
+        "line": 93738,
+        "value": "{\"state\": <text or JSON>, \"questions\": {\"<name>\": {\"type\": \"noul\" | \"choice\" | \"score\", \"instructions\": \"...\", \"criteria\": ...}}}"
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "rR",
+      "newName": "TR",
+      "1.88.1": {
+        "line": 92327,
+        "value": "/provider/v1/systemone"
+      },
+      "1.91.1": {
+        "line": 93683,
+        "value": "/provider/v1/systemone"
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "oR",
+      "newName": "CR",
+      "1.88.1": {
+        "line": 92326,
+        "value": [
+          "typesafe/jev"
+        ]
+      },
+      "1.91.1": {
+        "line": 93682,
+        "value": [
+          "typesafe/jev"
+        ]
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "sR",
+      "newName": "ER",
+      "1.88.1": {
+        "line": 92328,
+        "value": {
+          "jev": "typesafe/jev",
+          "jev-latest": "typesafe/jev",
+          "typesafe/jev": "typesafe/jev",
+          "typesafe-ai/jev": "typesafe/jev"
+        }
+      },
+      "1.91.1": {
+        "line": 93684,
+        "value": {
+          "jev": "typesafe/jev",
+          "jev-latest": "typesafe/jev",
+          "typesafe/jev": "typesafe/jev",
+          "typesafe-ai/jev": "typesafe/jev"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "aR",
+      "newName": "MR",
+      "1.88.1": {
+        "line": 92335,
+        "value": {
+          "expression": "be.lazy(() =>\n        be.union([\n          be.string(),\n          be.number(),\n          be.boolean(),\n          be.null(),\n          be.array(aR),\n          be.record(be.string(), aR),\n        ]),\n      )"
+        }
+      },
+      "1.91.1": {
+        "line": 93691,
+        "value": {
+          "expression": "Ee.lazy(() =>\n        Ee.union([\n          Ee.string(),\n          Ee.number(),\n          Ee.boolean(),\n          Ee.null(),\n          Ee.array(MR),\n          Ee.record(Ee.string(), MR),\n        ]),\n      )"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "iR",
+      "newName": "PR",
+      "1.88.1": {
+        "line": 92345,
+        "value": {
+          "expression": "be.union([\n        be.string(),\n        be.record(be.string(), aR),\n        be.array(aR),\n        be.null(),\n      ])"
+        }
+      },
+      "1.91.1": {
+        "line": 93701,
+        "value": {
+          "expression": "Ee.union([\n        Ee.string(),\n        Ee.record(Ee.string(), MR),\n        Ee.array(MR),\n        Ee.null(),\n      ])"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "lR",
+      "newName": "xR",
+      "1.88.1": {
+        "line": 92351,
+        "value": {
+          "expression": "be.object({\n        type: be.literal(\"noul\"),\n        instructions: iR,\n        criteria: be\n          .object({ true: iR.optional(), false: iR.optional() })\n          .nullable()\n          .optional(),\n      })"
+        }
+      },
+      "1.91.1": {
+        "line": 93707,
+        "value": {
+          "expression": "Ee.object({\n        type: Ee.literal(\"noul\"),\n        instructions: PR,\n        criteria: Ee.object({ true: PR.optional(), false: PR.optional() })\n          .nullable()\n          .optional(),\n      })"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "cR",
+      "newName": "IR",
+      "1.88.1": {
+        "line": 92359,
+        "value": {
+          "expression": "be.object({\n        type: be.literal(\"choice\"),\n        instructions: iR,\n        criteria: be.record(be.string(), iR),\n      })"
+        }
+      },
+      "1.91.1": {
+        "line": 93714,
+        "value": {
+          "expression": "Ee.object({\n        type: Ee.literal(\"choice\"),\n        instructions: PR,\n        criteria: Ee.record(Ee.string(), PR),\n      })"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "dR",
+      "newName": "AR",
+      "1.88.1": {
+        "line": 92364,
+        "value": {
+          "expression": "be.object({\n        type: be.literal(\"score\"),\n        instructions: iR,\n        criteria: be.array(iR).min(2),\n      })"
+        }
+      },
+      "1.91.1": {
+        "line": 93719,
+        "value": {
+          "expression": "Ee.object({\n        type: Ee.literal(\"score\"),\n        instructions: PR,\n        criteria: Ee.array(PR).min(2),\n      })"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "uR",
+      "newName": "RR",
+      "1.88.1": {
+        "line": 92369,
+        "value": 100
+      },
+      "1.91.1": {
+        "line": 93724,
+        "value": 100
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "mR",
+      "newName": "OR",
+      "1.88.1": {
+        "line": 92370,
+        "value": {
+          "expression": "be.object({\n        state: iR,\n        questions: be\n          .record(\n            be.string().min(1),\n            be.discriminatedUnion(\"type\", [lR, cR, dR]),\n          )\n          .refine((e) => Object.keys(e).length > 0, {\n            message: \"questions must name at least one question\",\n          })\n          .refine((e) => Object.keys(e).length <= uR, {\n            message: `at most ${uR} questions per call`,\n          }),\n      })"
+        }
+      },
+      "1.91.1": {
+        "line": 93725,
+        "value": {
+          "expression": "Ee.object({\n        state: PR,\n        questions: Ee.record(\n          Ee.string().min(1),\n          Ee.discriminatedUnion(\"type\", [xR, IR, AR]),\n        )\n          .refine((e) => Object.keys(e).length > 0, {\n            message: \"questions must name at least one question\",\n          })\n          .refine((e) => Object.keys(e).length <= RR, {\n            message: `at most ${RR} questions per call`,\n          }),\n      })"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "gR",
+      "newName": "DR",
+      "1.88.1": {
+        "line": 92387,
+        "value": {
+          "expression": "be.record(be.string(), be.number())"
+        }
+      },
+      "1.91.1": {
+        "line": 93741,
+        "value": {
+          "expression": "Ee.record(Ee.string(), Ee.number())"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "hR",
+      "newName": "NR",
+      "1.88.1": {
+        "line": 92388,
+        "value": {
+          "expression": "be.discriminatedUnion(\"type\", [\n        be.object({ type: be.literal(\"noul\"), noul: be.number() }),\n        be.object({\n          type: be.literal(\"choice\"),\n          choice: be.string(),\n          confidence: be.number().optional(),\n          probabilities: gR.optional(),\n        }),\n        be.object({\n          type: be.literal(\"score\"),\n          score: be.number(),\n          confidence: be.number().optional(),\n          legend: be.record(be.string(), iR).optional(),\n          probabilities: gR.optional(),\n        }),\n      ])"
+        }
+      },
+      "1.91.1": {
+        "line": 93742,
+        "value": {
+          "expression": "Ee.discriminatedUnion(\"type\", [\n        Ee.object({ type: Ee.literal(\"noul\"), noul: Ee.number() }),\n        Ee.object({\n          type: Ee.literal(\"choice\"),\n          choice: Ee.string(),\n          confidence: Ee.number().optional(),\n          probabilities: DR.optional(),\n        }),\n        Ee.object({\n          type: Ee.literal(\"score\"),\n          score: Ee.number(),\n          confidence: Ee.number().optional(),\n          legend: Ee.record(Ee.string(), PR).optional(),\n          probabilities: DR.optional(),\n        }),\n      ])"
+        }
+      },
+      "equalAfterBindingRenames": true
+    },
+    {
+      "oldName": "fR",
+      "newName": "FR",
+      "1.88.1": {
+        "line": 92404,
+        "value": {
+          "expression": "be.object({\n        model: be.string().optional(),\n        answers: be.record(be.string(), hR),\n        usage: be\n          .object({ input_tokens: be.number(), output_tokens: be.number() })\n          .partial()\n          .optional(),\n      })"
+        }
+      },
+      "1.91.1": {
+        "line": 93758,
+        "value": {
+          "expression": "Ee.object({\n        model: Ee.string().optional(),\n        answers: Ee.record(Ee.string(), NR),\n        usage: Ee.object({\n          input_tokens: Ee.number(),\n          output_tokens: Ee.number(),\n        })\n          .partial()\n          .optional(),\n      })"
+        }
+      },
+      "equalAfterBindingRenames": true
+    }
+  ],
+  "addedRoutes": [
+    "/provider/v1/notices"
+  ],
+  "removedRoutes": [],
+  "clientCatalog": {
+    "oldLine": 73991,
+    "newLine": 74803,
+    "oldCount": 106,
+    "newCount": 120,
+    "schemaVersion": 1,
+    "refreshAfterSeconds": 900,
+    "oldRoles": {
+      "default": "deepseek/deepseek-v4-flash",
+      "features": {
+        "branchSummarization": "deepseek/deepseek-v4-pro",
+        "compaction": "deepseek/deepseek-v4.1-flash",
+        "tasteOnboarding": "deepseek/deepseek-v4-flash",
+        "titleGeneration": "deepseek/deepseek-v4-flash",
+        "toolDescription": "deepseek/deepseek-v4-flash",
+        "vision": "deepseek/deepseek-v4.1-flash"
+      },
+      "zdrFeatures": {
+        "vision": "deepseek/deepseek-v4.1-flash"
+      }
+    },
+    "newRoles": {
+      "default": "deepseek/deepseek-v4.1-flash",
+      "features": {
+        "branchSummarization": "deepseek/deepseek-v4-pro",
+        "compaction": "deepseek/deepseek-v4.1-flash",
+        "tasteOnboarding": "deepseek/deepseek-v4-flash",
+        "titleGeneration": "deepseek/deepseek-v4.1-flash",
+        "toolDescription": "deepseek/deepseek-v4.1-flash",
+        "vision": "deepseek/deepseek-v4.1-flash"
+      },
+      "zdrFeatures": {
+        "vision": "deepseek/deepseek-v4.1-flash"
+      }
+    },
+    "added": [
+      {
+        "aliases": [],
+        "behaviorProfile": "anthropic-prefix-bound-v1",
+        "category": "premium",
+        "context_length": 1000000,
+        "display": {
+          "badge": null,
+          "description": "most capable for demanding reasoning & long-horizon agents",
+          "group": "Anthropic",
+          "label": "Claude Fable 5.2",
+          "notice": null,
+          "order": 77
+        },
+        "id": "claude-fable-5-2",
+        "inputModalities": [
+          "text",
+          "image"
+        ],
+        "maxOutputTokens": null,
+        "minimumPlan": "individual-provider",
+        "name": "Claude Fable 5.2",
+        "object": "model",
+        "owned_by": "command-code",
+        "pricing": {
+          "cacheReadCost": 0.2,
+          "cacheWrite1hCost": 16,
+          "cacheWriteCost": 10,
+          "inputCost": 8,
+          "outputCost": 40
+        },
+        "reasoningEfforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ],
+        "zdr": false
+      },
+      {
+        "aliases": [],
+        "behaviorProfile": "no-deferred-tools-v1",
+        "category": "premium",
+        "context_length": 1050000,
+        "display": {
+          "badge": null,
+          "description": "OpenAI flagship for the hardest engineering & research",
+          "group": "OpenAI",
+          "label": "GPT-6.2 Astra",
+          "notice": null,
+          "order": 87
+        },
+        "id": "gpt-6.2-astra",
+        "inputModalities": [
+          "text",
+          "image"
+        ],
+        "maxOutputTokens": null,
+        "minimumPlan": "individual-provider",
+        "name": "GPT-6.2 Astra",
+        "object": "model",
+        "owned_by": "command-code",
+        "pricing": {
+          "cacheReadCost": 0.4,
+          "cacheWrite1hCost": 0,
+          "cacheWriteCost": 10,
+          "contextTiers": [
+            {
+              "maxContext": 272000,
+              "rates": {
+                "cacheReadCost": 0.4,
+                "cacheWrite1hCost": 0,
+                "cacheWriteCost": 10,
+                "inputCost": 8,
+                "outputCost": 40
+              }
+            },
+            {
+              "rates": {
+                "cacheReadCost": 0.8,
+                "cacheWrite1hCost": 0,
+                "cacheWriteCost": 20,
+                "inputCost": 16,
+                "outputCost": 60
+              }
+            }
+          ],
+          "inputCost": 8,
+          "outputCost": 40
+        },
+        "reasoningEfforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ],
+        "zdr": true
+      },
+      {
+        "aliases": [],
+        "behaviorProfile": "no-deferred-tools-v1",
+        "category": "premium",
+        "context_length": 1050000,
+        "display": {
+          "badge": null,
+          "description": "efficient, versatile OpenAI model for everyday coding",
+          "group": "OpenAI",
+          "label": "GPT-6.2 Sol",
+          "notice": null,
+          "order": 88
+        },
+        "id": "gpt-6.2-sol",
+        "inputModalities": [
+          "text",
+          "image"
+        ],
+        "maxOutputTokens": null,
+        "minimumPlan": "individual-pro",
+        "name": "GPT-6.2 Sol",
+        "object": "model",
+        "owned_by": "command-code",
+        "pricing": {
+          "cacheReadCost": 0.1,
+          "cacheWrite1hCost": 0,
+          "cacheWriteCost": 2.5,
+          "contextTiers": [
+            {
+              "maxContext": 272000,
+              "rates": {
+                "cacheReadCost": 0.1,
+                "cacheWrite1hCost": 0,
+                "cacheWriteCost": 2.5,
+                "inputCost": 2,
+                "outputCost": 10
+              }
+            },
+            {
+              "rates": {
+                "cacheReadCost": 0.2,
+                "cacheWrite1hCost": 0,
+                "cacheWriteCost": 5,
+                "inputCost": 4,
+                "outputCost": 15
+              }
+            }
+          ],
+          "inputCost": 2,
+          "outputCost": 10
+        },
+        "reasoningEfforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ],
+        "zdr": true
+      },
+      {
+        "aliases": [],
+        "behaviorProfile": "no-deferred-tools-v1",
+        "category": "opensource",
+        "context_length": 1048576,
+        "display": {
+          "badge": null,
+          "description": "Accelerated V4.1 Flash",
+          "group": "Open Source",
+          "label": "DeepSeek V4.1 Flash Ultrafast",
+          "notice": null,
+          "order": 7
+        },
+        "id": "deepseek/deepseek-v4.1-flash-ultrafast",
+        "inputModalities": [
+          "text",
+          "image"
+        ],
+        "maxOutputTokens": null,
+        "minimumPlan": "individual-goat",
+        "name": "DeepSeek V4.1 Flash Ultrafast",
+        "object": "model",
+        "owned_by": "command-code",
+        "pricing": {
+          "cacheReadCost": 0.048,
+          "inputCost": 2.4,
+          "outputCost": 9.6
+        },
+        "reasoningEfforts": [
+          "off",
+          "low",
+          "high",
+          "max"
+        ],
+        "zdr": true
+      },
+      {
+        "aliases": [],
+        "behaviorProfile": "no-deferred-tools-v1",
+        "category": "opensource",
+        "context_length": 1000000,
+        "display": {
+          "badge": null,
+          "description": "flagship coding, agentic & knowledge work",
+          "group": "Open Source",
+          "label": "Qwen 4 Max",
+          "notice": null,
+          "order": 35
+        },
+        "id": "Qwen/Qwen4-Max",
+        "inputModalities": [
+          "text",
+          "image"
+        ],
+        "maxOutputTokens": null,
+        "minimumPlan": "individual-go",
+        "name": "Qwen 4 Max",
+        "object": "model",
+        "owned_by": "command-code",
+        "pricing": {
+          "cacheReadCost": 0.075,
+          "cacheWriteCost": 1.875,
+          "inputCost": 1.5,
+          "outputCost": 4.5
+        },
+        "reasoningEfforts": [
+          "off",
+          "low",
+          "high",
+          "xhigh"
+        ],
+        "zdr": true
+      },
+      {
+        "aliases": [],
+        "behaviorProfile": "no-deferred-tools-v1",
+        "category": "opensource",
+        "context_length": 1024000,
+        "display": {
+          "badge": null,
+          "description": "long-horizon agentic coding with image understanding",
+          "group": "Open Source",
+          "label": "Tencent Hy4",
+          "notice": null,
+          "order": 54
+        },
+        "id": "tencent/hy4",
+        "inputModalities": [
+          "text",
+          "image"
+        ],
+        "maxOutputTokens": null,
+        "minimumPlan": "individual-go",
+        "name": "Tencent Hy4",
+        "object": "model",
+        "owned_by": "command-code",
+        "pricing": {
+          "cacheReadCost": 0.042,
+          "inputCost": 0.834,
+          "outputCost": 2.501
+        },
+        "reasoningEfforts": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "zdr": true
+      },
+      {
+        "aliases": [],
+        "behaviorProfile": "no-deferred-tools-v1",
+        "category": "opensource",
+        "context_length": 1024000,
+        "display": {
+          "badge": null,
+          "description": "low-cost Hy4 for coding, reasoning & agentic work",
+          "group": "Open Source",
+          "label": "Tencent Hy4 Flash",
+          "notice": null,
+          "order": 55
+        },
+        "id": "tencent/hy4-flash",
+        "inputModalities": [
+          "text",
+          "image"
+        ],
+        "maxOutputTokens": null,
+        "minimumPlan": "individual-go",
+        "name": "Tencent Hy4 Flash",
+        "object": "model",
+        "owned_by": "command-code",
+        "pricing": {
+          "cacheReadCost": 0.003,
+          "inputCost": 0.07,
+          "outputCost": 0.281
+        },
+        "reasoningEfforts": [
+          "off",
+          "high"
+        ],
+        "zdr": true
+      },
+      {
+        "aliases": [],
+        "behaviorProfile": "no-deferred-tools-v1",
+        "category": "opensource",
+        "context_length": 1000000,
+        "display": {
+          "badge": null,
+          "description": "complex software engineering & sustained agent workflows",
+          "group": "Google",
+          "label": "Gemini 4 Carbon",
+          "notice": null,
+          "order": 100
+        },
+        "id": "google/gemini-4-carbon",
+        "inputModalities": [
+          "text",
+          "image"
+        ],
+        "maxOutputTokens": null,
+        "minimumPlan": "individual-pro",
+        "name": "Gemini 4 Carbon",
+        "object": "model",
+        "owned_by": "command-code",
+        "pricing": {
+          "cacheReadCost": 0.1,
+          "inputCost": 2,
+          "outputCost": 10
+        },
+        "reasoningEfforts": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "zdr": true
+      },
+      {
+        "aliases": [],
+        "behaviorProfile": "no-deferred-tools-v1",
+        "category": "opensource",
+        "context_length": 1048576,
+        "display": {
+          "badge": "free",
+          "description": "multimodal MoE reasoning with 1M context",
+          "group": "Open Source",
+          "label": "Inkling 2 Small",
+          "notice": "Inkling 2 Small is free and uses shared capacity, so limits may apply during busy periods. 200 requests a day per account",
+          "order": 61
+        },
+        "id": "thinkingmachines/inkling-2-small:free",
+        "inputModalities": [
+          "text",
+          "image"
+        ],
+        "maxOutputTokens": 131072,
+        "minimumPlan": "individual-go",
+        "name": "Inkling 2 Small",
+        "object": "model",
+        "owned_by": "command-code",
+        "pricing": {
+          "cacheReadCost": 0,
+          "inputCost": 0,
+          "outputCost": 0
+        },
+        "reasoningEfforts": [
+          "low",
+          "medium",
+          "high",
+          "max"
+        ],
+        "zdr": false
+      },
+      {
+        "aliases": [],
+        "behaviorProfile": "no-deferred-tools-v1",
+        "category": "opensource",
+        "context_length": 262144,
+        "display": {
+          "badge": "free",
+          "description": "open-weight MoE coding model, 2.5B active",
+          "group": "Open Source",
+          "label": "Flint",
+          "notice": "Flint is free and uses shared capacity, so limits may apply during busy periods. 1000 requests a day per account",
+          "order": 62
+        },
+        "id": "recursive/flint-v1.0:free",
+        "inputModalities": [
+          "text"
+        ],
+        "maxOutputTokens": null,
+        "minimumPlan": "individual-go",
+        "name": "Flint",
+        "object": "model",
+        "owned_by": "command-code",
+        "pricing": {
+          "cacheReadCost": 0,
+          "inputCost": 0,
+          "outputCost": 0
+        },
+        "reasoningEfforts": null,
+        "zdr": false
+      },
+      {
+        "aliases": [],
+        "behaviorProfile": "no-deferred-tools-v1",
+        "category": "opensource",
+        "context_length": 1048576,
+        "display": {
+          "badge": "free",
+          "description": "lightweight stealth model for agentic sub-tasks, 1M context",
+          "group": "Stealth",
+          "label": "Crouton Alpha",
+          "notice": null,
+          "order": 73
+        },
+        "hidden": true,
+        "id": "stealth/crouton-alpha",
+        "inputModalities": [
+          "text",
+          "image"
+        ],
+        "maxOutputTokens": 943718,
+        "minimumPlan": "individual-go",
+        "name": "Crouton Alpha",
+        "object": "model",
+        "owned_by": "command-code",
+        "pricing": {
+          "cacheReadCost": 0,
+          "inputCost": 0,
+          "outputCost": 0
+        },
+        "reasoningEfforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ],
+        "zdr": false
+      },
+      {
+        "aliases": [],
+        "behaviorProfile": "no-deferred-tools-v1",
+        "category": "opensource",
+        "context_length": 1000000,
+        "display": {
+          "badge": null,
+          "description": "hybrid-reasoning MoE for coding & tool-using agents",
+          "group": "Open Source",
+          "label": "Ling 3.1 Flash 1019",
+          "notice": null,
+          "order": 67
+        },
+        "id": "inclusionai/ling-3.1-flash-1019",
+        "inputModalities": [
+          "text"
+        ],
+        "maxOutputTokens": 262144,
+        "minimumPlan": "individual-go",
+        "name": "Ling 3.1 Flash 1019",
+        "object": "model",
+        "owned_by": "command-code",
+        "pricing": {
+          "cacheReadCost": 0.06,
+          "inputCost": 0.3,
+          "outputCost": 0.9
+        },
+        "reasoningEfforts": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "zdr": true
+      },
+      {
+        "aliases": [],
+        "behaviorProfile": "no-deferred-tools-v1",
+        "category": "opensource",
+        "context_length": 1000000,
+        "display": {
+          "badge": "free",
+          "description": "hybrid-reasoning MoE for coding & tool-using agents",
+          "group": "Open Source",
+          "label": "Ling 3.1 Flash 1019",
+          "notice": "Ling 3.1 Flash 1019 is free and uses shared capacity, so limits may apply during busy periods. 100 requests a day per account",
+          "order": 68
+        },
+        "hidden": true,
+        "id": "inclusionai/ling-3.1-flash-1019:free",
+        "inputModalities": [
+          "text"
+        ],
+        "maxOutputTokens": 262144,
+        "minimumPlan": "individual-go",
+        "name": "Ling 3.1 Flash 1019",
+        "object": "model",
+        "owned_by": "command-code",
+        "pricing": {
+          "cacheReadCost": 0,
+          "inputCost": 0,
+          "outputCost": 0
+        },
+        "reasoningEfforts": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "zdr": true
+      },
+      {
+        "aliases": [],
+        "behaviorProfile": "private-reasoning-v1",
+        "category": "opensource",
+        "context_length": 1048576,
+        "display": {
+          "badge": null,
+          "description": "multimodal reasoning for conversational and agentic work",
+          "group": "Meta",
+          "label": "Muse Ember",
+          "notice": null,
+          "order": 116
+        },
+        "id": "meta/muse-ember",
+        "inputModalities": [
+          "text",
+          "image",
+          "file"
+        ],
+        "maxOutputTokens": null,
+        "minimumPlan": "individual-go",
+        "name": "Muse Ember",
+        "object": "model",
+        "owned_by": "command-code",
+        "pricing": {
+          "cacheReadCost": 0.004,
+          "inputCost": 0.1,
+          "outputCost": 0.5
+        },
+        "reasoningEfforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ],
+        "zdr": true
+      }
+    ],
+    "removed": [],
+    "changed": [
+      {
+        "id": "claude-fable-5-1",
+        "changes": {
+          "display.description": {
+            "old": "most capable for demanding reasoning & long-horizon agents",
+            "new": "prev Fable, still strong for deep reasoning & agents"
+          }
+        }
+      },
+      {
+        "id": "claude-fable-5",
+        "changes": {
+          "display.description": {
+            "old": "prev Fable, still strong for deep reasoning & agents",
+            "new": "older Fable for deep reasoning & agents"
+          }
+        }
+      },
+      {
+        "id": "z-ai/glm-5.3-flashx",
+        "changes": {
+          "zdr": {
+            "old": false,
+            "new": true
+          }
+        }
+      },
+      {
+        "id": "tencent/hy4-preview",
+        "changes": {
+          "zdr": {
+            "old": false,
+            "new": true
+          }
+        }
+      },
+      {
+        "id": "stealth/glyph-cluster:free",
+        "changes": {
+          "display.notice": {
+            "old": "Glyph Cluster is free and uses shared capacity, so limits may apply during busy periods. 100 requests a day per account",
+            "new": "Glyph Cluster is free and uses shared capacity, so limits may apply during busy periods. 1000 requests a day per account"
+          }
+        }
+      },
+      {
+        "id": "reflection/beam:free",
+        "changes": {
+          "name": {
+            "old": "Beam 1.0",
+            "new": "Beam 1.0 (Free)"
+          },
+          "hidden": {
+            "old": null,
+            "new": true
+          },
+          "display.notice": {
+            "old": "Beam 1.0 is free and uses shared capacity, so limits may apply during busy periods",
+            "new": null
+          }
+        }
+      },
+      {
+        "id": "poolside/laguna-s-2.1-free",
+        "changes": {
+          "name": {
+            "old": "Laguna S 2.1",
+            "new": "Laguna S 2.1 (Free)"
+          },
+          "hidden": {
+            "old": null,
+            "new": true
+          },
+          "display.notice": {
+            "old": "Laguna S 2.1 is free and uses shared capacity, so limits may apply during busy periods",
+            "new": null
+          }
+        }
+      }
+    ],
+    "displayOrderExcluded": true,
+    "hiddenNewModels": [
+      "stealth/crouton-alpha",
+      "inclusionai/ling-3.1-flash-1019:free"
+    ],
+    "lingFreeWindow": {
+      "start": "2026-10-29T16:00:00Z",
+      "endExclusive": "2026-11-03T16:00:00Z",
+      "newFunctionLines": [
+        95626,
+        95629
+      ],
+      "expiredAtReview": true
+    }
+  },
+  "proxyFollowUp": {
+    "suggestedVersionFallback": "1.91.1",
+    "fallbackCount": 69,
+    "fallbackProblems": [],
+    "newVisibleModels": [
+      "claude-fable-5-2",
+      "gpt-6.2-astra",
+      "gpt-6.2-sol",
+      "deepseek/deepseek-v4.1-flash-ultrafast",
+      "Qwen/Qwen4-Max",
+      "tencent/hy4",
+      "tencent/hy4-flash",
+      "google/gemini-4-carbon",
+      "thinkingmachines/inkling-2-small:free",
+      "recursive/flint-v1.0:free",
+      "inclusionai/ling-3.1-flash-1019",
+      "meta/muse-ember"
+    ],
+    "notImplemented": [],
+    "policy": "Follow supported upstream gateway formats and honor downstream model/context choices; do not import CLI model substitution, goal continuations, context trimming, or whoami-specific 403 logic into chat key rotation.",
+    "baselineVersionFallback": "1.88.1",
+    "currentVersionFallback": "1.91.1",
+    "baselineFallbackCount": 58,
+    "baselineFallbackProblems": [
+      {
+        "id": "reflection/beam:free",
+        "reason": "hidden",
+        "upstream": {
+          "aliases": [],
+          "behaviorProfile": "no-deferred-tools-v1",
+          "category": "opensource",
+          "context_length": 1048576,
+          "display": {
+            "badge": "free",
+            "description": "reasoning model for coding and agentic workflows",
+            "group": "Open Source",
+            "label": "Beam 1.0",
+            "notice": null,
+            "order": 63
+          },
+          "hidden": true,
+          "id": "reflection/beam:free",
+          "inputModalities": [
+            "text"
+          ],
+          "maxOutputTokens": 131072,
+          "minimumPlan": "individual-go",
+          "name": "Beam 1.0 (Free)",
+          "object": "model",
+          "owned_by": "command-code",
+          "pricing": {
+            "cacheReadCost": 0,
+            "inputCost": 0,
+            "outputCost": 0
+          },
+          "reasoningEfforts": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ],
+          "zdr": false
+        }
+      }
+    ],
+    "implemented": [
+      "version fallback refresh",
+      "model fallback refresh"
+    ]
+  },
+  "proxyChanges": {
+    "versionFallback": {
+      "old": "1.88.1",
+      "new": "1.91.1"
+    },
+    "addedModelIDs": [
+      "claude-fable-5-2",
+      "gpt-6.2-astra",
+      "gpt-6.2-sol",
+      "deepseek/deepseek-v4.1-flash-ultrafast",
+      "Qwen/Qwen4-Max",
+      "tencent/hy4",
+      "tencent/hy4-flash",
+      "google/gemini-4-carbon",
+      "thinkingmachines/inkling-2-small:free",
+      "recursive/flint-v1.0:free",
+      "inclusionai/ling-3.1-flash-1019",
+      "meta/muse-ember"
+    ],
+    "removedFallbackModelIDs": [
+      "reflection/beam:free"
+    ],
+    "fallbackCount": 69,
+    "requestAndRoutingPoliciesChanged": false
+  },
+  "proxyValidation": {
+    "officialCatalogComparison": {
+      "result": "passed",
+      "models": 69,
+      "fields": [
+        "id",
+        "name",
+        "context_length",
+        "hidden"
+      ]
+    },
+    "goVersion": "1.24.0",
+    "goTestRace": {
+      "command": "go test -race -count=1 ./...",
+      "result": "passed"
+    },
+    "goVet": {
+      "command": "go vet ./...",
+      "result": "passed"
+    },
+    "golangciLint": {
+      "version": "2.1.6",
+      "command": "golangci-lint run ./...",
+      "result": "passed",
+      "issues": 0
+    }
+  }
+}

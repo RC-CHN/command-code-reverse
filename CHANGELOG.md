@@ -6,6 +6,14 @@ versioning follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Refresh the offline CLI version fallback to `1.91.1` and add the 12 newly
+  visible models from its client catalog, including GPT-6.2, Gemini 4 Carbon
+  and DeepSeek V4.1 Flash Ultrafast. Remove the hidden Beam free model from
+  the fallback list. Dynamic catalogs still take priority; explicit model
+  IDs and request parameters remain unchanged.
+
 ## [v0.3.6] - 2026-11-08
 
 ### Added
