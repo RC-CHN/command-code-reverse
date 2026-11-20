@@ -6,6 +6,8 @@ versioning follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+## [v0.3.7] - 2026-11-20
+
 ### Changed
 
 - Refresh the offline CLI version fallback to `1.91.1` and add the 12 newly
